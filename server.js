@@ -4,8 +4,8 @@ const cors = require('cors');
 const { initializeRedis } = require('./infra/redis');
 const { initializeDB } = require('./infra/db');
 
-await initializeRedis();
-await initializeDB();
+initializeRedis();
+initializeDB();
 
 const app = express();
 
