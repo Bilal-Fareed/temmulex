@@ -1,15 +1,15 @@
-const express = require('express');
-require('dotenv').config();
-const cors = require('cors');
-const { initializeRedis } = require('./infra/redis');
-const { initializeDB } = require('./infra/db');
+import express from 'express';
+import 'dotenv/config';
+import cors from 'cors';
+import { initializeRedis } from './infra/redis.js';
+import { initializeDB } from './infra/db.js';
 
 initializeRedis();
 initializeDB();
 
 const app = express();
 
-const webhookRoute = require('./src/routes/webhooks');
+import webhookRoute from './src/routes/webhooks';
 app.use('/webhooks', webhookRoute);
 
 app.use(express.json());
@@ -23,13 +23,13 @@ app.use(cors({
 
 const port = process.env.PORT || 3001;
 
-const openRoutes = require('./src/routes/openRoutes');
+import openRoutes from './src/routes/openRoutes';
 app.use('/v1', openRoutes);
 
-const userRoutes = require('./src/routes/userRoutes');
+import userRoutes from './src/routes/userRoutes';
 app.use('/v1/users', userRoutes);
 
-const adminRoutes = require('./src/routes/adminRoutes');
+import adminRoutes from './src/routes/adminRoutes';
 app.use('/api/admin', adminRoutes);
 
 app.listen(port, () => console.log("Server Running On Port: ", port));

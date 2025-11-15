@@ -1,42 +1,42 @@
-const pgPromise = require("pg-promise");
+import { drizzle } from "drizzle-orm/node-postgres";
+import { Pool } from "pg";
+// import * as schema from './schema';
 
 let dbInstance = null;
 
 const initializeDB = async () => {
-  try {
-    const pgp = pgPromise({
-      query(e) {
-        console.log("\x1b[36m[QUERY] > \x1b[0m", e.query);
-        if (e.params && e.params.length) {
-          console.log("\x1b[33m[PARAMS] > \x1b[0m", e.params);
-        }
-      },
-    });
+	try {
+		const pool = new Pool({
+			host: process.env.DB_HOST,
+			port: Number(process.env.DB_PORT),
+			user: process.env.DB_USER,
+			password: process.env.DB_PASSWORD,
+			database: process.env.DB_NAME,
+			ssl: process.env.DB_SSL === "true",
+		});
 
-    const connection = {
-      host: process.env.DB_HOST,
-      port: Number(process.env.DB_PORT),
-      database: process.env.DB_NAME,
-      user: process.env.DB_USER,
-      password: process.env.DB_PASSWORD,
-      ssl: process.env.DB_SSL === "true" ? { rejectUnauthorized: false } : false,
-    };
+		dbInstance = drizzle(pool, {
+			// schema,
+			logger: {
+				logQuery: (query, params) => {
+					console.log("\x1b[36m[QUERY] > \x1b[0m", query);
+					if (params && params?.length) {
+						console.log("\x1b[33m[PARAMS] > \x1b[0m", params);
+					}
+				},
+			},
+		});
 
-    const db = pgp(connection);
-
-    // Test connection
-    await db.one("SELECT 1");
-    console.log("\x1b[32m[DB CONNECTED]\x1b[0m Database connection successful.");
-
-    dbInstance = db;
-  } catch (err) {
-    console.error("\x1b[31m[DB ERROR]\x1b[0m Failed to connect to the database.");
-    console.error(err.message || err);
-    process.exit(1);
-  }
+		await dbInstance.execute("SELECT 1");
+		console.log("\x1b[32m[DB CONNECTED]\x1b[0m Database connection successful.");
+	} catch (error) {
+		console.error("\x1b[31m[DB ERROR]\x1b[0m Failed to connect to the database.");
+		console.error(error.message || error);
+		process.exit(1);
+	}
 }
 
-module.exports = {
-  initializeDB,
-  db: dbInstance,
+export {
+	initializeDB,
+	dbInstance as db,
 }
