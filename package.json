@@ -5,7 +5,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node server.js",
+    "start": "node --import dotenv/config server.js",
+    "local": "node --import dotenv/config --watch --env-file=.env.local server.js",
+    "dev": "node --import dotenv/config --env-file=.env.development server.js",
+    "production": "node --import dotenv/config --env-file=.env.production server.js",
     "drizzle:push": "npx drizzle-kit push",
     "drizzle:migrate": "npx drizzle-kit migrate",
     "drizzle:generate": "npx drizzle-kit generate",

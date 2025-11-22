@@ -1,6 +1,6 @@
 import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
-// import * as schema from './schema';
+import * as schema from '../src/models/index.js';
 
 let dbInstance = null;
 
@@ -16,7 +16,7 @@ const initializeDB = async () => {
 		});
 
 		dbInstance = drizzle(pool, {
-			// schema,
+			schema,
 			logger: {
 				logQuery: (query, params) => {
 					console.log("\x1b[36m[QUERY] > \x1b[0m", query);

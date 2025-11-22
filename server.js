@@ -4,8 +4,8 @@ import cors from 'cors';
 import { initializeRedis } from './infra/redis.js';
 import { initializeDB } from './infra/db.js';
 
-initializeRedis();
-initializeDB();
+await initializeRedis();
+await initializeDB();
 
 const app = express();
 
