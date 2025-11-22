@@ -9,8 +9,8 @@ await initializeDB();
 
 const app = express();
 
-import webhookRoute from './src/routes/webhooks';
-app.use('/webhooks', webhookRoute);
+// import webhookRoute from './src/routes/webhooks.js';
+// app.use('/webhooks', webhookRoute);
 
 app.use(express.json());
 
@@ -23,13 +23,13 @@ app.use(cors({
 
 const port = process.env.PORT || 3001;
 
-import openRoutes from './src/routes/openRoutes';
-app.use('/v1', openRoutes);
+// import openRoutes from './src/routes/openRoutes.js';
+// app.use('/v1', openRoutes);
 
-import userRoutes from './src/routes/userRoutes';
+import userRoutes from './src/routes/userRoutes.js';
 app.use('/v1/users', userRoutes);
 
-import adminRoutes from './src/routes/adminRoutes';
-app.use('/api/admin', adminRoutes);
+// import adminRoutes from './src/routes/adminRoutes.js';
+// app.use('/api/admin', adminRoutes);
 
 app.listen(port, () => console.log("Server Running On Port: ", port));
