@@ -8,7 +8,7 @@ const initializeRedis = async () => {
             host: process.env.REDIS_HOST || 'localhost',
             port: Number(process.env.REDIS_PORT || 6379),
             password: process.env.REDIS_PASSWORD || undefined,
-            maxRetriesPerRequest: null,
+            maxRetriesPerRequest: process.env.REDIS_MAX_RETRIES || null,
         });
 
         // Log runtime errors (e.g., Redis server crashes after initial connection)

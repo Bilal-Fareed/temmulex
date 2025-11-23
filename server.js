@@ -1,35 +1,38 @@
-import express from 'express';
-import 'dotenv/config';
-import cors from 'cors';
-import { initializeRedis } from './infra/redis.js';
-import { initializeDB } from './infra/db.js';
+import http from "http";
+import "dotenv/config";
+import cors from "cors";
+import express from "express";
+import { initializeDB } from "./infra/db.js";
+import { SocketServer } from "./socketServer.js";
+import { initializeRedis } from "./infra/redis.js";
 
 await initializeRedis();
 await initializeDB();
 
-const app = express();
+const server = express();
+const _server = http.createServer(server);
+await SocketServer(_server);
 
-// import webhookRoute from './src/routes/webhooks.js';
-// app.use('/webhooks', webhookRoute);
+// import webhookRoute from "./src/routes/webhooks.js";
+// server.use("/webhooks", webhookRoute);
 
-app.use(express.json());
+server.use(express.json());
+const corsConfig = process.env.ENVIRONMENT?.toLowerCase() === "production"
 
-const corsConfig = process.env.ENVIRONMENT?.toLowerCase() === 'production'
-
-app.use(cors({
+server.use(cors({
     origin: corsConfig ? process.env.CLIENT_URL : "*",
     credentials: corsConfig
 }));
 
 const port = process.env.PORT || 3001;
 
-// import openRoutes from './src/routes/openRoutes.js';
-// app.use('/v1', openRoutes);
+// import openRoutes from "./src/routes/openRoutes.js";
+// server.use("/v1", openRoutes);
 
-import userRoutes from './src/routes/userRoutes.js';
-app.use('/v1/users', userRoutes);
+import userRoutes from "./src/routes/userRoutes.js";
+server.use("/v1/users", userRoutes);
 
-// import adminRoutes from './src/routes/adminRoutes.js';
-// app.use('/api/admin', adminRoutes);
+// import adminRoutes from "./src/routes/adminRoutes.js";
+// server.use("/api/admin", adminRoutes);
 
-app.listen(port, () => console.log("Server Running On Port: ", port));
+_server.listen(port, () => console.log("Server Running On Port: ", port));
