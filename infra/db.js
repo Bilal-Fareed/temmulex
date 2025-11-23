@@ -26,12 +26,10 @@ const initializeDB = async () => {
 				},
 			},
 		});
-
-		await dbInstance.execute("SELECT 1");
+		await pool.query("SELECT 1;");
 		console.log("\x1b[32m[DB CONNECTED]\x1b[0m Database connection successful.");
 	} catch (error) {
-		console.error("\x1b[31m[DB ERROR]\x1b[0m Failed to connect to the database.");
-		console.error(error.message || error);
+		console.error("\x1b[31m[DB ERROR]\x1b[0m Failed to connect to the database. \x1b[30m[ERROR MESSAGE]\x1b[0m", error.message || error);
 		process.exit(1);
 	}
 }

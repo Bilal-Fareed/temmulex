@@ -1,6 +1,6 @@
 services:
     pgsql:
-        image: postgres
+        image: postgis/postgis:15-3.4
         restart: always
         shm_size: 128mb
         # volumes:
@@ -15,7 +15,7 @@ services:
         environment:
             POSTGRES_USER: docker
             POSTGRES_PASSWORD: docker
-            POSTGRES_DB: postgres
+            POSTGRES_DB: temmulex
             
     adminer:
         image: adminer

@@ -12,6 +12,7 @@ export default defineConfig({
         database: process.env.DB_NAME || 'temmulex',
         ssl: process.env.DB_SSL === 'true',
     },
+    extensionsFilters: ["postgis"],
     verbose: true,
     strict: true,
 });
