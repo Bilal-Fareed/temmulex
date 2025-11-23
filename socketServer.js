@@ -20,8 +20,4 @@ export const SocketServer = async (_server) => {
             console.log("Socket disconnected: ", socket.id)
         })
     })
-
-    return {
-        socketServer: _socketServer,
-    }
 }
