@@ -28,16 +28,6 @@ const logoutController = async (req, res) => {
     }
 };
 
-const googleAuthController = async (req, res) => {
-    try {
-        console.log("USER CONTROLLER > GOOGLE AUTH > try block executed");
-        res.status(200).json({ success: true, message: "Google auth successful" });
-    } catch (error) {
-        console.error("USER CONTROLLER > GOOGLE AUTH >", error);
-        res.status(500).json({ success: false, message: "Internal Server Error" });
-    }
-};
-
 const verifyOtpController = async (req, res) => {
     try {
         console.log("USER CONTROLLER > VERIFY OTP > try block executed");
@@ -83,7 +73,6 @@ export {
     userSignupController,
     loginController,
     logoutController,
-    googleAuthController,
     verifyOtpController,
     updatePasswordController,
     sendOtpController,

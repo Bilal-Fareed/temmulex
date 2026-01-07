@@ -16,9 +16,18 @@ const signinSchema = vine.object({
 
 // Signup schema
 const signupSchema = vine.object({
-    name: vine.string(),
+    user_type: vine.enum(['client', 'freelancer']),
     email: vine.string().email(),
     password: passwordSchema,
+    title: vine.string().minLength(2).maxLength(20),
+    first_name: vine.string().minLength(2).maxLength(100),
+    last_name: vine.string().minLength(2).maxLength(100),
+    country: vine.string().minLength(2).maxLength(100),
+    dob: vine.date(),
+    phone: vine.string().minLength(2).maxLength(50),
+    service: vine.string().minLength(2).maxLength(100).optional().requiredWhen('user_type', '=', 'freelancer'),
+    language: vine.string().minLength(2).maxLength(100).optional().requiredWhen('user_type', '=', 'freelancer'),
+    location: vine.string().minLength(2).maxLength(100).optional().requiredWhen('user_type', '=', 'freelancer'),
 });
 
 // Verify OTP schema
@@ -38,12 +47,6 @@ const updatePasswordSchema = vine.object({
     password: passwordSchema,
 });
 
-// Google Auth schema
-const googleAuthSchema = vine.object({
-    email: vine.string().email(),
-    googleId: vine.string(),
-});
-
 // Common headers schema
 const commonHeadersSchema = vine.object({
     'x-device-id': vine.string(),
@@ -57,6 +60,5 @@ export {
     verifyOtpSchema,
     sendOtpSchema,
     updatePasswordSchema,
-    googleAuthSchema,
     commonHeadersSchema,
 };
