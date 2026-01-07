@@ -9,15 +9,14 @@ import {
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 import { orders } from "./ordersModel.js";
-import { clients } from "./clientsModel.js";
-import { freelancers } from "./freelancersModel.js";
+import { users } from "./usersModel.js";
 
 export const reviews = pgTable("reviews", {
     id: serial("id").primaryKey(),
     uuid: uuid("uuid").defaultRandom().notNull().unique(),
     orderId: uuid("order_uuid").references(() => orders.uuid).notNull(),
-    reviewerId: uuid("reviewer_uuid").references(() => clients.uuid).notNull(),
-    freelancerId: uuid("freelancer_uuid").references(() => freelancers.uuid).notNull(),
+    reviewerId: uuid("reviewer_uuid").references(() => users.uuid).notNull(),
+    freelancerId: uuid("freelancer_uuid").references(() => users.uuid).notNull(),
     rating: integer("rating"),
     comments: text("comments"),
     isDeleted: boolean("is_deleted").default(false),
@@ -27,6 +26,6 @@ export const reviews = pgTable("reviews", {
 
 export const reviewRelations = relations(reviews, ({ one }) => ({
     order: one(orders, { fields: [reviews.orderId], references: [orders.uuid] }),
-    client: one(clients, { fields: [reviews.reviewerId], references: [clients.uuid] }),
-    freelancer: one(freelancers, { fields: [reviews.freelancerId], references: [freelancers.uuid] }),
+    client: one(users, { fields: [reviews.reviewerId], references: [users.uuid] }),
+    freelancer: one(users, { fields: [reviews.freelancerId], references: [users.uuid] }),
 }));

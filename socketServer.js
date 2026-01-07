@@ -4,6 +4,7 @@ import { createAdapter } from "@socket.io/redis-adapter";
 
 export const SocketServer = async (_server) => {
     const _socketServer = new socketIo(_server, {
+        connectionStateRecovery: {},
         adapter: createAdapter(
             redisClient.instance,
             redisClient.instance.duplicate()

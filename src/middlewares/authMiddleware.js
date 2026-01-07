@@ -1,7 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { db } from '../../infra/db.js';
-import { clients } from '../models/clientsModel.js';
-import { freelancers } from '../models/freelancersModel.js';
+import { users } from '../models/usersModel.js';
 import { sessions } from '../models/sessionsModel.js';
 import { and, eq } from 'drizzle-orm';
 import { generateAccessToken, generateRefreshToken, verifyAccessToken, verifyRefreshToken } from '../utils/jwt.js';
@@ -14,22 +13,16 @@ const authenticate = async (req, res, next) => {
   const refreshToken = req.headers['x-refresh-token'];
   const deviceId = req.headers['x-device-id'];
   const userAgent = req.headers['user-agent'] || 'unknown';
-  const tableSelector = {
-    "freelancer": freelancers,
-    "client": clients
-  }
-  
+
   if (!accessToken) {
     return res.status(401).json({ message: 'Access token missing' });
   }
 
   try {
     const decodedAccess = verifyAccessToken(accessToken);
-    
-    const table = tableSelector[`${decodedAccess.userType}`]
 
     // Validate user
-    const [user] = await db().select().from(table).where(eq(table.uuid, decodedAccess.uuid));
+    const [user] = await db().select().from(users).where(eq(users.uuid, decodedAccess.uuid));
     if (!user || user.refreshTokenVersion !== decodedAccess.version) {
       return res.status(401).json({ message: 'Session version mismatch' });
     }
@@ -122,6 +115,6 @@ const authenticate = async (req, res, next) => {
   }
 };
 
-export { 
-  authenticate 
+export {
+  authenticate
 };
