@@ -3,7 +3,9 @@ export * from "./messagesModel.js";
 export * from "./ordersModel.js";
 export * from "./reviewsModel.js";
 export * from "./sessionsModel.js";
-export * from "./freelanserProfilesModel.js";
+export * from "./freelancerProfilesModel.js";
+export * from "./freelancerLanguagesModel.js";
+export * from "./freelancerServicesModel.js"
 export * from "./languagesModel.js";
 export * from "./servicesModel.js";
 export * from "./usersModel.js";
