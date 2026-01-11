@@ -1,7 +1,7 @@
 import { uploadPdf } from "../helpers/cloudinary.js";
 import { hashPassword, verifyPassword, generateAccessToken, generateRefreshToken } from "../helpers/security.js";
 import { getUserByEmail, createUserService, getUserByUuid, updateUserByUuidService } from "../services/userService.js";
-import { insertFreelancerDetailService } from "../services/freelancerProfileService.js";
+import { insertFreelancerDetailService, getFreelancerProfileDetailByUserUuid } from "../services/freelancerProfileService.js";
 import { insertManyFreelancerLanguagesService } from "../services/freelancerLanguageService.js";
 import { insertManyFreelancerServicesService } from "../services/freelancerServicesService.js";
 import { redisClient } from "../../infra/redis.js";
@@ -90,6 +90,20 @@ const loginController = async (req, res) => {
         const isValid = await verifyPassword(password, user.password);
         if (!isValid) return res.status(403).json({ success: false, message: 'Invalid credentials' });
 
+        if (user_type === "freelancer") {
+            const freelancerProfileDetails = getFreelancerProfileDetailByUserUuid(user.uuid);
+            user = {
+                ...user,
+                location: freelancerProfileDetails.location,
+                resumeLink: freelancerProfileDetails.resumeLink,
+                certificateLink: freelancerProfileDetails.certificateLink,
+                profileStatus: freelancerProfileDetails.profileStatus,
+                isBlocked: freelancerProfileDetails.isBlocked,
+                isDeleted: freelancerProfileDetails.isDeleted,
+                createdAt: freelancerProfileDetails.createdAt
+            }
+        }
+
         const tokenId = randomUUID();
         const accessToken = generateAccessToken({ uuid: user.uuid, version: user.refreshTokenVersion, tokenId });
         const refreshToken = generateRefreshToken({ uuid: user.uuid, version: user.refreshTokenVersion, tokenId });
@@ -114,7 +128,13 @@ const loginController = async (req, res) => {
                 profilePicture: user.profilePicture,
                 name: user.firstName + user.lastName,
                 isBlocked: user.isBlocked,
-                createdAt: user.createdAt
+                createdAt: user.createdAt,
+                ...(user_type === "freelancer" && {
+                    location: user.location,
+                    resumeLink: user.resumeLink,
+                    certificateLink: user.certificateLink,
+                    profileStatus: user.profileStatus,
+                })
             },
             accessToken,
             refreshToken,

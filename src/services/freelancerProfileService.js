@@ -13,6 +13,13 @@ const insertFreelancerDetailService = async (data, options = {}) => {
   });
 };
 
+const getFreelancerProfileDetailByUserUuid = async (userUuid) => {
+  return await db.query.freelancerProfiles.findFirst({
+    where: eq(freelancerProfiles.userId, userUuid),
+  });
+} 
+
 export {
-  insertFreelancerDetailService
+  insertFreelancerDetailService,
+  getFreelancerProfileDetailByUserUuid
 }
