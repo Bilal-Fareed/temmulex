@@ -5,9 +5,11 @@ import express from "express";
 import { initializeDB } from "./infra/db.js";
 import { SocketServer } from "./socketServer.js";
 import { initializeRedis } from "./infra/redis.js";
+import { initializeMailer } from './src/helpers/mailer.js';
 
 await initializeRedis();
 await initializeDB();
+if (process.env.ENVIRONMENT?.toLowerCase() === 'production') await initializeMailer();
 
 const server = express();
 const _server = http.createServer(server);

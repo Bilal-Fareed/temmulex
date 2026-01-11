@@ -3,7 +3,7 @@ import { db } from '../../infra/db.js';
 import { users } from '../models/usersModel.js';
 import { sessions } from '../models/sessionsModel.js';
 import { and, eq } from 'drizzle-orm';
-import { generateAccessToken, generateRefreshToken, verifyAccessToken, verifyRefreshToken } from '../utils/jwt.js';
+import { generateAccessToken, generateRefreshToken, verifyAccessToken, verifyRefreshToken } from '../helpers/security.js';
 
 /**
  * Express middleware to authenticate users using access and refresh tokens
@@ -22,7 +22,7 @@ const authenticate = async (req, res, next) => {
     const decodedAccess = verifyAccessToken(accessToken);
 
     // Validate user
-    const [user] = await db().select().from(users).where(eq(users.uuid, decodedAccess.uuid));
+    const [user] = await db.select().from(users).where(eq(users.uuid, decodedAccess.uuid));
     if (!user || user.refreshTokenVersion !== decodedAccess.version) {
       return res.status(401).json({ message: 'Session version mismatch' });
     }
@@ -48,7 +48,7 @@ const authenticate = async (req, res, next) => {
       const table = tableSelector[`${decodedRefresh.userType}`]
 
       // Validate session exists and matches device
-      const [session] = await db()
+      const [session] = await db
         .select()
         .from(sessions)
         .where(
@@ -66,16 +66,16 @@ const authenticate = async (req, res, next) => {
       }
 
       // Validate user
-      const [user] = await db().select().from(table).where(eq(table.uuid, decodedRefresh.uuid));
+      const [user] = await db.select().from(table).where(eq(table.uuid, decodedRefresh.uuid));
       if (!user || user.refreshTokenVersion !== decodedRefresh.version) {
         return res.status(401).json({ message: 'Session version mismatch' });
       }
 
       // Rotate session
-      await db().delete(sessions).where(eq(sessions.tokenId, decodedRefresh.tokenId));
+      await db.delete(sessions).where(eq(sessions.tokenId, decodedRefresh.tokenId));
 
       const newTokenId = uuidv4();
-      await db().insert(sessions).values({
+      await db.insert(sessions).values({
         tokenId: newTokenId,
         userId: user.uuid,
         deviceId: deviceId,
@@ -116,5 +116,5 @@ const authenticate = async (req, res, next) => {
 };
 
 export {
-  authenticate
+  authenticate,
 };

@@ -25,9 +25,13 @@ const signupSchema = vine.object({
     country: vine.string().minLength(2).maxLength(100),
     dob: vine.date(),
     phone: vine.string().minLength(2).maxLength(50),
-    service: vine.string().minLength(2).maxLength(100).optional().requiredWhen('user_type', '=', 'freelancer'),
-    language: vine.string().minLength(2).maxLength(100).optional().requiredWhen('user_type', '=', 'freelancer'),
-    location: vine.string().minLength(2).maxLength(100).optional().requiredWhen('user_type', '=', 'freelancer'),
+    languages: vine.array(vine.string()).optional().requiredWhen('user_type', '=', 'freelancer'),
+    location: vine.object({ lat: vine.number(), lng: vine.number() }).optional().requiredWhen('user_type', '=', 'freelancer'),
+    services: vine.array(vine.object({
+        serviceId: vine.string(),
+        fixedPriceCents: vine.number(),
+        currency: vine.string().minLength(3).maxLength(5).regex(/[A-Z]/, "Currency must contain capital alphabets"),
+    })).optional().requiredWhen('user_type', '=', 'freelancer'),
 });
 
 // Verify OTP schema
