@@ -1,5 +1,5 @@
 import { db } from '../../infra/db.js';
-import freelancerProfiles from "../models/freelancerProfilesModel.js";
+import { freelancerProfiles } from "../models/freelancerProfilesModel.js";
 
 const insertFreelancerDetailService = async (data, options = {}) => {
 

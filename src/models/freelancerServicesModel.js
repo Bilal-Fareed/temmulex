@@ -2,7 +2,7 @@ import { pgTable, uuid, char, integer, boolean, timestamp, primaryKey } from "dr
 import { freelancerProfiles } from "./freelancerProfilesModel.js";
 import { services } from "./servicesModel.js";
 
-export const freelancerServices = pgTable("freelancer_services", {
+const freelancerServices = pgTable("freelancer_services", {
     serviceId: uuid("service_id").notNull().references(() => services.uuid, { onDelete: "cascade" }),
     freelancerId: uuid("freelancer_id").notNull().references(() => freelancerProfiles.uuid, { onDelete: "cascade" }),
     fixedPriceCents: integer("fixed_price_cents").notNull(),
@@ -13,3 +13,7 @@ export const freelancerServices = pgTable("freelancer_services", {
 }, (table) => [
     primaryKey({ columns: [table.serviceId, table.freelancerId] }),
 ]);
+
+export {
+    freelancerServices
+}

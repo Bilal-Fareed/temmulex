@@ -6,7 +6,7 @@ import {
     uuid,
 } from "drizzle-orm/pg-core";
 
-export const sessions = pgTable("sessions", {
+const sessions = pgTable("sessions", {
     tokenId: uuid("token_id").defaultRandom().primaryKey(),
     userId: uuid("user_uuid").notNull(),
     userType: varchar("user_type", { length: 255 }),
@@ -16,3 +16,7 @@ export const sessions = pgTable("sessions", {
     updatedAt: timestamp("updated_at").defaultNow(),
     revoked: boolean("revoked").default(false),
 });
+
+export {
+    sessions
+}

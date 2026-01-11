@@ -1,5 +1,5 @@
 import { db } from "../../infra/db.js";
-import users from "../models/usersModel.js";
+import { users } from "../models/usersModel.js";
 
 const getUserByEmail = async (email, options = {}) => {
 	return await db.query.users.findFirst({

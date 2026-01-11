@@ -1,12 +1,10 @@
 import {
     pgTable,
-    char,
     serial,
     varchar,
     timestamp,
     boolean,
     geometry,
-    integer,
     uuid,
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
@@ -17,7 +15,7 @@ import { users } from "./usersModel.js";
 import { freelancerLanguages } from "./freelancerLanguagesModel.js";
 import { freelancerServices } from "./freelancerServicesModel.js";
 
-export const freelancerProfiles = pgTable("freelancer_profiles", {
+const freelancerProfiles = pgTable("freelancer_profiles", {
     id: serial("id"),
     uuid: uuid("uuid").defaultRandom().notNull().unique(),
     userId: uuid("user_id").primaryKey(),
@@ -31,7 +29,7 @@ export const freelancerProfiles = pgTable("freelancer_profiles", {
     updatedAt: timestamp("updated_at").defaultNow(),
 });
 
-export const freelancerProfilesRelations = relations(freelancerProfiles, ({ many, one }) => ({
+const freelancerProfilesRelations = relations(freelancerProfiles, ({ many, one }) => ({
     conversations: many(conversations),
     orders: many(orders),
     reviews: many(reviews),
@@ -39,3 +37,8 @@ export const freelancerProfilesRelations = relations(freelancerProfiles, ({ many
     services: many(freelancerServices),
     users: one(users, { fields: [freelancerProfiles.userId], references: [users.uuid], onDelete: "cascade" }),
 }));
+
+export {
+    freelancerProfilesRelations,
+    freelancerProfiles
+}

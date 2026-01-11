@@ -12,7 +12,7 @@ import { users } from "./usersModel.js";
 import { reviews } from "./reviewsModel.js";
 import { conversations } from "./conversationsModel.js";
 
-export const orders = pgTable("orders", {
+const orders = pgTable("orders", {
     id: serial("id").primaryKey(),
     uuid: uuid("uuid").defaultRandom().notNull().unique(),
     clientId: uuid("client_uuid").references(() => users.uuid).notNull(),
@@ -24,9 +24,14 @@ export const orders = pgTable("orders", {
     updatedAt: timestamp("updated_at").defaultNow(),
 });
 
-export const orderRelations = relations(orders, ({ one }) => ({
+const orderRelations = relations(orders, ({ one }) => ({
     client: one(users, { fields: [orders.clientId], references: [users.uuid] }),
     freelancer: one(users, { fields: [orders.freelancerId], references: [users.uuid] }),
     reviews: one(reviews),
     conversations: one(conversations),
 }));
+
+export {
+    orders,
+    orderRelations
+}

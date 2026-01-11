@@ -1,5 +1,5 @@
 import { db } from '../../infra/db.js';
-import freelancerServices from "../models/freelancerServicesModel.js";
+import { freelancerServices } from "../models/freelancerServicesModel.js";
 
 const getFreelancerLanguage = async (freelancerUuid, languageId, options = {}) => {
 	return await db.query.freelancerServices.findFirst({

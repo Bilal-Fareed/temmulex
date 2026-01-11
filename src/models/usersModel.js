@@ -13,7 +13,7 @@ import { conversations } from "./conversationsModel.js";
 import { orders } from "./ordersModel.js";
 import { reviews } from "./reviewsModel.js";
 
-export const users = pgTable("users", {
+const users = pgTable("users", {
     id: serial("id").primaryKey(),
     uuid: uuid("uuid").defaultRandom().notNull().unique(),
     email: varchar("email", { length: 255 }).notNull().unique(),
@@ -33,8 +33,13 @@ export const users = pgTable("users", {
     refreshTokenVersion: integer("refresh_token_version").default(0),
 });
 
-export const usersRelations = relations(users, ({ many }) => ({
+const usersRelations = relations(users, ({ many }) => ({
     conversations: many(conversations),
     orders: many(orders),
     reviews: many(reviews),
 }));
+
+export {
+    users,
+    usersRelations
+}

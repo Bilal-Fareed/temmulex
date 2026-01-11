@@ -10,7 +10,7 @@ import {
 import { relations } from "drizzle-orm";
 import { conversations } from "./conversationsModel.js";
 
-export const messages = pgTable("messages", {
+const messages = pgTable("messages", {
     id: serial("id").primaryKey(),
     uuid: uuid("uuid").defaultRandom().notNull().unique(),
     senderId: uuid("sender_uuid").notNull(),
@@ -23,6 +23,11 @@ export const messages = pgTable("messages", {
     updatedAt: timestamp("updated_at").defaultNow(),
 });
 
-export const messageRelations = relations(messages, ({ one }) => ({
+const messageRelations = relations(messages, ({ one }) => ({
     conversation: one(conversations, { fields: [messages.conversationId], references: [conversations.uuid] }),
 }));
+
+export {
+    messages,
+    messageRelations
+}

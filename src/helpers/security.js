@@ -44,7 +44,6 @@ export {
     hashPassword,
     verifyPassword,
     generateAccessToken,
-    generateTemporaryAccessToken,
     generateRefreshToken,
     verifyAccessToken,
     verifyRefreshToken,

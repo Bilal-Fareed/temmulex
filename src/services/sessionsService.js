@@ -1,5 +1,5 @@
 import { db } from "../../infra/db.js";
-import sessions from "../models/sessionsModel.js";
+import { sessions } from "../models/sessionsModel.js";
 
 const deleteSessionByTokenId = async (tokenId) => {
 	await db.delete(sessions).where(eq(sessions.tokenId, tokenId))

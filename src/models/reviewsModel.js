@@ -11,7 +11,7 @@ import { relations } from "drizzle-orm";
 import { orders } from "./ordersModel.js";
 import { users } from "./usersModel.js";
 
-export const reviews = pgTable("reviews", {
+const reviews = pgTable("reviews", {
     id: serial("id").primaryKey(),
     uuid: uuid("uuid").defaultRandom().notNull().unique(),
     orderId: uuid("order_uuid").references(() => orders.uuid).notNull(),
@@ -24,8 +24,13 @@ export const reviews = pgTable("reviews", {
     updatedAt: timestamp("updated_at").defaultNow(),
 });
 
-export const reviewRelations = relations(reviews, ({ one }) => ({
+const reviewRelations = relations(reviews, ({ one }) => ({
     order: one(orders, { fields: [reviews.orderId], references: [orders.uuid] }),
     client: one(users, { fields: [reviews.reviewerId], references: [users.uuid] }),
     freelancer: one(users, { fields: [reviews.freelancerId], references: [users.uuid] }),
 }));
+
+export {
+    reviews,
+    reviewRelations
+}
