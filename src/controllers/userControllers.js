@@ -6,7 +6,7 @@ import { insertManyFreelancerLanguagesService } from "../services/freelancerLang
 import { insertManyFreelancerServicesService } from "../services/freelancerServicesService.js";
 import { redisClient } from "../../infra/redis.js";
 import { sendOtpEmail } from "../helpers/mailer.js";
-import { deleteUserSession } from "../services/sessionsService.js";
+import { deleteUserSessionByUserId } from "../services/sessionsService.js";
 
 const userSignupController = async (req, res) => {
     try {
@@ -97,7 +97,7 @@ const logoutController = async (req, res) => {
 
         await Promise.all([
             updateUserByUuidService(uuid, { refreshTokenVersion: user.refreshTokenVersion + 1 }),
-            deleteUserSession(uuid)
+            deleteUserSessionByUserId(uuid)
         ]);
 
         res.status(200).json({ success: true, message: "User Logged Out" });

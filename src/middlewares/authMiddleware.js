@@ -1,8 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
-import { db } from '../../infra/db.js';
-import { users } from '../models/usersModel.js';
-import { sessions } from '../models/sessionsModel.js';
-import { and, eq } from 'drizzle-orm';
+import { getUserByUuid } from '../services/userService.js';
+import { getUserSessionForAuth, insertUserSession } from '../services/sessionsService.js';
 import { generateAccessToken, generateRefreshToken, verifyAccessToken, verifyRefreshToken } from '../helpers/security.js';
 
 /**
@@ -22,7 +20,7 @@ const authenticate = async (req, res, next) => {
     const decodedAccess = verifyAccessToken(accessToken);
 
     // Validate user
-    const [user] = await db.select().from(users).where(eq(users.uuid, decodedAccess.uuid));
+    const [user] = await getUserByUuid(decodedAccess.uuid);
     if (!user || user.refreshTokenVersion !== decodedAccess.version) {
       return res.status(401).json({ message: 'Session version mismatch' });
     }
@@ -43,44 +41,37 @@ const authenticate = async (req, res, next) => {
     }
 
     try {
-      const decodedRefresh = verifyRefreshToken(refreshToken);
-
-      const table = tableSelector[`${decodedRefresh.userType}`]
+      const decodedRefreshToken = verifyRefreshToken(refreshToken);
 
       // Validate session exists and matches device
-      const [session] = await db
-        .select()
-        .from(sessions)
-        .where(
-          and(
-            eq(sessions.tokenId, decodedRefresh.tokenId),
-            eq(sessions.deviceId, deviceId),
-            eq(sessions.userId, decodedRefresh.uuid),
-            eq(sessions.userType, decodedRefresh.userType),
-            eq(sessions.revoked, false)
-          )
-        );
+      const [session] = await getUserSessionForAuth({
+        tokenId: decodedRefreshToken.tokenId,
+        deviceId: deviceId,
+        userUuid: decodedRefreshToken.uuid,
+        userType: decodedRefreshToken.userType,
+        revoked: false
+      })
 
       if (!session) {
         return res.status(401).json({ message: 'Session revoked or device mismatch' });
       }
 
       // Validate user
-      const [user] = await db.select().from(table).where(eq(table.uuid, decodedRefresh.uuid));
-      if (!user || user.refreshTokenVersion !== decodedRefresh.version) {
+      const [user] = await getUserByUuid(decodedRefreshToken.uuid);
+      if (!user || user.refreshTokenVersion !== decodedRefreshToken.version) {
         return res.status(401).json({ message: 'Session version mismatch' });
       }
 
       // Rotate session
-      await db.delete(sessions).where(eq(sessions.tokenId, decodedRefresh.tokenId));
+      await deleteSessionById();
 
       const newTokenId = uuidv4();
-      await db.insert(sessions).values({
+      await insertUserSession({
         tokenId: newTokenId,
         userId: user.uuid,
         deviceId: deviceId,
         userAgent: userAgent,
-        userType: decodedRefresh.userType,
+        userType: decodedRefreshToken.userType,
       });
 
       // Generate new tokens
@@ -88,14 +79,14 @@ const authenticate = async (req, res, next) => {
         uuid: user.uuid,
         version: user.refreshTokenVersion,
         tokenId: newTokenId,
-        userType: decodedRefresh.userType,
+        userType: decodedRefreshToken.userType,
       });
 
       const newRefreshToken = generateRefreshToken({
         uuid: user.uuid,
         version: user.refreshTokenVersion,
         tokenId: newTokenId,
-        userType: decodedRefresh.userType,
+        userType: decodedRefreshToken.userType,
       });
 
       // Send new tokens in headers
