@@ -238,13 +238,13 @@ const sendOtpController = async (req, res) => {
 
         if (!user) return res.status(404).json({ success: false, message: "Email does not exists" });
 
-        if (process.env.ENVIRONMENT?.toLowerCase() !== 'production') 
+        if (process.env.ENVIRONMENT?.toLowerCase() !== 'production')
             res.status(201).json({ success: true, message: "OTP send successfully" });
 
         const otp = Math.floor(1000 + Math.random() * 9000).toString();
 
         await redisClient.set(`otp:${user.uuid}`, otp, 'EX', 60);
-        
+
         await sendOtpEmail(email, otp);
 
         res.status(201).json({ success: true, message: "OTP send successfully" });
