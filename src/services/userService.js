@@ -31,26 +31,11 @@ const updateUserByUuidService = async (uuid, updatedObject) => {
     .where(eq(users.uuid, uuid));
 };
 
-const logoutService = async (userUuid) => {
-    
-    const user = await db().query.users.findFirst({
-        where: eq(users.uuid, userUuid),
-    });
-
-    if (!user) throw new Error('User does not exist');
-
-    await Promise.all([
-        db().update(users).set({ refreshTokenVersion: user.refreshTokenVersion + 1 }).where(eq(users.uuid, userUuid)),
-        db().delete(sessions).where(eq(sessions.userId, userUuid))
-    ]); 
-};
-
 
 export {
     createUserService,
     getUserByEmail,
     updateUserByUuidService,
     getUserByUuid,
-    logoutService,
 }
 

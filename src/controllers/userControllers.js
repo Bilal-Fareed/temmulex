@@ -87,7 +87,7 @@ const logoutController = async (req, res) => {
         const { uuid } = req.user
 
         if (!uuid) {
-            response.status(400).json({ success: false, message: 'Failed to logout' });
+            res.status(400).json({ success: false, message: 'Failed to logout' });
             return;
         }
 
