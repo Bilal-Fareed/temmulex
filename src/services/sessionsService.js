@@ -1,5 +1,6 @@
 import { db } from "../../infra/db.js";
 import { sessions } from "../models/sessionsModel.js";
+import { eq, and } from "drizzle-orm";
 
 const deleteSessionByTokenId = async (tokenId) => {
 	await db.delete(sessions).where(eq(sessions.tokenId, tokenId))

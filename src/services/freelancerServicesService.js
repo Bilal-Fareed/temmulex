@@ -1,5 +1,6 @@
 import { db } from '../../infra/db.js';
 import { freelancerServices } from "../models/freelancerServicesModel.js";
+import { eq, and } from "drizzle-orm";
 
 const getFreelancerLanguage = async (freelancerUuid, languageId, options = {}) => {
 	return await db.query.freelancerServices.findFirst({

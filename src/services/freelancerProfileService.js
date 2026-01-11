@@ -1,5 +1,6 @@
 import { db } from '../../infra/db.js';
 import { freelancerProfiles } from "../models/freelancerProfilesModel.js";
+import { eq, sql } from "drizzle-orm";
 
 const insertFreelancerDetailService = async (data, options = {}) => {
 

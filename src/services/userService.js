@@ -1,5 +1,6 @@
 import { db } from "../../infra/db.js";
 import { users } from "../models/usersModel.js";
+import { eq } from "drizzle-orm";
 
 const getUserByEmail = async (email, options = {}) => {
 	return await db.query.users.findFirst({
