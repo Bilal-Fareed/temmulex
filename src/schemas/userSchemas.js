@@ -24,7 +24,7 @@ const signupSchema = vine.object({
     first_name: vine.string().minLength(2).maxLength(100),
     last_name: vine.string().minLength(2).maxLength(100),
     country: vine.string().minLength(2).maxLength(100),
-    dob: vine.date(),
+    dob: vine.date({ formats: ['YYYY/DD/MM', 'x'] }),
     phone: vine.string().minLength(2).maxLength(50),
     languages: vine.array(vine.string()).optional().requiredWhen('user_type', '=', 'freelancer'),
     location: vine.object({ lat: vine.number(), lng: vine.number() }).optional().requiredWhen('user_type', '=', 'freelancer'),
