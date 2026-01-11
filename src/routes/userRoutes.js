@@ -59,7 +59,7 @@ const upload = multer({
     },
 });
 
-router.post('/signup', validate({ body: signupSchema, headers: commonHeadersSchema }), upload.fields([{ name: 'cv', maxCount: 1 }, { name: 'dbs', maxCount: 1 }]), userSignupController);
+router.post('/signup', validate({ body: signupSchema, headers: commonHeadersSchema }), upload.fields([{ name: 'cv', maxCount: 1 }, { name: 'dbs', maxCount: 1 }, { name: 'profile_picture', maxCount: 1 }]), userSignupController);
 
 router.post('/login', validate({ body: signinSchema, headers: commonHeadersSchema }), loginController);
 
