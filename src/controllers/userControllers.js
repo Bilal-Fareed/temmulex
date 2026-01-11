@@ -1,12 +1,13 @@
 import { uploadPdf } from "../helpers/cloudinary.js";
-import { hashPassword, verifyPassword, generateAccessToken } from "../helpers/security.js";
+import { hashPassword, verifyPassword, generateAccessToken, generateRefreshToken } from "../helpers/security.js";
 import { getUserByEmail, createUserService, getUserByUuid, updateUserByUuidService } from "../services/userService.js";
 import { insertFreelancerDetailService } from "../services/freelancerProfileService.js";
 import { insertManyFreelancerLanguagesService } from "../services/freelancerLanguageService.js";
 import { insertManyFreelancerServicesService } from "../services/freelancerServicesService.js";
 import { redisClient } from "../../infra/redis.js";
 import { sendOtpEmail } from "../helpers/mailer.js";
-import { deleteUserSessionByUserId } from "../services/sessionsService.js";
+import { deleteUserSessionByUserId, insertUserSession } from "../services/sessionsService.js";
+import { randomUUID } from 'crypto';
 
 const userSignupController = async (req, res) => {
     try {
@@ -22,7 +23,10 @@ const userSignupController = async (req, res) => {
 
         if (existing) return res.status(403).json({ success: false, message: "Email already in use" });
 
-        const hashedPassword = await hashPassword(password);
+        const [hashedPassword, profilePictureUrl] = await Promise.all([
+            hashPassword(password),
+            uploadPdf(files?.cv?.[0], "users/profilePicture")
+        ]);
 
         const user = await createUserService({
             email,
@@ -33,6 +37,7 @@ const userSignupController = async (req, res) => {
             last_name,
             dob,
             country,
+            profilePicture: profilePictureUrl
         });
 
         if (user_type === "freelancer") {
@@ -74,7 +79,46 @@ const userSignupController = async (req, res) => {
 const loginController = async (req, res) => {
     try {
         console.log("USER CONTROLLER > LOGIN > try block executed");
-        res.status(200).json({ success: true, message: "Login successful" });
+
+        const { email, password, user_type } = req.body;
+        const userAgent = request.headers['x-user-agent'] || 'unknown';
+        const deviceId = request.headers['x-device-id'];
+
+        const user = await getUserByEmail(email);
+        if (!user || !user.password) return res.status(403).json({ success: false, message: 'Invalid credentials' });
+
+        const isValid = await verifyPassword(password, user.password);
+        if (!isValid) return res.status(403).json({ success: false, message: 'Invalid credentials' });
+
+        const tokenId = randomUUID();
+        const accessToken = generateAccessToken({ uuid: user.uuid, version: user.refreshTokenVersion, tokenId });
+        const refreshToken = generateRefreshToken({ uuid: user.uuid, version: user.refreshTokenVersion, tokenId });
+
+        await insertUserSession({
+            tokenId,
+            userUuid: user.uuid,
+            deviceId,
+            userAgent,
+            userType: user_type
+        })
+
+        res.status(200).json({
+            success: true,
+            user: {
+                uuid: user.uuid,
+                email: user.email,
+                title: user.title,
+                country: user.country,
+                dob: user.dob,
+                phone: user.phone,
+                profilePicture: user.profilePicture,
+                name: user.firstName + user.lastName,
+                isBlocked: user.isBlocked,
+                createdAt: user.createdAt
+            },
+            accessToken,
+            refreshToken,
+        });
     } catch (error) {
         console.error("USER CONTROLLER > LOGIN >", error);
         res.status(500).json({ success: false, message: "Internal Server Error" });

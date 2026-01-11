@@ -25,21 +25,39 @@ const router = Router();
 const upload = multer({
     storage: multer.memoryStorage(),
     limits: {
-        fileSize: 5 * 1024 * 1024, // max file size 5MB
-        files: 2, // total files
+        fileSize: 5 * 1024 * 1024, // 5MB per file
+        files: 3, // cv, dbs, profile_picture
     },
     fileFilter: (req, file, cb) => {
-        if (file.mimetype !== 'application/pdf') {
-            return cb(new Error('Only PDF files are allowed'))
+        const { fieldname, mimetype } = file;
+
+        // PDF fields
+        if (fieldname === "cv" || fieldname === "dbs") {
+            if (mimetype !== "application/pdf") {
+                return cb(new Error(`${fieldname} must be a PDF file`));
+            }
+            return cb(null, true);
         }
 
-        if (!['cv', 'dbs'].includes(file.fieldname)) {
-            return cb(new Error('Invalid file field'))
+        // Profile picture (images only)
+        if (fieldname === "profile_picture") {
+            const allowedImageTypes = [
+                "image/jpeg",
+                "image/png",
+                "image/webp",
+            ];
+
+            if (!allowedImageTypes.includes(mimetype)) {
+                return cb(new Error("Profile picture must be an image (jpg, png, webp)"));
+            }
+
+            return cb(null, true);
         }
 
-        cb(null, true)
+        // Any other field is invalid
+        return cb(new Error("Invalid file field"));
     },
-})
+});
 
 router.post('/signup', validate({ body: signupSchema, headers: commonHeadersSchema }), upload.fields([{ name: 'cv', maxCount: 1 }, { name: 'dbs', maxCount: 1 }]), userSignupController);
 

@@ -12,6 +12,7 @@ const passwordSchema = vine.string()
 const signinSchema = vine.object({
     email: vine.string().email(),
     password: vine.string().maxLength(200),
+    user_type: vine.enum(['client', 'freelancer']),
 });
 
 // Signup schema
