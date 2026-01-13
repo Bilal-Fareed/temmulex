@@ -17,7 +17,7 @@ const signinSchema = vine.object({
 
 // Signup schema
 const signupSchema = vine.object({
-    user_type: vine.enum(['client', 'freelancer']),
+    user_type: vine.enum(['client', 'freelancer']).default('client'),
     email: vine.string().email(),
     password: passwordSchema,
     title: vine.string().minLength(2).maxLength(20),
@@ -26,13 +26,13 @@ const signupSchema = vine.object({
     country: vine.string().minLength(2).maxLength(100),
     dob: vine.date({ formats: ['YYYY/DD/MM', 'x'] }),
     phone: vine.string().minLength(2).maxLength(50),
-    languages: vine.array(vine.string()).optional().requiredWhen('user_type', '=', 'freelancer'),
+    languages: vine.array(vine.string().uuid({ version: [4] })).default([]).optional().requiredWhen('user_type', '=', 'freelancer'),
     location: vine.object({ lat: vine.number(), lng: vine.number() }).optional().requiredWhen('user_type', '=', 'freelancer'),
     services: vine.array(vine.object({
-        serviceId: vine.string(),
+        serviceId: vine.string().uuid({ version: [4] }),
         fixedPriceCents: vine.number(),
         currency: vine.string().minLength(3).maxLength(5).regex(/[A-Z]/, "Currency must contain capital alphabets"),
-    })).optional().requiredWhen('user_type', '=', 'freelancer'),
+    })).default([]).optional().requiredWhen('user_type', '=', 'freelancer'),
 });
 
 // Verify OTP schema

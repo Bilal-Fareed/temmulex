@@ -17,16 +17,22 @@ const userSignupController = async (req, res) => {
         let dbsUrl = null;
 
         const { email, password, title, first_name, last_name, country, dob, phone, user_type, services, languages, location } = req.body;
-        const files = req.files;
+        const files = req.files ?? {};
 
         const existing = await getUserByEmail(email);
 
         if (existing) return res.status(403).json({ success: false, message: "Email already in use" });
 
+        if (!files?.profile_picture?.[0]) return res.status(422).json({ success: false, message: "Profile picture is required" });
+
         const [hashedPassword, profilePictureUrl] = await Promise.all([
             hashPassword(password),
-            uploadPdf(files?.cv?.[0], "users/profilePicture")
+            uploadPdf(files?.profile_picture?.[0], "users/profilePicture")
         ]);
+
+        if (user_type === "freelancer" && (!files?.cv?.[0] || !files?.dbs?.[0])) {
+            return res.status(422).json({ success: false, message: "CV and DBS are required for freelancers" });
+        }
 
         const user = await createUserService({
             email,
