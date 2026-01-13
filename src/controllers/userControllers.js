@@ -1,4 +1,4 @@
-import { uploadPdf } from "../helpers/cloudinary.js";
+import { uploadFile } from "../helpers/cloudinary.js";
 import { hashPassword, verifyPassword, generateAccessToken, generateRefreshToken } from "../helpers/security.js";
 import { getUserByEmail, createUserService, getUserByUuid, updateUserByUuidService } from "../services/userService.js";
 import { insertFreelancerDetailService, getFreelancerProfileDetailByUserUuid } from "../services/freelancerProfileService.js";
@@ -27,7 +27,7 @@ const userSignupController = async (req, res) => {
 
         const [hashedPassword, profilePictureUrl] = await Promise.all([
             hashPassword(password),
-            uploadPdf(files?.profile_picture?.[0], "users/profilePicture")
+            uploadFile(files?.profile_picture?.[0], "users/profilePicture")
         ]);
 
         if (user_type === "freelancer" && (!files?.cv?.[0] || !files?.dbs?.[0])) {
@@ -48,8 +48,8 @@ const userSignupController = async (req, res) => {
 
         if (user_type === "freelancer") {
             [cvUrl, dbsUrl] = await Promise.all([
-                uploadPdf(files?.cv?.[0], "freelancers/cv"),
-                uploadPdf(files?.dbs?.[0], "freelancers/dbs")
+                uploadFile(files?.cv?.[0], "freelancers/cv"),
+                uploadFile(files?.dbs?.[0], "freelancers/dbs")
             ]);
 
             const { lat = 0, lng = 0 } = location;
