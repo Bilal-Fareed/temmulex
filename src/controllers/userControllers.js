@@ -87,17 +87,18 @@ const loginController = async (req, res) => {
         console.log("USER CONTROLLER > LOGIN > try block executed");
 
         const { email, password, user_type } = req.body;
-        const userAgent = request.headers['x-user-agent'] || 'unknown';
-        const deviceId = request.headers['x-device-id'];
+        const userAgent = req.headers['x-user-agent'] || 'unknown';
+        const deviceId = req.headers['x-device-id'];
 
-        const user = await getUserByEmail(email);
+        let user = await getUserByEmail(email) || {};
         if (!user || !user.password) return res.status(403).json({ success: false, message: 'Invalid credentials' });
 
         const isValid = await verifyPassword(password, user.password);
         if (!isValid) return res.status(403).json({ success: false, message: 'Invalid credentials' });
 
         if (user_type === "freelancer") {
-            const freelancerProfileDetails = getFreelancerProfileDetailByUserUuid(user.uuid);
+            const freelancerProfileDetails = await getFreelancerProfileDetailByUserUuid(user.uuid);
+            if (!freelancerProfileDetails) return res.status(404).json({ success: false, message: 'Invalid credentials' });
             user = {
                 ...user,
                 location: freelancerProfileDetails.location,
@@ -190,7 +191,7 @@ const verifyOtpController = async (req, res) => {
         if (process.env.ENVIRONMENT?.toLowerCase() !== 'production') {
             if (otp !== '0000') return res.status(403).json({ success: false, message: "Invalid OTP" });
             const accessToken = generateAccessToken({ uuid: user.uuid, version: user.refreshTokenVersion, intent });
-            res.status(200).json({ success: true, token: accessToken, message: 'OTP Verified Successfully!' });
+            return res.status(200).json({ success: true, token: accessToken, message: 'OTP Verified Successfully!' });
         }
 
         const storedOtp = await redisClient.get(`otp:${user.uuid}`);
@@ -199,7 +200,7 @@ const verifyOtpController = async (req, res) => {
             await redisClient.del(`otp:${user.uuid}`);
             await updateUserByUuidService(user.uuid, { isVerified: true })
             const accessToken = generateAccessToken({ uuid: user.uuid, version: user.refreshTokenVersion, intent });
-            res.status(200).json({ success: true, token: accessToken, message: 'OTP Verified Successfully!' });
+            return res.status(200).json({ success: true, token: accessToken, message: 'OTP Verified Successfully!' });
         } else {
             return res.status(401).json({ success: false, message: 'Invalid or expired OTP' });
         }
@@ -245,7 +246,7 @@ const sendOtpController = async (req, res) => {
         if (!user) return res.status(404).json({ success: false, message: "Email does not exists" });
 
         if (process.env.ENVIRONMENT?.toLowerCase() !== 'production')
-            res.status(201).json({ success: true, message: "OTP send successfully" });
+            return res.status(201).json({ success: true, message: "OTP send successfully" });
 
         const otp = Math.floor(1000 + Math.random() * 9000).toString();
 

@@ -20,7 +20,7 @@ const authenticate = async (req, res, next) => {
 		const decodedAccess = verifyAccessToken(accessToken);
 
 		// Validate user
-		const [user] = await getUserByUuid(decodedAccess.uuid);
+		const user = await getUserByUuid(decodedAccess.uuid);
 		if (!user || user.refreshTokenVersion !== decodedAccess.version) {
 			return res.status(401).json({ message: 'Session version mismatch' });
 		}
