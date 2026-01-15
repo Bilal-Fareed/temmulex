@@ -10,7 +10,7 @@ export default defineConfig({
         user: process.env.DB_USER || 'docker',
         password: process.env.DB_PASSWORD || 'docker',
         database: process.env.DB_NAME || 'temmulex',
-        ssl: process.env.DB_SSL === 'true',
+        ssl: { rejectUnauthorized: false },
     },
     extensionsFilters: ["postgis"],
     verbose: true,
