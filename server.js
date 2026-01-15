@@ -7,8 +7,8 @@ import { SocketServer } from "./socketServer.js";
 import { initializeRedis } from "./infra/redis.js";
 import { initializeMailer } from './src/helpers/mailer.js';
 
-await initializeRedis();
 await initializeDB();
+if (process.env.ENVIRONMENT?.toLowerCase() === 'production') await initializeRedis();
 if (process.env.ENVIRONMENT?.toLowerCase() === 'production') await initializeMailer();
 
 const server = express();
