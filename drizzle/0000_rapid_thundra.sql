@@ -1,3 +1,9 @@
+CREATE EXTENSION postgis;
+
+CREATE EXTENSION postgis_raster;
+
+CREATE EXTENSION postgis_topology;
+
 CREATE TABLE "conversations" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"uuid" uuid DEFAULT gen_random_uuid() NOT NULL,
