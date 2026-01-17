@@ -1,4 +1,4 @@
-import { pgTable, serial, varchar, timestamp, uuid } from "drizzle-orm/pg-core";
+import { pgTable, serial, varchar, timestamp, uuid, boolean } from "drizzle-orm/pg-core";
 
 const services = pgTable("services", {
 	id: serial("id").primaryKey(),
@@ -7,6 +7,7 @@ const services = pgTable("services", {
 	slug: varchar("slug", { length: 150 }).notNull().unique(),
 	createdAt: timestamp("created_at").defaultNow(),
 	updatedAt: timestamp("updated_at"),
+	isDeleted: boolean("is_deleted").default(false),
 });
 
 export {
