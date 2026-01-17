@@ -11,6 +11,9 @@ await initializeDB();
 if (process.env.ENVIRONMENT?.toLowerCase() === 'production') await initializeRedis();
 if (process.env.ENVIRONMENT?.toLowerCase() === 'production') await initializeMailer();
 
+import { runSeeds } from "./src/seeds/index.js"
+await runSeeds();
+
 const server = express();
 const _server = http.createServer(server);
 await SocketServer(_server);
@@ -28,8 +31,8 @@ server.use(cors({
 
 const port = process.env.PORT || 3001;
 
-// import openRoutes from "./src/routes/openRoutes.js";
-// server.use("/v1", openRoutes);
+import openRoutes from "./src/routes/openRoutes.js";
+server.use("/v1", openRoutes);
 
 import userRoutes from "./src/routes/userRoutes.js";
 server.use("/v1/users", userRoutes);
