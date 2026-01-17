@@ -11,7 +11,7 @@ const initializeDB = async () => {
 			database: process.env.DB_NAME,
 			username: process.env.DB_USER,
 			password: process.env.DB_PASSWORD,
-			ssl: { rejectUnauthorized: false },
+			ssl: true,
 		});
 
 		dbInstance = drizzle(pool, {
