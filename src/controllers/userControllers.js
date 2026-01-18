@@ -223,9 +223,9 @@ const verifyOtpController = async (req, res) => {
     }
 };
 
-const updatePasswordController = async (req, res) => {
+const forgotPasswordController = async (req, res) => {
     try {
-        console.log("USER CONTROLLER > UPDATE PASSWORD > try block executed");
+        console.log("USER CONTROLLER > FORGOT PASSWORD > try block executed");
 
         const { email, intent } = req.user;
         const { password } = req.body;
@@ -241,6 +241,34 @@ const updatePasswordController = async (req, res) => {
         await updateUserByUuidService(uuid, {
             password: hashedPassword,
             refreshTokenVersion: user.refreshTokenVersion + 1
+        });
+
+        res.status(200).json({ success: true, message: "Password updated" });
+    } catch (error) {
+        console.error("USER CONTROLLER > FORGOT PASSWORD >", error);
+        res.status(500).json({ success: false, message: "Internal Server Error" });
+    }
+};
+
+const updatePasswordController = async (req, res) => {
+    try {
+        console.log("USER CONTROLLER > UPDATE PASSWORD > try block executed");
+
+        const { uuid } = req.user;
+        const { old_password, new_password } = req.body;
+
+        const user = await getUserByUuid(uuid);
+
+        if (!user) return res.status(404).json({ success: false, message: "User does not exists" });
+
+        const isValid = await verifyPassword(old_password, user.password);
+
+        if (!isValid) return res.status(403).json({ success: false, message: "Your old password is incorrect" });
+
+        const hashedPassword = await hashPassword(new_password);
+
+        await updateUserByUuidService(uuid, {
+            password: hashedPassword,
         });
 
         res.status(200).json({ success: true, message: "Password updated" });
@@ -288,6 +316,7 @@ export {
     loginController,
     logoutController,
     verifyOtpController,
+    forgotPasswordController,
     updatePasswordController,
     sendOtpController,
     getUserDetailsController,

@@ -7,6 +7,7 @@ import {
     signupSchema,
     signinSchema,
     verifyOtpSchema,
+    forgotPasswordSchema,
     updatePasswordSchema,
     commonHeadersSchema,
     sendOtpSchema
@@ -15,6 +16,7 @@ import {
     userSignupController,
     loginController,
     logoutController,
+    forgotPasswordController,
     updatePasswordController,
     verifyOtpController,
     sendOtpController,
@@ -33,7 +35,9 @@ router.post('/verify-otp', validate({ body: verifyOtpSchema }), verifyOtpControl
 
 router.post('/send-otp', validate({ body: sendOtpSchema }), sendOtpController);
 
-router.put('/update-password', validate({ body: updatePasswordSchema }), authenticateTemporaryToken, updatePasswordController);
+router.put('/forgot-password', validate({ body: forgotPasswordSchema }), authenticateTemporaryToken, forgotPasswordController);
+
+router.put('/update-password', validate({ body: updatePasswordSchema }), authenticate, updatePasswordController);
 
 router.get('/details', authenticate, getUserDetailsController);
 

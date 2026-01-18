@@ -48,8 +48,14 @@ const sendOtpSchema = vine.object({
 });
 
 // Update password schema
-const updatePasswordSchema = vine.object({
+const forgotPasswordSchema = vine.object({
     password: passwordSchema,
+});
+
+// Update password schema
+const updatePasswordSchema = vine.object({
+    old_password: vine.string().minLength(8, "Password must be at least 8 characters long").maxLength(200, "Password length is too long"),
+    new_password: passwordSchema,
 });
 
 // Common headers schema
@@ -64,6 +70,7 @@ export {
     signupSchema,
     verifyOtpSchema,
     sendOtpSchema,
+    forgotPasswordSchema,
     updatePasswordSchema,
     commonHeadersSchema,
 };
