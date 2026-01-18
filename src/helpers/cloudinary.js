@@ -10,23 +10,29 @@ cloudinary.config({
 export async function uploadFile(file, folder) {
 	if (!file) return null;
 
-	const { name } = path.parse(file.originalname);
-
-	const result = await new Promise((resolve, reject) => {
-		const stream = cloudinary.uploader.upload_stream({
-			folder,
-			public_id: name,
-			resource_type: "auto",
-			use_filename: true,
-			unique_filename: false,
-			overwrite: true,
-		}, (error, result) => {
-			if (error) return reject(error);
-			resolve(result);
+	try {
+		const { name } = path.parse(file.originalname);
+	
+		const result = await new Promise((resolve, reject) => {
+			const stream = cloudinary.uploader.upload_stream({
+				folder,
+				public_id: name,
+				resource_type: "auto",
+				use_filename: true,
+				unique_filename: false,
+				overwrite: true,
+			}, (error, result) => {
+				if (error) return reject(error);
+				resolve(result);
+			});
+	
+			stream.end(file.buffer);
 		});
+	
+		return result.secure_url;
 
-		stream.end(file.buffer);
-	});
-
-	return result.secure_url;
+	} catch (error) {
+		console.log("Cloudinary Uplaod Error > ", error)
+		return null;
+	}
 }

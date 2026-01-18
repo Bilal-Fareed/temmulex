@@ -2,17 +2,26 @@ import { db } from "../../infra/db.js";
 import { sessions } from "../models/sessionsModel.js";
 import { eq, and } from "drizzle-orm";
 
-const deleteSessionByTokenId = async (tokenId) => {
-	await db.delete(sessions).where(eq(sessions.tokenId, tokenId))
+const deleteSessionByTokenId = async (tokenId, options = {}) => {
+	const { transaction } = options;
+	const executor = transaction || db;
+
+	await executor.delete(sessions).where(eq(sessions.tokenId, tokenId))
 }
 
-const deleteUserSessionByUserId = async (userUuid) => {
-	await db.delete(sessions).where(eq(sessions.userId, userUuid))
+const deleteUserSessionByUserId = async (userUuid, options = {}) => {
+	const { transaction } = options;
+	const executor = transaction || db;
+
+	await executor.delete(sessions).where(eq(sessions.userId, userUuid))
 }
 
-const getUserSessionForAuth = async (data) => {
+const getUserSessionForAuth = async (data, options = {}) => {
+	const { transaction } = options;
+	const executor = transaction || db;
+	
 	const { tokenId, deviceId, userUuid, userType, revoked } = data
-	await db
+	await executor
 		.select()
 		.from(sessions)
 		.where(
@@ -26,9 +35,12 @@ const getUserSessionForAuth = async (data) => {
 		);
 }
 
-const insertUserSession = async (data) => {
+const insertUserSession = async (data, options = {}) => {
+	const { transaction } = options;
+	const executor = transaction || db;
+
 	const { tokenId, userUuid, deviceId, userAgent, userType } = data
-	await db.insert(sessions).values({
+	await executor.insert(sessions).values({
 		tokenId: tokenId,
 		userId: userUuid,
 		deviceId: deviceId,

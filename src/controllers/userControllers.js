@@ -8,6 +8,7 @@ import { redisClient } from "../../infra/redis.js";
 import { sendOtpEmail } from "../helpers/mailer.js";
 import { deleteUserSessionByUserId, insertUserSession } from "../services/sessionsService.js";
 import { randomUUID } from 'crypto';
+import { db } from "../../infra/db.js";
 
 const userSignupController = async (req, res) => {
     try {
@@ -34,47 +35,60 @@ const userSignupController = async (req, res) => {
             return res.status(422).json({ success: false, message: "CV and DBS are required for freelancers" });
         }
 
-        const user = await createUserService({
-            email,
-            password: hashedPassword,
-            phone,
-            title,
-            first_name,
-            last_name,
-            dob,
-            country,
-            profilePicture: profilePictureUrl
-        });
-
         if (user_type === "freelancer") {
             [cvUrl, dbsUrl] = await Promise.all([
                 uploadFile(files?.cv?.[0], "freelancers/cv"),
                 uploadFile(files?.dbs?.[0], "freelancers/dbs")
-            ]);
+            ])
+        };
 
-            const { lat = 0, lng = 0 } = location;
-            const insertingFreelancersDetails = [];
+        await db.transaction(async (tx) => {
 
-            const freelancer = await insertFreelancerDetailService({ userId: user.uuid, lat, lng, cvUrl, dbsUrl });
+            const user = await createUserService({
+                email,
+                password: hashedPassword,
+                phone,
+                title,
+                first_name,
+                last_name,
+                dob,
+                country,
+                profilePicture: profilePictureUrl
+            }, { transaction: tx });
 
-            if (services?.length) {
-                insertingFreelancersDetails.push(insertManyFreelancerServicesService(services.map((service) => ({
-                    freelancerId: freelancer.uuid,
-                    serviceId: service.serviceId,
-                    fixedPriceCents: service.fixedPriceCents,
-                    currency: service.currency
-                }))));
+            if (user_type === "freelancer") {
+
+                const { lat = 0, lng = 0 } = location;
+                const insertingFreelancersDetails = [];
+
+                const freelancer = await insertFreelancerDetailService({ userId: user.uuid, lat, lng, cvUrl, dbsUrl }, { transaction: tx });
+
+                if (services?.length) {
+                    insertingFreelancersDetails.push(
+                        insertManyFreelancerServicesService(
+                            services.map((service) => ({
+                                freelancerId: freelancer.uuid,
+                                serviceId: service.serviceId,
+                                fixedPriceCents: service.fixedPriceCents,
+                                currency: service.currency
+                            })), { transaction: tx }
+                        )
+                    );
+                }
+
+                if (languages?.length) {
+                    insertingFreelancersDetails.push(
+                        insertManyFreelancerLanguagesService(
+                            languages.map((lang) => ({
+                                freelancerId: freelancer.uuid,
+                                languageId: lang,
+                            })), { transaction: tx }
+                        )
+                    );
+                }
+                await Promise.all(insertingFreelancersDetails);
             }
-
-            if (languages?.length) {
-                insertingFreelancersDetails.push(insertManyFreelancerLanguagesService(languages.map((lang) => ({
-                    freelancerId: freelancer.uuid,
-                    languageId: lang,
-                }))));
-            }
-            await Promise.all(insertingFreelancersDetails);
-        }
-
+        });
         res.status(200).json({ success: true, message: "Signup successful" });
     } catch (error) {
         console.error("USER CONTROLLER > SIGNUP >", error);

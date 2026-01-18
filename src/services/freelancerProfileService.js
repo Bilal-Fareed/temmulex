@@ -3,10 +3,12 @@ import { freelancerProfiles } from "../models/freelancerProfilesModel.js";
 import { eq, sql } from "drizzle-orm";
 
 const insertFreelancerDetailService = async (data, options = {}) => {
+	const { transaction } = options;
+	const executor = transaction || db;
 
 	const { userId, lat, lng, cvUrl, dbsUrl } = data
 
-	const [freelancer] = await db.insert(freelancerProfiles).values({
+	const [freelancer] = await executor.insert(freelancerProfiles).values({
 		userId: userId,
 		location: sql`ST_SetSRID(ST_MakePoint(${lng}, ${lat}), 4326)`,
 		resumeLink: cvUrl,
