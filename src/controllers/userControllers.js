@@ -105,14 +105,14 @@ const loginController = async (req, res) => {
         const deviceId = req.headers['x-device-id'];
 
         let user = await getUserByEmail(email) || {};
-        if (!user || !user.password) return res.status(403).json({ success: false, message: 'Invalid credentials' });
+        if (!user || !user.password) return res.status(403).json({ success: false, message: 'Invalid credentials.' });
 
         const isValid = await verifyPassword(password, user.password);
-        if (!isValid) return res.status(403).json({ success: false, message: 'Invalid credentials' });
+        if (!isValid) return res.status(403).json({ success: false, message: 'Invalid credentials.' });
 
         if (user_type === "freelancer") {
             const freelancerProfileDetails = await getFreelancerProfileDetailByUserUuid(user.uuid);
-            if (!freelancerProfileDetails) return res.status(404).json({ success: false, message: 'Invalid credentials' });
+            if (!freelancerProfileDetails) return res.status(404).json({ success: false, message: 'Please create a freelancer profile first to proceed further.' });
             user = {
                 ...user,
                 location: freelancerProfileDetails.location,
