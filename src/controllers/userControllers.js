@@ -227,12 +227,12 @@ const updatePasswordController = async (req, res) => {
     try {
         console.log("USER CONTROLLER > UPDATE PASSWORD > try block executed");
 
-        const { uuid, intent } = req.user;
+        const { email, intent } = req.user;
         const { password } = req.body;
 
         if (intent !== 'PASSWORD_UPDATE') return res.status(401).json({ success: false, message: "Unauthorized User" });
 
-        const user = await getUserByUuid(uuid)
+        const user = await getUserByEmail(email);
 
         if (!user) return res.status(404).json({ success: false, message: "User does not exists" });
 

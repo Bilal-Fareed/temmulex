@@ -33,7 +33,7 @@ router.post('/verify-otp', validate({ body: verifyOtpSchema }), verifyOtpControl
 
 router.post('/send-otp', validate({ body: sendOtpSchema }), sendOtpController);
 
-router.put('/update-password', authenticate, validate({ body: updatePasswordSchema }), updatePasswordController);
+router.put('/update-password', validate({ body: updatePasswordSchema }), authenticateTemporaryToken, updatePasswordController);
 
 router.get('/details', authenticate, getUserDetailsController);
 
