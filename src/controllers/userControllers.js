@@ -55,11 +55,11 @@ const userSignupController = async (req, res) => {
             const { lat = 0, lng = 0 } = location;
             const insertingFreelancersDetails = [];
 
-            insertingFreelancersDetails.push(insertFreelancerDetailService({ userId: user.uuid, lat, lng, cvUrl, dbsUrl }));
+            const freelancer = await insertFreelancerDetailService({ userId: user.uuid, lat, lng, cvUrl, dbsUrl });
 
             if (services?.length) {
                 insertingFreelancersDetails.push(insertManyFreelancerServicesService(services.map((service) => ({
-                    freelancerId: user.uuid,
+                    freelancerId: freelancer.uuid,
                     serviceId: service.serviceId,
                     fixedPriceCents: service.fixedPriceCents,
                     currency: service.currency
@@ -68,7 +68,7 @@ const userSignupController = async (req, res) => {
 
             if (languages?.length) {
                 insertingFreelancersDetails.push(insertManyFreelancerLanguagesService(languages.map((lang) => ({
-                    freelancerId: user.uuid,
+                    freelancerId: freelancer.uuid,
                     languageId: lang,
                 }))));
             }

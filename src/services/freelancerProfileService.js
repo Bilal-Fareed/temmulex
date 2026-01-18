@@ -6,12 +6,23 @@ const insertFreelancerDetailService = async (data, options = {}) => {
 
 	const { userId, lat, lng, cvUrl, dbsUrl } = data
 
-	await db.insert(freelancerProfiles).values({
+	const [freelancer] = await db.insert(freelancerProfiles).values({
 		userId: userId,
 		location: sql`ST_SetSRID(ST_MakePoint(${lng}, ${lat}), 4326)`,
 		resumeLink: cvUrl,
 		certificateLink: dbsUrl,
+	}).returning({
+		uuid: freelancerProfiles.uuid,
+		userId: freelancerProfiles.userId,
+		location: freelancerProfiles.location,
+		resumeLink: freelancerProfiles.resumeLink,
+		certificateLink: freelancerProfiles.certificateLink,
+		profileStatus: freelancerProfiles.profileStatus,
+		isBlocked: freelancerProfiles.isBlocked
 	});
+
+	return freelancer;
+
 };
 
 const getFreelancerProfileDetailByUserUuid = async (userUuid) => {
