@@ -12,7 +12,10 @@ const getFreelancerLanguage = async (freelancerUuid, languageId, options = {}) =
 }
 
 const insertManyFreelancerLanguagesService = async (languages = [], options = {}) => {
-	await db.insert(freelancerLanguages).values(languages);
+	const { transaction } = options;
+	const executor = transaction || db;
+
+	await executor.insert(freelancerLanguages).values(languages);
 };
 
 export {

@@ -16,17 +16,23 @@ const getUserByUuid = async (uuid, options = {}) => {
 
 const createUserService = async (data, options = {}) => {
 
+	const { transaction } = options;
+	const executor = transaction || db;
+
 	const { email, title, first_name, last_name, country, dob, phone, password, profilePicture } = data
 
-	const [user] = await db.insert(users)
+	const [user] = await executor.insert(users)
 		.values({ email: email, password: password, title: title, firstName: first_name, lastName: last_name, country: country, dob: dob, phone: phone, profilePicture: profilePicture })
 		.returning({ uuid: users.uuid, phone: users.phone, email: users.email, firstName: users.firstName, lastName: users.lastName, country: users.country, dob: users.dob, profilePicture: users.profilePicture });
 
 	return user;
 };
 
-const updateUserByUuidService = async (uuid, updatedObject) => {
-	await db
+const updateUserByUuidService = async (uuid, updatedObject, options = {}) => {
+	const { transaction } = options;
+	const executor = transaction || db;
+
+	await executor
 		.update(users)
 		.set(updatedObject)
 		.where(eq(users.uuid, uuid));
