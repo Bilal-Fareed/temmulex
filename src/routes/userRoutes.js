@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { multerHandler } from '../middlewares/multerMiddleware.js';
-import { authenticate } from '../middlewares/authMiddleware.js';
+import { authenticate, authenticateTemporaryToken } from '../middlewares/authMiddleware.js';
 import { validate } from '../middlewares/validationMiddleware.js';
 import { parseMultipartJSON } from '../middlewares/multipartJsonParserMiddleware.js'; 
 import {
@@ -23,7 +23,7 @@ import {
 
 const router = Router();
 
-router.post('/signup', multerHandler, parseMultipartJSON(['languages', 'location', 'services']), validate({ body: signupSchema, headers: commonHeadersSchema }), userSignupController);
+router.post('/signup', multerHandler, parseMultipartJSON(['languages', 'location', 'services']), validate({ body: signupSchema, headers: commonHeadersSchema }), authenticateTemporaryToken, userSignupController);
 
 router.post('/login', validate({ body: signinSchema, headers: commonHeadersSchema }), loginController);
 

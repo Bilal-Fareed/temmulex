@@ -106,6 +106,28 @@ const authenticate = async (req, res, next) => {
 	}
 };
 
+const authenticateTemporaryToken = async (req, res, next) => {
+	const accessToken = req.headers.authorization?.split(' ')[1];
+
+	if (!accessToken) {
+		return res.status(401).json({ message: 'Access token missing' });
+	}
+
+	try {
+		const decodedAccess = verifyAccessToken(accessToken);
+
+		req.user = {
+			email: decodedAccess.email,
+			intent: decodedAccess.intent,
+		};
+		next();
+	} catch (error) {
+		console.error("TEMPORARY AUTH MIDDLEWARE > CATCH > ", error);
+		next();
+	}
+};
+
 export {
 	authenticate,
+	authenticateTemporaryToken,
 };
