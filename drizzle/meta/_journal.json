@@ -15,6 +15,13 @@
       "when": 1768671228414,
       "tag": "0001_fantastic_lizard",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1771754784758,
+      "tag": "0002_freezing_senator_kelly",
+      "breakpoints": true
     }
   ]
 }

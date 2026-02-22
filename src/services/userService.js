@@ -2,15 +2,17 @@ import { db } from "../../infra/db.js";
 import { users } from "../models/usersModel.js";
 import { eq } from "drizzle-orm";
 
-const getUserByEmail = async (email, options = {}) => {
+const getUserByEmail = async (email, projection = {}, options = {}) => {
 	return await db.query.users.findFirst({
 		where: eq(users.email, email),
+		columns: projection,
 	});
 }
 
-const getUserByUuid = async (uuid, options = {}) => {
+const getUserByUuid = async (uuid, projection = {}, options = {}) => {
 	return await db.query.users.findFirst({
 		where: eq(users.uuid, uuid),
+		columns: projection,
 	});
 }
 

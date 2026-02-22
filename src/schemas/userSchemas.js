@@ -27,7 +27,7 @@ const signupSchema = vine.object({
     dob: vine.date({ formats: ['DD/MM/YYYY', 'x'] }),
     phone: vine.string().minLength(2).maxLength(50),
     languages: vine.array(vine.string().uuid({ version: [4] })).optional().requiredWhen('user_type', '=', 'freelancer'),
-    location: vine.object({ lat: vine.number(), lng: vine.number() }).optional().requiredWhen('user_type', '=', 'freelancer'),
+    location: vine.object({ lat: vine.number().min(-90).max(90), lng: vine.number().min(-180).max(180) }).optional().requiredWhen('user_type', '=', 'freelancer'),
     services: vine.array(vine.object({
         serviceId: vine.string().uuid({ version: [4] }),
         fixedPriceCents: vine.number(),
@@ -64,6 +64,15 @@ const commonHeadersSchema = vine.object({
     'x-user-agent': vine.enum(['android', 'ios'])
 });
 
+// nearby top rated shoppers schema
+const nearbyTopRatedShopperSchema = vine.object({
+    lat: vine.number().min(-90).max(90),
+    lng: vine.number().min(-180).max(180),
+    radius: vine.number().min(10).max(1000000), // distance in meter
+    page: vine.number().min(1).max(1000),
+    limit: vine.number().min(1).max(100),
+}); 
+
 export {
     passwordSchema,
     signinSchema,
@@ -71,6 +80,7 @@ export {
     verifyOtpSchema,
     sendOtpSchema,
     forgotPasswordSchema,
+    nearbyTopRatedShopperSchema,
     updatePasswordSchema,
     commonHeadersSchema,
 };

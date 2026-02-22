@@ -10,6 +10,7 @@ import {
     forgotPasswordSchema,
     updatePasswordSchema,
     commonHeadersSchema,
+    nearbyTopRatedShopperSchema,
     sendOtpSchema
 } from '../schemas/userSchemas.js';
 import {
@@ -20,7 +21,8 @@ import {
     updatePasswordController,
     verifyOtpController,
     sendOtpController,
-    getUserDetailsController,
+    getNearbyTopRatedShoppersController,
+    getMyProfileController,
 } from '../controllers/userControllers.js';
 
 const router = Router();
@@ -39,6 +41,8 @@ router.put('/forgot-password', validate({ body: forgotPasswordSchema }), authent
 
 router.put('/update-password', validate({ body: updatePasswordSchema }), authenticate, updatePasswordController);
 
-router.get('/details', authenticate, getUserDetailsController);
+router.get('/my-profile', authenticate, getMyProfileController);
+
+router.get('/top-rated/nearby', validate({ query: nearbyTopRatedShopperSchema }), authenticate, getNearbyTopRatedShoppersController);
 
 export default router;

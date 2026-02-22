@@ -1,0 +1,1 @@
+ALTER TABLE "services" ADD COLUMN "service_type" varchar(255) NOT NULL;

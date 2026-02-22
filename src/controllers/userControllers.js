@@ -1,7 +1,7 @@
 import { uploadFile } from "../helpers/cloudinary.js";
 import { hashPassword, verifyPassword, generateAccessToken, generateRefreshToken } from "../helpers/security.js";
 import { getUserByEmail, createUserService, getUserByUuid, updateUserByUuidService } from "../services/userService.js";
-import { insertFreelancerDetailService, getFreelancerProfileDetailByUserUuid } from "../services/freelancerProfileService.js";
+import { insertFreelancerDetailService, getFreelancerProfileDetailByUserUuid, getNearbyFreelancers } from "../services/freelancerProfileService.js";
 import { insertManyFreelancerLanguagesService } from "../services/freelancerLanguageService.js";
 import { insertManyFreelancerServicesService } from "../services/freelancerServicesService.js";
 import { redisClient } from "../../infra/redis.js";
@@ -302,14 +302,65 @@ const sendOtpController = async (req, res) => {
 
 const getUserDetailsController = async (req, res) => {
     try {
+
         console.log("USER CONTROLLER > GET USER DETAILS > try block executed");
-        res.status(200).json({ success: true, message: "User details fetched" });
+
+        const { uuid } = req.params;
+
+        const user = await getUserByUuid(uuid, {
+            password: false,
+            refreshTokenVersion: false,
+            updatedAt: false,
+            id: false
+        });
+
+        if (!user) return res.status(404).json({ success: false, message: "User does not exists" });
+
+        res.status(200).json({ success: true, message: "User details fetched", user: user });
     } catch (error) {
         console.error("USER CONTROLLER > GET USER DETAILS >", error);
         res.status(500).json({ success: false, message: "Internal Server Error" });
     }
 };
 
+const getMyProfileController = async (req, res) => {
+    try {
+
+        console.log("USER CONTROLLER > GET MY PROFILE > try block executed");
+        
+        const { uuid } = req.user;
+
+        const user = await getUserByUuid(uuid, {
+            password: false,
+            refreshTokenVersion: false,
+            updatedAt: false,
+            id: false
+        });
+
+        if (!user) return res.status(404).json({ success: false, message: "User does not exists" });
+
+        res.status(200).json({ success: true, message: "User details fetched", user: user });
+    } catch (error) {
+        console.error("USER CONTROLLER > GET MY PROFILE >", error);
+        res.status(500).json({ success: false, message: "Internal Server Error" });
+    }
+};
+
+const getNearbyTopRatedShoppersController = async (req, res) => {
+    try {
+
+        console.log("USER CONTROLLER > GET NEARBY TOP RATED SHOPPERS > try block executed");
+        
+        const { lat, lng, radius, page, limit } = req.query;
+
+        const data = await getNearbyFreelancers(lat, lng, radius, page, limit);
+
+        res.status(200).json({ success: true, message: "Nearby shoppers fetched successfully", data: data || [] });
+    } catch (error) {
+        console.error("USER CONTROLLER > GET NEARBY TOP RATED SHOPPERS >", error);
+        res.status(500).json({ success: false, message: "Internal Server Error" });
+    }
+};
 
 export {
     userSignupController,
@@ -320,4 +371,6 @@ export {
     updatePasswordController,
     sendOtpController,
     getUserDetailsController,
+    getMyProfileController,
+    getNearbyTopRatedShoppersController,
 }
