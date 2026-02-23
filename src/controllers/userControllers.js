@@ -351,9 +351,33 @@ const getNearbyTopRatedShoppersController = async (req, res) => {
 
         console.log("USER CONTROLLER > GET NEARBY TOP RATED SHOPPERS > try block executed");
         
-        const { lat, lng, radius, page, limit } = req.query;
+        let {
+            lat = 0.0,
+            lng = 0.0,
+            radius = 1000,
+            languages = [],
+            services = [],
+            search_text,
+            page = 1,
+            limit = 10,
+            price_range
+        } = req.query;
 
-        const data = await getNearbyFreelancers(lat, lng, radius, page, limit);
+        if (!Array.isArray(languages)) languages = [languages];
+        if (!Array.isArray(services)) services = [services];
+        if (price_range) price_range = JSON.parse(price_range);
+
+        const data = await getNearbyFreelancers({
+            lat,
+            lng,
+            radius,
+            languageIds: languages,
+            serviceIds: services,
+            page,
+            limit,
+            search_text,
+            ...(price_range && { price_range })
+        });
 
         res.status(200).json({ success: true, message: "Nearby shoppers fetched successfully", data: data || [] });
     } catch (error) {

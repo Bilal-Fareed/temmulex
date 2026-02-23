@@ -68,9 +68,25 @@ const commonHeadersSchema = vine.object({
 const nearbyTopRatedShopperSchema = vine.object({
     lat: vine.number().min(-90).max(90),
     lng: vine.number().min(-180).max(180),
-    radius: vine.number().min(10).max(1000000), // distance in meter
-    page: vine.number().min(1).max(1000),
-    limit: vine.number().min(1).max(100),
+    radius: vine.number().min(10).max(1000000).optional(), // distance in meter
+    services: vine.unionOfTypes([
+        vine.string().uuid({ version: [4] }),
+        vine.array(vine.string().uuid({ version: [4] })),
+    ]).optional(),
+    languages: vine.unionOfTypes([
+        vine.string().uuid({ version: [4] }),
+        vine.array(vine.string().uuid({ version: [4] })),
+    ]).optional(),
+    price_range: vine.unionOfTypes([
+        vine.object({
+            starting_price: vine.number().min(0).max(10000),
+            ending_price: vine.number().min(0).max(10000),
+        }),
+        vine.string().minLength(0).maxLength(1000),
+    ]).optional(),
+    search_text: vine.string().minLength(0).maxLength(1000).optional(),
+    page: vine.number().min(1).max(1000).optional(),
+    limit: vine.number().min(1).max(100).optional(),
 }); 
 
 export {

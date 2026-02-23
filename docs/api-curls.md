@@ -104,3 +104,13 @@ curl --location --request POST 'http://localhost:3001/v1/users/logout' \
 --header 'authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1dWlkIjoiMjg1YmIwZTAtYTNkOC00MDU5LTg4NTUtNDk3MTE4NTMyMTIxIiwidmVyc2lvbiI6MCwidG9rZW5JZCI6ImVlYjhmNmExLWEzZTAtNGRhZS05NjRkLWY2OTM2MjQwYzVmOSIsImlhdCI6MTc2ODMyNzI5MSwiZXhwIjoxNzY4MzMwODkxfQ.YWUa9AKGLroqHf6_XP2FebkYHYtTtFFXyE9M2EWyEqE' \
 --data ''
 ```
+
+
+## 📝 List Shoppers With Filters
+```bash
+curl --location --globoff 'http://localhost:3001/v1/users/top-rated/nearby?lat=-0.011994620971542783&lng=0.0001965761694590108&radius=500000&languages=a44f2482-76c4-4435-93af-64726771a8f8&languages=df56e5f8-d112-4a2a-9186-407bda3e39d4&services=40130a06-2a6a-400f-95f3-0e9b53be0c7c&services=d92c074d-e0e1-46bd-83df-120f5ed0b0db&price_range={%22starting_price%22%3A%200%2C%20%22ending_price%22%3A%2020}&search_text=shopper%27s%20name' \
+--header 'x-device-id: test-device-id' \
+--header 'x-user-agent: android' \
+--header 'x-refresh-token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1dWlkIjoiMjg1YmIwZTAtYTNkOC00MDU5LTg4NTUtNDk3MTE4NTMyMTIxIiwidmVyc2lvbiI6MCwidG9rZW5JZCI6ImVlYjhmNmExLWEzZTAtNGRhZS05NjRkLWY2OTM2MjQwYzVmOSIsImlhdCI6MTc2ODMyNzI5MSwiZXhwIjoxNzY4OTMyMDkxfQ.grt-eqI0s9_JxOC5EDUVOD6-Qk2pGI6k_XPX9Jq07EI' \
+--header 'authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1dWlkIjoiMjg1YmIwZTAtYTNkOC00MDU5LTg4NTUtNDk3MTE4NTMyMTIxIiwidmVyc2lvbiI6MCwidG9rZW5JZCI6ImVlYjhmNmExLWEzZTAtNGRhZS05NjRkLWY2OTM2MjQwYzVmOSIsImlhdCI6MTc2ODMyNzI5MSwiZXhwIjoxNzY4MzMwODkxfQ.YWUa9AKGLroqHf6_XP2FebkYHYtTtFFXyE9M2EWyEqE'
+```

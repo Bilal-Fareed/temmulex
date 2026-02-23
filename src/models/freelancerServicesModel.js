@@ -1,4 +1,4 @@
-import { pgTable, uuid, char, integer, boolean, timestamp, primaryKey } from "drizzle-orm/pg-core";
+import { pgTable, uuid, char, integer, boolean, varchar, text, timestamp, primaryKey } from "drizzle-orm/pg-core";
 import { freelancerProfiles } from "./freelancerProfilesModel.js";
 import { services } from "./servicesModel.js";
 
@@ -7,6 +7,8 @@ const freelancerServices = pgTable("freelancer_services", {
     freelancerId: uuid("freelancer_id").notNull().references(() => freelancerProfiles.uuid, { onDelete: "cascade" }),
     fixedPriceCents: integer("fixed_price_cents").notNull(),
     currency: char("currency", { length: 3 }).notNull().default("USD"),
+    title: varchar("title", { length: 150 }),
+    description: text("description"),
     isDeleted: boolean("is_deleted").default(false),
     createdAt: timestamp("created_at").defaultNow(),
     updatedAt: timestamp("updated_at").defaultNow(),
