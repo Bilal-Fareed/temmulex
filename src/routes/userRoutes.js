@@ -20,6 +20,7 @@ import {
     forgotPasswordController,
     updatePasswordController,
     verifyOtpController,
+    deleteAccountController,
     sendOtpController,
     getNearbyTopRatedShoppersController,
     getMyProfileController,
@@ -32,6 +33,8 @@ router.post('/signup', multerHandler, parseMultipartJSON(['languages', 'location
 router.post('/login', validate({ body: signinSchema, headers: commonHeadersSchema }), loginController);
 
 router.post('/logout', authenticate, logoutController);
+
+router.post('/delete-account', authenticate, deleteAccountController);
 
 router.post('/verify-otp', validate({ body: verifyOtpSchema }), verifyOtpController);
 

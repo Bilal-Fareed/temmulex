@@ -26,6 +26,8 @@ const userSignupController = async (req, res) => {
 
         const exists = await getUserByEmail(email);
 
+        if (exists?.isDeleted || exists?.isBlocked) return res.status(400).json({ success: false, message: "Please contact support, the account on this email has been deleted or blocked." });
+
         if (exists) return res.status(403).json({ success: false, message: "Email already in use" });
 
         if (!files?.profile_picture?.[0]) return res.status(422).json({ success: false, message: "Profile picture is required" });
@@ -113,6 +115,8 @@ const loginController = async (req, res) => {
 
         const isValid = await verifyPassword(password, user.password);
         if (!isValid) return res.status(403).json({ success: false, message: 'Invalid credentials.' });
+        
+        if (user?.isDeleted || user?.isBlocked) return res.status(400).json({ success: false, message: "Please contact support, the account on this email has been deleted or blocked." });
 
         if (user_type === "freelancer") {
             const freelancerProfileDetails = await getFreelancerProfileDetailByUserUuid(user.uuid);
@@ -192,6 +196,32 @@ const logoutController = async (req, res) => {
         res.status(200).json({ success: true, message: "User Logged Out" });
     } catch (error) {
         console.error("USER CONTROLLER > LOGOUT >", error);
+        res.status(500).json({ success: false, message: "Internal Server Error" });
+    }
+};
+
+const deleteAccountController = async (req, res) => {
+    try {
+        console.log("USER CONTROLLER > DELETE ACCOUNT > try block executed");
+        const { uuid } = req.user
+
+        if (!uuid) {
+            res.status(400).json({ success: false, message: 'Failed to delete account' });
+            return;
+        }
+
+        const user = await getUserByUuid(uuid);
+
+        if (!user) return res.status(404).json({ success: false, message: "Failed to delete account" });
+
+        await Promise.all([
+            updateUserByUuidService(uuid, { refreshTokenVersion: user.refreshTokenVersion + 1, isDeleted: true }),
+            deleteUserSessionByUserId(uuid)
+        ]);
+
+        res.status(200).json({ success: true, message: "User Logged Out" });
+    } catch (error) {
+        console.error("USER CONTROLLER > DELETE ACCOUNT >", error);
         res.status(500).json({ success: false, message: "Internal Server Error" });
     }
 };
@@ -395,6 +425,7 @@ export {
     updatePasswordController,
     sendOtpController,
     getUserDetailsController,
+    deleteAccountController,
     getMyProfileController,
     getNearbyTopRatedShoppersController,
 }
