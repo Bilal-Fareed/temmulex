@@ -102,6 +102,65 @@ const userSignupController = async (req, res) => {
     }
 };
 
+const updateUserProfileController = async (req, res) => {
+    try {
+        console.log("USER CONTROLLER > UPDATE USER PROFILE > try block executed");
+
+        const { uuid } = req.user;
+        const { email, title, first_name, last_name, country, dob, phone, profile_picture, otp } = req.body;
+
+        const user = await getUserByUuid(uuid);
+
+        if (user?.isDeleted || user?.isBlocked) return res.status(400).json({ success: false, message: "Please contact support, the account on this email has been deleted or blocked." });
+
+        if (otp) {
+            const storedOtp = await redisClient.get(`otp:${email}`);
+
+            if (storedOtp && storedOtp === otp) {
+                await redisClient.del(`otp:${email}`);
+                await updateUserByUuidService(uuid, {
+                    email,
+                    title,
+                    first_name,
+                    last_name,
+                    country,
+                    dob,
+                    phone,
+                    profilePicture: profile_picture
+                });
+            } else {
+                return res.status(403).json({ success: false, message: "Invalid OTP, please verify OTP to update your email." });
+            }
+        }
+
+        if (user && user.email !== email) {
+            const otp = Math.floor(1000 + Math.random() * 9000).toString();
+
+            await redisClient.set(`otp:${email}`, otp, 'EX', 60);
+
+            await sendOtpEmail(email, otp);
+
+            return res.status(200).json({ success: true, subcode: 1000, message: "An OTP is send on your new email please verify OTP to update your profile." });
+        }
+
+        await updateUserByUuidService(uuid, {
+            email,
+            title,
+            first_name,
+            last_name,
+            country,
+            dob,
+            phone,
+            profilePicture: profile_picture
+        });
+
+        res.status(200).json({ success: true, message: "Your profile details have been updated successfully" });
+    } catch (error) {
+        console.error("USER CONTROLLER > UPDATE USER PROFILE >", error);
+        res.status(500).json({ success: false, message: "Internal Server Error" });
+    }
+};
+
 const loginController = async (req, res) => {
     try {
         console.log("USER CONTROLLER > LOGIN > try block executed");
@@ -427,5 +486,6 @@ export {
     getUserDetailsController,
     deleteAccountController,
     getMyProfileController,
+    updateUserProfileController,
     getNearbyTopRatedShoppersController,
 }

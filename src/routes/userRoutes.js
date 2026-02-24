@@ -10,6 +10,7 @@ import {
     forgotPasswordSchema,
     updatePasswordSchema,
     commonHeadersSchema,
+    updateUserProfileSchema,
     nearbyTopRatedShopperSchema,
     sendOtpSchema
 } from '../schemas/userSchemas.js';
@@ -20,6 +21,7 @@ import {
     forgotPasswordController,
     updatePasswordController,
     verifyOtpController,
+    updateUserProfileController,
     deleteAccountController,
     sendOtpController,
     getNearbyTopRatedShoppersController,
@@ -43,6 +45,8 @@ router.post('/send-otp', validate({ body: sendOtpSchema }), sendOtpController);
 router.put('/forgot-password', validate({ body: forgotPasswordSchema }), authenticateTemporaryToken, forgotPasswordController);
 
 router.put('/update-password', validate({ body: updatePasswordSchema }), authenticate, updatePasswordController);
+
+router.put('/update-profile', validate({ body: updateUserProfileSchema }), authenticate, updateUserProfileController);
 
 router.get('/my-profile', authenticate, getMyProfileController);
 

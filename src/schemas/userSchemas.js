@@ -35,6 +35,19 @@ const signupSchema = vine.object({
     })).optional().requiredWhen('user_type', '=', 'freelancer'),
 });
 
+// Update User Profile Schema
+const updateUserProfileSchema = vine.object({
+    title: vine.string().minLength(2).maxLength(20),
+    first_name: vine.string().minLength(2).maxLength(100),
+    last_name: vine.string().minLength(2).maxLength(100),
+    email: vine.string().email(),
+    phone: vine.string().minLength(2).maxLength(50),
+    country: vine.string().minLength(2).maxLength(100),
+    dob: vine.date({ formats: ['DD/MM/YYYY', 'x'] }),
+    profile_picture: vine.string().url(),
+    otp: vine.string().regex(/^\d{4}$/, "OTP must contain only digits").optional(),
+});
+
 // Verify OTP schema
 const verifyOtpSchema = vine.object({
     email: vine.string().email(),
@@ -99,4 +112,5 @@ export {
     nearbyTopRatedShopperSchema,
     updatePasswordSchema,
     commonHeadersSchema,
+    updateUserProfileSchema,
 };
