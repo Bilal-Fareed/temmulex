@@ -22,6 +22,7 @@ import {
     updatePasswordController,
     verifyOtpController,
     updateUserProfileController,
+    uploadFileController,
     deleteAccountController,
     sendOtpController,
     getNearbyTopRatedShoppersController,
@@ -31,6 +32,8 @@ import {
 const router = Router();
 
 router.post('/signup', multerHandler, parseMultipartJSON(['languages', 'location', 'services']), validate({ body: signupSchema, headers: commonHeadersSchema }), authenticateTemporaryToken, userSignupController);
+
+router.post('/upload', multerHandler, authenticate, uploadFileController);
 
 router.post('/login', validate({ body: signinSchema, headers: commonHeadersSchema }), loginController);
 

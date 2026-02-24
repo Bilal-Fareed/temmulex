@@ -102,6 +102,33 @@ const userSignupController = async (req, res) => {
     }
 };
 
+const uploadFileController = async (req, res) => {
+    try {
+        console.log("USER CONTROLLER > UPLOAD FILE > try block executed");
+
+        const files = req.files ?? {};
+
+        const fileUploadDecision = {
+            "profile_picture": uploadFile(files?.profile_picture?.[0], "users/profilePicture"),
+            "cv": uploadFile(files?.cv?.[0], "freelancers/cv"),
+            "dbs": uploadFile(files?.dbs?.[0], "freelancers/dbs")
+        }
+
+        let uploadType;
+
+        if (files?.profile_picture?.[0]) uploadType = 'profile_picture';
+        if (files?.dbs?.[0]) uploadType = 'cv';
+        if (files?.cv?.[0]) uploadType = 'dbs';
+
+        const file_url = await fileUploadDecision[uploadType];
+
+        res.status(200).json({ success: true, file_url: file_url, message: "Signup successful" });
+    } catch (error) {
+        console.error("USER CONTROLLER > UPLOAD FILE >", error);
+        res.status(500).json({ success: false, message: "Internal Server Error" });
+    }
+};
+
 const updateUserProfileController = async (req, res) => {
     try {
         console.log("USER CONTROLLER > UPDATE USER PROFILE > try block executed");
@@ -487,5 +514,6 @@ export {
     deleteAccountController,
     getMyProfileController,
     updateUserProfileController,
+    uploadFileController,
     getNearbyTopRatedShoppersController,
 }
