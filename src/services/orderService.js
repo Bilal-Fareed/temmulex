@@ -10,6 +10,20 @@ const buildWhere = (filters) => {
     );
 };
 
+const createOrderService = async (data, options = {}) => {
+
+	const { transaction } = options;
+	const executor = transaction || db;
+
+    const { clientId, freelancerId, serviceId, price } = data
+
+    const [order] = await executor.insert(orders)
+        .values({ clientId: clientId, freelancerId: freelancerId, serviceId: serviceId, price: price })
+		.returning({ uuid: orders.uuid, clientId: orders.clientId, freelancerId: orders.freelancerId, serviceId: orders.serviceId, price: orders.price });
+
+	return order;
+};
+
 const getOrderService = async (filters = {}, projection = {}, options = {}) => {
 
     const { page, limit } = options;
@@ -26,5 +40,6 @@ const getOrderService = async (filters = {}, projection = {}, options = {}) => {
 
 
 export {
-    getOrderService
+    getOrderService,
+    createOrderService,
 }

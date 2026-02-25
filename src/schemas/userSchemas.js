@@ -102,11 +102,17 @@ const nearbyTopRatedShopperSchema = vine.object({
     limit: vine.number().min(1).max(100).optional(),
 }); 
 
-// nearby top rated shoppers schema
+// get my orders list schema
 const getMyOrdersSchema = vine.object({
     order_status: vine.enum(['ongoing', 'completed']),
     page: vine.number().min(1).max(1000).optional(),
     limit: vine.number().min(1).max(100).optional(),
+}); 
+
+// place order schema
+const placeOrderSchema = vine.object({
+    freelancer_id: vine.string().uuid({ version: [4] }),
+    service_id: vine.string().uuid({ version: [4] }),
 }); 
 
 export {
@@ -120,5 +126,6 @@ export {
     updatePasswordSchema,
     commonHeadersSchema,
     getMyOrdersSchema,
+    placeOrderSchema,
     updateUserProfileSchema,
 };

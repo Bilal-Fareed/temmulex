@@ -3,10 +3,11 @@ import { hashPassword, verifyPassword, generateAccessToken, generateRefreshToken
 import { getUserByEmail, createUserService, getUserByUuid, updateUserByUuidService } from "../services/userService.js";
 import { insertFreelancerDetailService, getFreelancerProfileDetailByUserUuid, getNearbyFreelancers } from "../services/freelancerProfileService.js";
 import { insertManyFreelancerLanguagesService } from "../services/freelancerLanguageService.js";
-import { insertManyFreelancerServicesService } from "../services/freelancerServicesService.js";
+import { insertManyFreelancerServices, getFreelancerServices } from "../services/freelancerServicesService.js";
 import { getOrderService } from "../services/orderService.js";
 import { redisClient } from "../../infra/redis.js";
 import { sendOtpEmail } from "../helpers/mailer.js";
+import { createOrderService } from "../services/orderService.js"
 import { deleteUserSessionByUserId, insertUserSession } from "../services/sessionsService.js";
 import { randomUUID } from 'crypto';
 import { db } from "../../infra/db.js";
@@ -72,7 +73,7 @@ const userSignupController = async (req, res) => {
 
                 if (services?.length) {
                     insertingFreelancersDetails.push(
-                        insertManyFreelancerServicesService(
+                        insertManyFreelancerServices(
                             services.map((service) => ({
                                 freelancerId: freelancer.uuid,
                                 serviceId: service.serviceId,
@@ -523,6 +524,38 @@ const getMyOrdersController = async (req, res) => {
     }
 };
 
+const placeOrderController = async (req, res) => {
+    try {
+
+        console.log("USER CONTROLLER > PLACE ORDER > try block executed");
+
+        const uuid = "42b3e3e6-4c44-4dfb-ba89-d48c4cd4e60f"
+        const { service_id, freelancer_id } = req.body;
+
+        if(uuid === freelancer_id) return res.status(403).json({success: false, message: "You can not book a service for yourself."})
+
+        const freelancerDetails = await getFreelancerProfileDetailByUserUuid(freelancer_id);
+        
+        if(!freelancerDetails)  return res.status(400).json({success: false, message: "The user with whome you are trying to book is not a freelancer."})
+
+        const freelancerService = await getFreelancerServices(freelancerDetails.uuid, service_id);
+
+        if(!freelancerService) return res.status(400).json({success: false, message: "This selected service is not offered by the freelancer."})
+
+        const order = await createOrderService({
+            clientId: uuid, 
+            freelancerId: freelancer_id, 
+            serviceId: service_id, 
+            price: freelancerService.fixedPriceCents
+        })
+
+        res.status(200).json({ success: true, message: "Your order have been placed successfully", order_id: order?.uuid });
+    } catch (error) {
+        console.error("USER CONTROLLER > PLACE ORDER >", error);
+        res.status(500).json({ success: false, message: "Internal Server Error" });
+    }
+};
+
 export {
     userSignupController,
     loginController,
@@ -534,6 +567,7 @@ export {
     getUserDetailsController,
     deleteAccountController,
     getMyProfileController,
+    placeOrderController,
     updateUserProfileController,
     getMyOrdersController,
     uploadFileController,

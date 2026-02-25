@@ -11,6 +11,7 @@ import {
     updatePasswordSchema,
     commonHeadersSchema,
     getMyOrdersSchema,
+    placeOrderSchema,
     updateUserProfileSchema,
     nearbyTopRatedShopperSchema,
     sendOtpSchema
@@ -29,6 +30,7 @@ import {
     sendOtpController,
     getNearbyTopRatedShoppersController,
     getMyProfileController,
+    placeOrderController,
 } from '../controllers/userControllers.js';
 
 const router = Router();
@@ -58,5 +60,7 @@ router.get('/my-profile', authenticate, getMyProfileController);
 router.get('/top-rated/nearby', validate({ query: nearbyTopRatedShopperSchema }), authenticate, getNearbyTopRatedShoppersController);
 
 router.get('/my-order', validate({ query: getMyOrdersSchema }), authenticate, getMyOrdersController);
+
+router.post('/place-order', validate({ body: placeOrderSchema }), authenticate, placeOrderController);
 
 export default router;

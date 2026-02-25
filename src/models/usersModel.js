@@ -12,6 +12,7 @@ import { relations } from "drizzle-orm";
 import { conversations } from "./conversationsModel.js";
 import { orders } from "./ordersModel.js";
 import { reviews } from "./reviewsModel.js";
+import { freelancerProfiles } from "./freelancerProfilesModel.js";
 
 const users = pgTable("users", {
     id: serial("id").primaryKey(),
@@ -33,10 +34,11 @@ const users = pgTable("users", {
     refreshTokenVersion: integer("refresh_token_version").default(0),
 });
 
-const usersRelations = relations(users, ({ many }) => ({
+const usersRelations = relations(users, ({ many, one }) => ({
     conversations: many(conversations),
     orders: many(orders),
     reviews: many(reviews),
+    freelancerProfiles: one(freelancerProfiles)
 }));
 
 export {

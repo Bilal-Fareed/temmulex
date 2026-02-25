@@ -1,4 +1,6 @@
+import { orders } from "./ordersModel.js";
 import { pgTable, serial, varchar, timestamp, uuid, boolean } from "drizzle-orm/pg-core";
+import { relations } from "drizzle-orm";
 
 const services = pgTable("services", {
 	id: serial("id").primaryKey(),
@@ -11,6 +13,11 @@ const services = pgTable("services", {
 	isDeleted: boolean("is_deleted").default(false),
 });
 
+const servicesRelations = relations(services, ({ many }) => ({
+	orders: many(orders),
+}));
+
 export {
-	services
+	services,
+	servicesRelations
 }
