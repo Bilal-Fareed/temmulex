@@ -72,7 +72,23 @@ const getOrderService = async (filters = {}, projection = {}, options = {}) => {
 }
 
 
+const rateOrder = async (data, options = {}) => {
+
+    const { transaction } = options;
+    const executor = transaction || db;
+
+    const { orderId, freelancerId, reviewerId, rating = 0 } = data
+
+    const [review] = await executor.insert(reviews)
+        .values({ orderId: orderId, freelancerId: freelancerId, reviewerId: reviewerId, rating: rating })
+        .returning({ uuid: reviews.uuid });
+
+    return review;
+
+}
+
 export {
+    rateOrder,
     getOrderService,
     createOrderService,
 }

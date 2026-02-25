@@ -115,12 +115,19 @@ const placeOrderSchema = vine.object({
     service_id: vine.string().uuid({ version: [4] }),
 }); 
 
+// order feedback schema
+const orderFeedbackSchema = vine.object({
+    booking_id: vine.string().uuid({ version: [4] }),
+    rating: vine.number().min(1).max(5)
+}); 
+
 export {
     passwordSchema,
     signinSchema,
     signupSchema,
     verifyOtpSchema,
     sendOtpSchema,
+    orderFeedbackSchema,
     forgotPasswordSchema,
     nearbyTopRatedShopperSchema,
     updatePasswordSchema,

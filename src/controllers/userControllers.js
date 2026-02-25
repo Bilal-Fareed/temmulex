@@ -4,7 +4,7 @@ import { getUserByEmail, createUserService, getUserByUuid, updateUserByUuidServi
 import { insertFreelancerDetailService, getFreelancerProfileDetailByUserUuid, getNearbyFreelancers } from "../services/freelancerProfileService.js";
 import { insertManyFreelancerLanguagesService } from "../services/freelancerLanguageService.js";
 import { insertManyFreelancerServices, getFreelancerServices } from "../services/freelancerServicesService.js";
-import { getOrderService } from "../services/orderService.js";
+import { getOrderService, rateOrder } from "../services/orderService.js";
 import { redisClient } from "../../infra/redis.js";
 import { sendOtpEmail } from "../helpers/mailer.js";
 import { createOrderService } from "../services/orderService.js"
@@ -529,7 +529,7 @@ const placeOrderController = async (req, res) => {
 
         console.log("USER CONTROLLER > PLACE ORDER > try block executed");
 
-        const uuid = "42b3e3e6-4c44-4dfb-ba89-d48c4cd4e60f"
+        const { uuid } = req.user;
         const { service_id, freelancer_id } = req.body;
 
         if(uuid === freelancer_id) return res.status(403).json({success: false, message: "You can not book a service for yourself."})
@@ -556,10 +556,36 @@ const placeOrderController = async (req, res) => {
     }
 };
 
+const orderFeedbackController = async (req, res) => {
+    try {
+
+        console.log("USER CONTROLLER > BOOKING FEEDBACK > try block executed");
+
+        const { booking_id, rating } = req.body;
+
+        const order = await getOrderService({ uuid: booking_id }, {}, { page: 1, limit: 1 });
+
+        if (!order || order.length <= 0) return res.status(400).json({ success: false, message: "Booking not found." });
+
+        await rateOrder({
+            orderId: order[0].orderId,
+            reviewerId: order[0].clientUuid,
+            freelancerId: order[0].freelancerUuid,
+            rating: rating
+        })
+
+        res.status(200).json({ success: true, message: "Rating has been added successfully" });
+    } catch (error) {
+        console.error("USER CONTROLLER > BOOKING FEEDBACK >", error);
+        res.status(500).json({ success: false, message: "Internal Server Error" });
+    }
+};
+
 export {
     userSignupController,
     loginController,
     logoutController,
+    orderFeedbackController,
     verifyOtpController,
     forgotPasswordController,
     updatePasswordController,

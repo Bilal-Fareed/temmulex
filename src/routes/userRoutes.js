@@ -13,6 +13,7 @@ import {
     getMyOrdersSchema,
     placeOrderSchema,
     updateUserProfileSchema,
+    orderFeedbackSchema,
     nearbyTopRatedShopperSchema,
     sendOtpSchema
 } from '../schemas/userSchemas.js';
@@ -26,6 +27,7 @@ import {
     updateUserProfileController,
     uploadFileController,
     getMyOrdersController,
+    orderFeedbackController,
     deleteAccountController,
     sendOtpController,
     getNearbyTopRatedShoppersController,
@@ -62,5 +64,7 @@ router.get('/top-rated/nearby', validate({ query: nearbyTopRatedShopperSchema })
 router.get('/my-order', validate({ query: getMyOrdersSchema }), authenticate, getMyOrdersController);
 
 router.post('/place-order', validate({ body: placeOrderSchema }), authenticate, placeOrderController);
+
+router.post('/booking/feedback', validate({ body: orderFeedbackSchema }), authenticate, orderFeedbackController);
 
 export default router;
