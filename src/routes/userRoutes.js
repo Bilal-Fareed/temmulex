@@ -10,6 +10,7 @@ import {
     forgotPasswordSchema,
     updatePasswordSchema,
     commonHeadersSchema,
+    getMyOrdersSchema,
     updateUserProfileSchema,
     nearbyTopRatedShopperSchema,
     sendOtpSchema
@@ -23,6 +24,7 @@ import {
     verifyOtpController,
     updateUserProfileController,
     uploadFileController,
+    getMyOrdersController,
     deleteAccountController,
     sendOtpController,
     getNearbyTopRatedShoppersController,
@@ -54,5 +56,7 @@ router.put('/update-profile', validate({ body: updateUserProfileSchema }), authe
 router.get('/my-profile', authenticate, getMyProfileController);
 
 router.get('/top-rated/nearby', validate({ query: nearbyTopRatedShopperSchema }), authenticate, getNearbyTopRatedShoppersController);
+
+router.get('/my-order', validate({ query: getMyOrdersSchema }), authenticate, getMyOrdersController);
 
 export default router;

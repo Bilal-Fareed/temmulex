@@ -4,6 +4,7 @@ import { getUserByEmail, createUserService, getUserByUuid, updateUserByUuidServi
 import { insertFreelancerDetailService, getFreelancerProfileDetailByUserUuid, getNearbyFreelancers } from "../services/freelancerProfileService.js";
 import { insertManyFreelancerLanguagesService } from "../services/freelancerLanguageService.js";
 import { insertManyFreelancerServicesService } from "../services/freelancerServicesService.js";
+import { getOrderService } from "../services/orderService.js";
 import { redisClient } from "../../infra/redis.js";
 import { sendOtpEmail } from "../helpers/mailer.js";
 import { deleteUserSessionByUserId, insertUserSession } from "../services/sessionsService.js";
@@ -502,6 +503,26 @@ const getNearbyTopRatedShoppersController = async (req, res) => {
     }
 };
 
+const getMyOrdersController = async (req, res) => {
+    try {
+
+        console.log("USER CONTROLLER > GET MY ORDERS > try block executed");
+
+        const { uuid } = req.user;
+        const { page = 1, limit = 10, order_status } = req.query;
+
+        const data = await getOrderService({
+            status: order_status,
+            clientId: uuid,
+        }, {}, { page, limit });
+
+        res.status(200).json({ success: true, message: "Orders fetched successfully", data: data || [] });
+    } catch (error) {
+        console.error("USER CONTROLLER > GET MY ORDERS >", error);
+        res.status(500).json({ success: false, message: "Internal Server Error" });
+    }
+};
+
 export {
     userSignupController,
     loginController,
@@ -514,6 +535,7 @@ export {
     deleteAccountController,
     getMyProfileController,
     updateUserProfileController,
+    getMyOrdersController,
     uploadFileController,
     getNearbyTopRatedShoppersController,
 }
