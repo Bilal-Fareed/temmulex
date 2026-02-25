@@ -39,7 +39,7 @@ router.post('/login', validate({ body: signinSchema, headers: commonHeadersSchem
 
 router.post('/logout', authenticate, logoutController);
 
-router.post('/delete-account', authenticate, deleteAccountController);
+router.put('/delete-account', authenticate, deleteAccountController);
 
 router.post('/verify-otp', validate({ body: verifyOtpSchema }), verifyOtpController);
 

@@ -123,7 +123,7 @@ const authenticateTemporaryToken = async (req, res, next) => {
 		next();
 	} catch (error) {
 		console.error("TEMPORARY AUTH MIDDLEWARE > CATCH > ", error);
-		next();
+		return res.status(401).json({ message: 'Invalid or expired token' });
 	}
 };
 
