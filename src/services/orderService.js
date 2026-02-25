@@ -1,6 +1,10 @@
 import { db } from "../../infra/db.js";
 import { orders } from "../models/ordersModel.js";
-import { eq, and } from "drizzle-orm";
+import { users } from "../models/usersModel.js";
+import { reviews } from "../models/reviewsModel.js";
+import { eq, and, sql } from "drizzle-orm";
+import { alias } from "drizzle-orm/pg-core";
+import { services } from "../models/servicesModel.js";
 
 const buildWhere = (filters) => {
     return and(
@@ -26,13 +30,42 @@ const createOrderService = async (data, options = {}) => {
 
 const getOrderService = async (filters = {}, projection = {}, options = {}) => {
 
+    const client = alias(users, "client");
+    const freelancer = alias(users, "freelancer");
+
     const { page, limit } = options;
 
     const offset = (page - 1) * limit;
 
     return await db
-        .select()
+        .select({
+            orderId: orders.uuid,
+            price: orders.price,
+            status: orders.status,
+            createdAt: orders.createdAt,
+
+            serviceId: services.uuid,
+            serviceName: services.name,
+            serviceType: services.service_type,
+
+            clientUuid: client.uuid,
+            clientName: sql`${client.firstName} || ' ' || ${client.lastName}`,
+            clientEmail: client.email,
+
+            freelancerUuid: freelancer.uuid,
+            freelancerName: sql`${freelancer.firstName} || ' ' || ${freelancer.lastName}`,
+            freelancerEmail: freelancer.email,
+
+            reviewId: reviews.uuid,
+            rating: reviews.rating,
+        })
         .from(orders)
+
+        .leftJoin(client, eq(client.uuid, orders.clientId))
+        .leftJoin(services, eq(services.uuid, orders.serviceId))
+        .leftJoin(freelancer, eq(freelancer.uuid, orders.freelancerId))
+        .leftJoin(reviews, eq(reviews.orderId, orders.uuid))
+
         .where(buildWhere(filters))
         .offset(offset)
         .limit(limit);
