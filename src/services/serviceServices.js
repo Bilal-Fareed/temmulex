@@ -7,7 +7,8 @@ const getServices = async (options = {}) => {
         .select({
             uuid: services.uuid,
             name: services.name,
-            slug: services.slug
+            slug: services.slug,
+            service_type: services.service_type,
         })
         .from(services)
         .where(eq(services.isDeleted, false))

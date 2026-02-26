@@ -1,0 +1,3 @@
+ALTER TABLE "orders" ADD COLUMN "service_uuid" uuid;--> statement-breakpoint
+ALTER TABLE "orders" ADD CONSTRAINT "orders_service_uuid_services_uuid_fk" FOREIGN KEY ("service_uuid") REFERENCES "public"."services"("uuid") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "freelancer_profiles" ADD CONSTRAINT "freelancer_profiles_user_id_users_uuid_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("uuid") ON DELETE cascade ON UPDATE no action;

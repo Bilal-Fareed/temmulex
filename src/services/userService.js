@@ -2,15 +2,32 @@ import { db } from "../../infra/db.js";
 import { users } from "../models/usersModel.js";
 import { eq } from "drizzle-orm";
 
-const getUserByEmail = async (email, options = {}) => {
-	return await db.query.users.findFirst({
-		where: eq(users.email, email),
+const buildWhere = (filters) => {
+	return and(
+		...Object.entries(filters).map(([key, value]) =>
+			eq(users[key], value)
+		)
+	);
+};
+
+const getUserService = async (filters = {}, projection = {}, options = {}) => {
+	return await db.query.users.find({
+		where: buildWhere(filters),
+		columns: projection,
 	});
 }
 
-const getUserByUuid = async (uuid, options = {}) => {
+const getUserByEmail = async (email, projection = {}, options = {}) => {
+	return await db.query.users.findFirst({
+		where: eq(users.email, email),
+		columns: projection,
+	});
+}
+
+const getUserByUuid = async (uuid, projection = {}, options = {}) => {
 	return await db.query.users.findFirst({
 		where: eq(users.uuid, uuid),
+		columns: projection,
 	});
 }
 
@@ -40,6 +57,7 @@ const updateUserByUuidService = async (uuid, updatedObject, options = {}) => {
 
 
 export {
+	getUserService,
 	createUserService,
 	getUserByEmail,
 	updateUserByUuidService,

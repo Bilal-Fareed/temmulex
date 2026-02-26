@@ -18,7 +18,7 @@ import { freelancerServices } from "./freelancerServicesModel.js";
 const freelancerProfiles = pgTable("freelancer_profiles", {
     id: serial("id"),
     uuid: uuid("uuid").defaultRandom().notNull().unique(),
-    userId: uuid("user_id").primaryKey(),
+    userId: uuid("user_id").primaryKey().references(() => users.uuid, { onDelete: "cascade" }),
     location: geometry('location', { type: 'point', mode: 'xy', srid: 4326 }).notNull(),
     resumeLink: varchar("resume_link", { length: 500 }),
     certificateLink: varchar("certificate_link", { length: 500 }),

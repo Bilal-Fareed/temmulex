@@ -2,16 +2,16 @@ import { db } from '../../infra/db.js';
 import { freelancerServices } from "../models/freelancerServicesModel.js";
 import { eq, and } from "drizzle-orm";
 
-const getFreelancerLanguage = async (freelancerUuid, languageId, options = {}) => {
+const getFreelancerServices = async (freelancerUuid, serviceUuid, options = {}) => {
 	return await db.query.freelancerServices.findFirst({
 		where: and(
 			eq(freelancerServices.freelancerId, freelancerUuid),
-			eq(freelancerServices.languageId, languageId)
+			eq(freelancerServices.serviceId, serviceUuid)
 		)
 	});
 }
 
-const insertManyFreelancerServicesService = async (services = [], options = {}) => {
+const insertManyFreelancerServices = async (services = [], options = {}) => {
 	const { transaction } = options;
 	const executor = transaction || db;
 
@@ -19,6 +19,6 @@ const insertManyFreelancerServicesService = async (services = [], options = {}) 
 };
 
 export {
-	getFreelancerLanguage,
-	insertManyFreelancerServicesService,
+	getFreelancerServices,
+	insertManyFreelancerServices,
 }

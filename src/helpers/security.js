@@ -21,12 +21,14 @@ function verifyPasswordSync(password, hash) {
     return bcrypt.compareSync(password, hash);
 }
 
-function generateAccessToken(payload) {
-    return jwt.sign(payload, ACCESS_SECRET, { expiresIn: '1h' });
+function generateAccessToken(payload, options = {}) {
+    const { expiryTime = '1h' } = options;
+    return jwt.sign(payload, ACCESS_SECRET, { expiresIn: expiryTime });
 };
 
-function generateRefreshToken(payload) {
-    return jwt.sign(payload, REFRESH_SECRET, { expiresIn: '7d' });
+function generateRefreshToken(payload, options = {}) {
+    const { expiryTime = '7d' } = options;
+    return jwt.sign(payload, REFRESH_SECRET, { expiresIn: expiryTime });
 };
 
 function verifyAccessToken(token) {
