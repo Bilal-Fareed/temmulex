@@ -306,7 +306,7 @@ const verifyOtpController = async (req, res) => {
     try {
         console.log("USER CONTROLLER > VERIFY OTP > try block executed");
 
-        const { email, otp, intent } = req.body;
+        const { email, otp, intent = 'EMAIL_VERIFICATION' } = req.body;
 
         if (process.env.ENVIRONMENT?.toLowerCase() !== 'production') {
             if (otp !== '0000') return res.status(403).json({ success: false, message: "Invalid OTP" });

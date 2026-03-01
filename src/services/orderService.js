@@ -38,7 +38,7 @@ const createOrderService = async (data, options = {}) => {
 	return order;
 };
 
-const getOrderService = async (filters = {}, projection = {}, options = {}) => {
+const getOrderService = async (filters = {}, projection = undefined, options = {}) => {
 
     const client = alias(users, "client");
     const freelancer = alias(users, "freelancer");
@@ -97,17 +97,17 @@ const rateOrder = async (data, options = {}) => {
 
 }
 
-const getOrderByFilterService = async (filters = {}, projection = {}, options = {}) => {
+const getOrderByFilterService = async (filters = {}, projection = undefined, options = {}) => {
     return await db.query.orders.find({
         where: buildWhere(filters),
-        columns: projection,
+		...(projection && Object.keys(projection).length > 0 && { columns: projection }),
     });
 }
 
-const getOrderByUuid = async (uuid, projection = {}, options = {}) => {
+const getOrderByUuid = async (uuid, projection = undefined, options = {}) => {
 	return await db.query.orders.findFirst({
 		where: eq(orders.uuid, uuid),
-		columns: projection,
+		...(projection && Object.keys(projection).length > 0 && { columns: projection }),
 	});
 }
 
