@@ -10,24 +10,24 @@ const buildWhere = (filters) => {
 	);
 };
 
-const getUserService = async (filters = {}, projection = {}, options = {}) => {
+const getUserService = async (filters = {}, projection = undefined, options = {}) => {
 	return await db.query.users.find({
 		where: buildWhere(filters),
-		columns: projection,
+		...(projection && Object.keys(projection).length > 0 && { columns: projection }),
 	});
 }
 
-const getUserByEmail = async (email, projection = {}, options = {}) => {
+const getUserByEmail = async (email, projection = undefined, options = {}) => {
 	return await db.query.users.findFirst({
 		where: eq(users.email, email),
-		columns: projection,
+		...(projection && Object.keys(projection).length > 0 && { columns: projection }),
 	});
 }
 
-const getUserByUuid = async (uuid, projection = {}, options = {}) => {
+const getUserByUuid = async (uuid, projection = undefined, options = {}) => {
 	return await db.query.users.findFirst({
 		where: eq(users.uuid, uuid),
-		columns: projection,
+		...(projection && Object.keys(projection).length > 0 && { columns: projection }),
 	});
 }
 
