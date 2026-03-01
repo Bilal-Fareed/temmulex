@@ -37,6 +37,9 @@ server.use("/v1", openRoutes);
 import userRoutes from "./src/routes/userRoutes.js";
 server.use("/v1/users", userRoutes);
 
+import freelancerRoutes from "./src/routes/freelancerRoutes.js";
+server.use("/v1/freelancers", freelancerRoutes);
+
 // import adminRoutes from "./src/routes/adminRoutes.js";
 // server.use("/api/admin", adminRoutes);
 

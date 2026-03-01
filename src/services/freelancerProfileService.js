@@ -7,6 +7,14 @@ import { freelancerLanguages } from '../models/freelancerLanguagesModel.js';
 import { freelancerServices } from '../models/freelancerServicesModel.js';
 import { eq, sql, and } from "drizzle-orm";
 
+const buildWhere = (filters) => {
+	return and(
+		...Object.entries(filters).map(([key, value]) =>
+			eq(users[key], value)
+		)
+	);
+};
+
 const insertFreelancerDetailService = async (data, options = {}) => {
 	const { transaction } = options;
 	const executor = transaction || db;
@@ -38,6 +46,21 @@ const getFreelancerProfileDetailByUserUuid = async (userUuid) => {
 	});
 }
 
+const updateFreelancerDetailService = async (data, filters = {}, options = {}) => {
+	const { transaction } = options;
+	const executor = transaction || db;
+
+	const { location = { lat: 0.0, lng: 0.0 }, cvUrl, dbsUrl } = data
+
+	const [freelancer] = await executor.update(freelancerProfiles).set({
+		location: sql`ST_SetSRID(ST_MakePoint(${lng}, ${lat}), 4326)`,
+		resumeLink: cvUrl,
+		certificateLink: dbsUrl,
+	}).where(...buildWhere(filters));
+
+	return freelancer;
+
+};
 
 /**
  * Get nearby freelancers within a radius
@@ -104,6 +127,7 @@ const getNearbyFreelancers = async (filters) => {
 			title: users.title,
 			isVerified: users.isVerified,
 			country: users.country,
+			profilePicture: users.profilePicture,
 			profileStatus: freelancerProfiles.profileStatus,
 			createdAt: freelancerProfiles.createdAt,
 			distance: sql`ST_DistanceSphere(${freelancerProfiles.location}, ${sql.raw(point)})`,
@@ -119,8 +143,37 @@ const getNearbyFreelancers = async (filters) => {
 	return result;
 }
 
+const getFreelancerDetails = async (uuid) => {
+
+	const result = await db
+		.select({
+			userId: users.uuid,
+			firstName: users.firstName,
+			lastName: users.lastName,
+			email: users.email,
+			phone: users.phone,
+			title: users.title,
+			isVerified: users.isVerified,
+			country: users.country,
+			profilePicture: users.profilePicture,
+			resumeLink: freelancerProfiles.resumeLink,
+			certificateLink: freelancerProfiles.certificateLink,
+			profileStatus: freelancerProfiles.profileStatus,
+			createdAt: freelancerProfiles.createdAt,
+			languages: sql`COALESCE(( SELECT json_agg(DISTINCT jsonb_build_object('name', l.name, 'uuid', l.uuid)) FROM freelancer_languages fl JOIN languages l ON l.uuid = fl.language_id WHERE fl.freelancer_id = ${freelancerProfiles.uuid} AND COALESCE(fl.is_deleted,false)=false ), '[]')`,
+			services: sql`COALESCE(( SELECT json_agg(DISTINCT jsonb_build_object('description', fs.description, 'title', fs.title, 'name', s.name, 'fixed_price_cents', fs.fixed_price_cents, 'currency', fs.currency, 'service_type', s.service_type, 'uuid', s.uuid)) FROM freelancer_services fs JOIN services s ON s.uuid = fs.service_id WHERE fs.freelancer_id = ${freelancerProfiles.uuid} AND COALESCE(fs.is_deleted,false)=false ), '[]')`,
+		})
+		.from(users)
+		.innerJoin(freelancerProfiles, eq(users.uuid, freelancerProfiles.userId))
+		.where(eq(freelancerProfiles.userId, uuid))
+
+	return result;
+}
+
 export {
 	insertFreelancerDetailService,
 	getFreelancerProfileDetailByUserUuid,
 	getNearbyFreelancers,
+	getFreelancerDetails,
+	updateFreelancerDetailService,
 }

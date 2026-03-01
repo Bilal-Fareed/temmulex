@@ -10,6 +10,7 @@ import { sendOtpEmail } from "../helpers/mailer.js";
 import { createOrderService } from "../services/orderService.js"
 import { deleteUserSessionByUserId, insertUserSession } from "../services/sessionsService.js";
 import { randomUUID } from 'crypto';
+import { PROFILE_UPDATE_OTP_MESSAGE_SUBCODE } from '../helpers/constants.js';
 import { db } from "../../infra/db.js";
 
 const userSignupController = async (req, res) => {
@@ -110,19 +111,9 @@ const uploadFileController = async (req, res) => {
 
         const files = req.files ?? {};
 
-        const fileUploadDecision = {
-            "profile_picture": uploadFile(files?.profile_picture?.[0], "users/profilePicture"),
-            "cv": uploadFile(files?.cv?.[0], "freelancers/cv"),
-            "dbs": uploadFile(files?.dbs?.[0], "freelancers/dbs")
-        }
+        if (!files?.profile_picture?.[0]) return res.status(400).json({ success: false, message: "Please provide an image to upload" });
 
-        let uploadType;
-
-        if (files?.profile_picture?.[0]) uploadType = 'profile_picture';
-        if (files?.dbs?.[0]) uploadType = 'cv';
-        if (files?.cv?.[0]) uploadType = 'dbs';
-
-        const file_url = await fileUploadDecision[uploadType];
+        const file_url = await uploadFile(files?.profile_picture?.[0], "users/profilePicture");
 
         res.status(200).json({ success: true, file_url: file_url, message: "Signup successful" });
     } catch (error) {
@@ -140,7 +131,7 @@ const updateUserProfileController = async (req, res) => {
 
         const user = await getUserByUuid(uuid);
 
-        if (user?.isDeleted || user?.isBlocked) return res.status(400).json({ success: false, message: "Please contact support, the account on this email has been deleted or blocked." });
+        if (user?.isDeleted || user?.isBlocked) return res.status(400).json({ success: false, message: "Please contact support, your account has been deleted or blocked." });
 
         if (otp) {
             const storedOtp = await redisClient.get(`otp:${email}`);
@@ -160,20 +151,17 @@ const updateUserProfileController = async (req, res) => {
             } else {
                 return res.status(403).json({ success: false, message: "Invalid OTP, please verify OTP to update your email." });
             }
-        }
-
-        if (user && user.email !== email) {
+        } else if (user && user.email !== email) {
             const otp = Math.floor(1000 + Math.random() * 9000).toString();
 
             await redisClient.set(`otp:${email}`, otp, 'EX', 60);
 
             await sendOtpEmail(email, otp);
 
-            return res.status(200).json({ success: true, subcode: 1000, message: "An OTP is send on your new email please verify OTP to update your profile." });
+            return res.status(200).json({ success: true, subcode: PROFILE_UPDATE_OTP_MESSAGE_SUBCODE, message: "An OTP is send on your new email please verify OTP to update your profile." });
         }
 
         await updateUserByUuidService(uuid, {
-            email,
             title,
             first_name,
             last_name,

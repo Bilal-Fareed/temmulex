@@ -14,6 +14,16 @@ const buildWhere = (filters) => {
     );
 };
 
+const updateOrderByUuidService = async (uuid, updatedObject, options = {}) => {
+    const { transaction } = options;
+    const executor = transaction || db;
+
+    await executor
+        .update(orders)
+        .set(updatedObject)
+        .where(eq(orders.uuid, uuid));
+};
+
 const createOrderService = async (data, options = {}) => {
 
 	const { transaction } = options;
@@ -87,8 +97,25 @@ const rateOrder = async (data, options = {}) => {
 
 }
 
+const getOrderByFilterService = async (filters = {}, projection = {}, options = {}) => {
+    return await db.query.orders.find({
+        where: buildWhere(filters),
+        columns: projection,
+    });
+}
+
+const getOrderByUuid = async (uuid, projection = {}, options = {}) => {
+	return await db.query.orders.findFirst({
+		where: eq(orders.uuid, uuid),
+		columns: projection,
+	});
+}
+
 export {
     rateOrder,
+    getOrderByUuid,
     getOrderService,
     createOrderService,
+    getOrderByFilterService,
+    updateOrderByUuidService,
 }
