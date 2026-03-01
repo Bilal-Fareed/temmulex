@@ -46,8 +46,8 @@ const uploadFileController = async (req, res) => {
         let uploadType;
 
         if (files?.profile_picture?.[0]) uploadType = 'profile_picture';
-        else if (files?.dbs?.[0]) uploadType = 'cv';
-        else if (files?.cv?.[0]) uploadType = 'dbs';
+        else if (files?.dbs?.[0]) uploadType = 'dbs';
+        else if (files?.cv?.[0]) uploadType = 'cv';
         else return res.status(400).json({ success: false, message: "Please upload a valid image or file to upload" });
 
         const fileUploadDecision = {
@@ -58,7 +58,7 @@ const uploadFileController = async (req, res) => {
 
         const file_url = await fileUploadDecision[uploadType];
 
-        res.status(200).json({ success: true, file_url: file_url, message: "Signup successful" });
+        res.status(200).json({ success: true, file_url: file_url, message: "File uploaded successfully" });
     } catch (error) {
         console.error("FREELANCER CONTROLLER > UPLOAD FILE >", error);
         res.status(500).json({ success: false, message: "Internal Server Error" });

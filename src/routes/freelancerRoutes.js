@@ -35,7 +35,7 @@ router.post('/update-service', authenticate, validate({ body: updateServiceSchem
 
 router.post('/update-profile', authenticate, validate({ body: updateFreelancerProfileSchema }), updateFreelancerProfileController);
 
-router.get('/my-order', authenticate, validate({ query: getMyOrdersSchema }), getMyOrdersController);
+router.get('/my-orders', authenticate, validate({ query: getMyOrdersSchema }), getMyOrdersController);
 
 router.put('/:order_id/complete', authenticate, validate({ params: completeOrderSchema }), completeOrderController);
 

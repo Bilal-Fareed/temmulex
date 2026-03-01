@@ -61,7 +61,7 @@ router.get('/my-profile', authenticate, getMyProfileController);
 
 router.get('/top-rated/nearby', authenticate, validate({ query: nearbyTopRatedShopperSchema }), getNearbyTopRatedShoppersController);
 
-router.get('/my-order', authenticate, validate({ query: getMyOrdersSchema }), getMyOrdersController);
+router.get('/my-orders', authenticate, validate({ query: getMyOrdersSchema }), getMyOrdersController);
 
 router.post('/place-order', authenticate, validate({ body: placeOrderSchema }), placeOrderController);
 

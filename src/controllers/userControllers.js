@@ -115,7 +115,7 @@ const uploadFileController = async (req, res) => {
 
         const file_url = await uploadFile(files?.profile_picture?.[0], "users/profilePicture");
 
-        res.status(200).json({ success: true, file_url: file_url, message: "Signup successful" });
+        res.status(200).json({ success: true, file_url: file_url, message: "File Uploaded successfully" });
     } catch (error) {
         console.error("USER CONTROLLER > UPLOAD FILE >", error);
         res.status(500).json({ success: false, message: "Internal Server Error" });

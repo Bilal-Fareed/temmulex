@@ -1,5 +1,7 @@
 # API Endpoint cURL Examples
 
+## ============================================== USER REQUEST CURLS ============================================
+
 ## 📝 Signup As Client
 ```bash
 curl --location 'http://localhost:3001/v1/users/signup' \
@@ -184,6 +186,14 @@ curl --location --request PUT 'http://localhost:3001/v1/users/update-profile' \
 ```
 
 
+## 📝 Upload User Photo
+```bash
+curl --location 'http://localhost:3001/v1/users/upload' \
+--header 'x-refresh-token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1dWlkIjoiMTVjMmJiNzEtNTI2ZS00YzBjLWFhMjctODk4YzViM2ZhNzY0IiwidmVyc2lvbiI6MCwidG9rZW5JZCI6ImJlZTZlZDliLTEzNDctNDMyOS1iZTZlLTNmNWI3N2JkNmUyNiIsImlhdCI6MTc3MjQwMjI3MiwiZXhwIjoxNzczMDA3MDcyfQ.kSeYvr7B4T_jUj_nzRM-pnxomrny_sUB5aWYvbmW-V8' \
+--header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1dWlkIjoiMTVjMmJiNzEtNTI2ZS00YzBjLWFhMjctODk4YzViM2ZhNzY0IiwidmVyc2lvbiI6MCwidG9rZW5JZCI6ImJlZTZlZDliLTEzNDctNDMyOS1iZTZlLTNmNWI3N2JkNmUyNiIsImlhdCI6MTc3MjQwMjI3MiwiZXhwIjoxNzcyNDA1ODcyfQ.YHI2NVb-z09F-Ha2c2dRUKtsbpR-SoUpwMHWheY3qbo' \
+--form 'profile_picture=@"/C:/Users/DELL/Downloads/photo.png"'
+```
+
 
 ## 📝 Get My Profile Details
 ```bash
@@ -232,4 +242,137 @@ curl --location 'http://localhost:3001/v1/users/booking/feedback' \
     "booking_id": "6670f0bd-7e4b-4dd1-bc51-22de6306e249",
     "rating": 5
 }'
+```
+
+## 📝 Get Orders List for Users
+```bash
+curl --location 'http://localhost:3001/v1/users/my-order?order_status=completed' \
+--header 'x-device-id: test-device-id' \
+--header 'x-user-agent: android' \
+--header 'x-refresh-token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1dWlkIjoiMTVjMmJiNzEtNTI2ZS00YzBjLWFhMjctODk4YzViM2ZhNzY0IiwidmVyc2lvbiI6MCwidG9rZW5JZCI6ImJlZTZlZDliLTEzNDctNDMyOS1iZTZlLTNmNWI3N2JkNmUyNiIsImlhdCI6MTc3MjQwMjI3MiwiZXhwIjoxNzczMDA3MDcyfQ.kSeYvr7B4T_jUj_nzRM-pnxomrny_sUB5aWYvbmW-V8' \
+--header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1dWlkIjoiMTVjMmJiNzEtNTI2ZS00YzBjLWFhMjctODk4YzViM2ZhNzY0IiwidmVyc2lvbiI6MCwidG9rZW5JZCI6ImJlZTZlZDliLTEzNDctNDMyOS1iZTZlLTNmNWI3N2JkNmUyNiIsImlhdCI6MTc3MjQwMjI3MiwiZXhwIjoxNzcyNDA1ODcyfQ.YHI2NVb-z09F-Ha2c2dRUKtsbpR-SoUpwMHWheY3qbo' \
+--header 'Content-Type: application/json'
+```
+
+
+## 📝 Place Order
+```bash
+curl --location 'http://localhost:3001/v1/users/place-order' \
+--header 'x-device-id: test-device-id' \
+--header 'x-user-agent: android' \
+--header 'x-refresh-token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1dWlkIjoiMjVkNmNmZTUtYjRlOC00YzVhLThiM2YtNDQyOTgwZmY0NzY0IiwidmVyc2lvbiI6MCwidG9rZW5JZCI6IjkyY2RhOWZmLTI4YzMtNDE3OS04YWYxLWU1MzBjZDE2Njg3NCIsImlhdCI6MTc3MjQwNDMyNCwiZXhwIjoxNzczMDA5MTI0fQ.ZBaW2-QS58whJCSRZhVt3GJ85dzjGt4oOxkt8W1Fxgg' \
+--header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1dWlkIjoiMjVkNmNmZTUtYjRlOC00YzVhLThiM2YtNDQyOTgwZmY0NzY0IiwidmVyc2lvbiI6MCwidG9rZW5JZCI6IjkyY2RhOWZmLTI4YzMtNDE3OS04YWYxLWU1MzBjZDE2Njg3NCIsImlhdCI6MTc3MjQwNDMyNCwiZXhwIjoxNzcyNDA3OTI0fQ.N97QJryBcfXpqqFl_9ZfoFnQ4T4ym4ymBYPrd6X6nlg' \
+--header 'Content-Type: application/json' \
+--data '{
+    "freelancer_id":"15c2bb71-526e-4c0c-aa27-898c5b3fa764",
+    "service_id":"b5de0efc-057a-4968-89e8-5cdfcc47145e"
+}'
+```
+
+
+## 📝 Give Rating for Order
+```bash
+curl --location 'http://localhost:3001/v1/users/booking/feedback' \
+--header 'x-device-id: test-device-id' \
+--header 'x-user-agent: android' \
+--header 'x-refresh-token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1dWlkIjoiMjVkNmNmZTUtYjRlOC00YzVhLThiM2YtNDQyOTgwZmY0NzY0IiwidmVyc2lvbiI6MCwidG9rZW5JZCI6IjkyY2RhOWZmLTI4YzMtNDE3OS04YWYxLWU1MzBjZDE2Njg3NCIsImlhdCI6MTc3MjQwNDMyNCwiZXhwIjoxNzczMDA5MTI0fQ.ZBaW2-QS58whJCSRZhVt3GJ85dzjGt4oOxkt8W1Fxgg' \
+--header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1dWlkIjoiMjVkNmNmZTUtYjRlOC00YzVhLThiM2YtNDQyOTgwZmY0NzY0IiwidmVyc2lvbiI6MCwidG9rZW5JZCI6IjkyY2RhOWZmLTI4YzMtNDE3OS04YWYxLWU1MzBjZDE2Njg3NCIsImlhdCI6MTc3MjQwNDMyNCwiZXhwIjoxNzcyNDA3OTI0fQ.N97QJryBcfXpqqFl_9ZfoFnQ4T4ym4ymBYPrd6X6nlg' \
+--header 'Content-Type: application/json' \
+--data '{
+    "booking_id":"262d6b7b-b33c-4bbd-8d1b-05df37a13e9a",
+    "rating":"5"
+}'
+```
+
+
+
+## ============================================== FREELANCER REQUEST CURLS ============================================
+
+## 📝 Get Freelancer Profile Details
+```bash
+curl --location 'http://localhost:3001/v1/freelancers/my-profile' \
+--header 'x-device-id: test-device-id' \
+--header 'x-user-agent: android' \
+--header 'x-refresh-token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1dWlkIjoiMTVjMmJiNzEtNTI2ZS00YzBjLWFhMjctODk4YzViM2ZhNzY0IiwidmVyc2lvbiI6MCwidG9rZW5JZCI6ImJlZTZlZDliLTEzNDctNDMyOS1iZTZlLTNmNWI3N2JkNmUyNiIsImlhdCI6MTc3MjQwMjI3MiwiZXhwIjoxNzczMDA3MDcyfQ.kSeYvr7B4T_jUj_nzRM-pnxomrny_sUB5aWYvbmW-V8' \
+--header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1dWlkIjoiMTVjMmJiNzEtNTI2ZS00YzBjLWFhMjctODk4YzViM2ZhNzY0IiwidmVyc2lvbiI6MCwidG9rZW5JZCI6ImJlZTZlZDliLTEzNDctNDMyOS1iZTZlLTNmNWI3N2JkNmUyNiIsImlhdCI6MTc3MjQwMjI3MiwiZXhwIjoxNzcyNDA1ODcyfQ.YHI2NVb-z09F-Ha2c2dRUKtsbpR-SoUpwMHWheY3qbo'
+```
+
+
+## 📝 Upload Freelancer Document and Photo
+```bash
+curl --location 'http://localhost:3001/v1/freelancers/upload' \
+--header 'x-device-id: test-device-id' \
+--header 'x-user-agent: android' \
+--header 'x-refresh-token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1dWlkIjoiMTVjMmJiNzEtNTI2ZS00YzBjLWFhMjctODk4YzViM2ZhNzY0IiwidmVyc2lvbiI6MCwidG9rZW5JZCI6ImJlZTZlZDliLTEzNDctNDMyOS1iZTZlLTNmNWI3N2JkNmUyNiIsImlhdCI6MTc3MjQwMjI3MiwiZXhwIjoxNzczMDA3MDcyfQ.kSeYvr7B4T_jUj_nzRM-pnxomrny_sUB5aWYvbmW-V8' \
+--header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1dWlkIjoiMTVjMmJiNzEtNTI2ZS00YzBjLWFhMjctODk4YzViM2ZhNzY0IiwidmVyc2lvbiI6MCwidG9rZW5JZCI6ImJlZTZlZDliLTEzNDctNDMyOS1iZTZlLTNmNWI3N2JkNmUyNiIsImlhdCI6MTc3MjQwMjI3MiwiZXhwIjoxNzcyNDA1ODcyfQ.YHI2NVb-z09F-Ha2c2dRUKtsbpR-SoUpwMHWheY3qbo' \
+--form 'dbs=@"/C:/Users/DELL/Downloads/pdf-sample_0.pdf"'
+```
+
+
+## 📝 Add Service to Freelancer Profile
+```bash
+curl --location 'http://localhost:3001/v1/freelancers/add-service' \
+--header 'x-device-id: test-device-id' \
+--header 'x-user-agent: android' \
+--header 'x-refresh-token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1dWlkIjoiMTVjMmJiNzEtNTI2ZS00YzBjLWFhMjctODk4YzViM2ZhNzY0IiwidmVyc2lvbiI6MCwidG9rZW5JZCI6ImJlZTZlZDliLTEzNDctNDMyOS1iZTZlLTNmNWI3N2JkNmUyNiIsImlhdCI6MTc3MjQwMjI3MiwiZXhwIjoxNzczMDA3MDcyfQ.kSeYvr7B4T_jUj_nzRM-pnxomrny_sUB5aWYvbmW-V8' \
+--header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1dWlkIjoiMTVjMmJiNzEtNTI2ZS00YzBjLWFhMjctODk4YzViM2ZhNzY0IiwidmVyc2lvbiI6MCwidG9rZW5JZCI6ImJlZTZlZDliLTEzNDctNDMyOS1iZTZlLTNmNWI3N2JkNmUyNiIsImlhdCI6MTc3MjQwMjI3MiwiZXhwIjoxNzcyNDA1ODcyfQ.YHI2NVb-z09F-Ha2c2dRUKtsbpR-SoUpwMHWheY3qbo' \
+--header 'Content-Type: application/json' \
+--data '{
+    "serviceId": "b5de0efc-057a-4968-89e8-5cdfcc47145e",
+    "title": "Hairstylish",
+    "fixedPriceCents": "15",
+    "description": "Best Hairstylish in the Town",
+    "currency": "USD"
+}'
+```
+
+
+## 📝 Delete Service from Freelancer Profile
+```bash
+curl --location --request DELETE 'http://localhost:3001/v1/freelancers/40130a06-2a6a-400f-95f3-0e9b53be0c7c/service' \
+--header 'x-device-id: test-device-id' \
+--header 'x-user-agent: android' \
+--header 'x-refresh-token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1dWlkIjoiMTVjMmJiNzEtNTI2ZS00YzBjLWFhMjctODk4YzViM2ZhNzY0IiwidmVyc2lvbiI6MCwidG9rZW5JZCI6ImJlZTZlZDliLTEzNDctNDMyOS1iZTZlLTNmNWI3N2JkNmUyNiIsImlhdCI6MTc3MjQwMjI3MiwiZXhwIjoxNzczMDA3MDcyfQ.kSeYvr7B4T_jUj_nzRM-pnxomrny_sUB5aWYvbmW-V8' \
+--header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1dWlkIjoiMTVjMmJiNzEtNTI2ZS00YzBjLWFhMjctODk4YzViM2ZhNzY0IiwidmVyc2lvbiI6MCwidG9rZW5JZCI6ImJlZTZlZDliLTEzNDctNDMyOS1iZTZlLTNmNWI3N2JkNmUyNiIsImlhdCI6MTc3MjQwMjI3MiwiZXhwIjoxNzcyNDA1ODcyfQ.YHI2NVb-z09F-Ha2c2dRUKtsbpR-SoUpwMHWheY3qbo' \
+--header 'Content-Type: application/json'
+```
+
+
+
+## 📝 Update Service Details in Freelancer Profile
+```bash
+curl --location 'http://localhost:3001/v1/freelancers/update-service' \
+--header 'x-device-id: test-device-id' \
+--header 'x-user-agent: android' \
+--header 'x-refresh-token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1dWlkIjoiMTVjMmJiNzEtNTI2ZS00YzBjLWFhMjctODk4YzViM2ZhNzY0IiwidmVyc2lvbiI6MCwidG9rZW5JZCI6ImJlZTZlZDliLTEzNDctNDMyOS1iZTZlLTNmNWI3N2JkNmUyNiIsImlhdCI6MTc3MjQwMjI3MiwiZXhwIjoxNzczMDA3MDcyfQ.kSeYvr7B4T_jUj_nzRM-pnxomrny_sUB5aWYvbmW-V8' \
+--header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1dWlkIjoiMTVjMmJiNzEtNTI2ZS00YzBjLWFhMjctODk4YzViM2ZhNzY0IiwidmVyc2lvbiI6MCwidG9rZW5JZCI6ImJlZTZlZDliLTEzNDctNDMyOS1iZTZlLTNmNWI3N2JkNmUyNiIsImlhdCI6MTc3MjQwMjI3MiwiZXhwIjoxNzcyNDA1ODcyfQ.YHI2NVb-z09F-Ha2c2dRUKtsbpR-SoUpwMHWheY3qbo' \
+--header 'Content-Type: application/json' \
+--data '{
+    "serviceId": "b5de0efc-057a-4968-89e8-5cdfcc47145e",
+    "title": "Tommy & Guy",
+    "fixedPriceCents": "30",
+    "description": "Best Hairstylish in K-Town"
+}'
+```
+
+
+## 📝 Get Orders List for Freelancer
+```bash
+curl --location 'http://localhost:3001/v1/freelancers/my-orders?order_status=completed' \
+--header 'x-device-id: test-device-id' \
+--header 'x-user-agent: android' \
+--header 'x-refresh-token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1dWlkIjoiMTVjMmJiNzEtNTI2ZS00YzBjLWFhMjctODk4YzViM2ZhNzY0IiwidmVyc2lvbiI6MCwidG9rZW5JZCI6ImJlZTZlZDliLTEzNDctNDMyOS1iZTZlLTNmNWI3N2JkNmUyNiIsImlhdCI6MTc3MjQwMjI3MiwiZXhwIjoxNzczMDA3MDcyfQ.kSeYvr7B4T_jUj_nzRM-pnxomrny_sUB5aWYvbmW-V8' \
+--header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1dWlkIjoiMTVjMmJiNzEtNTI2ZS00YzBjLWFhMjctODk4YzViM2ZhNzY0IiwidmVyc2lvbiI6MCwidG9rZW5JZCI6ImJlZTZlZDliLTEzNDctNDMyOS1iZTZlLTNmNWI3N2JkNmUyNiIsImlhdCI6MTc3MjQwMjI3MiwiZXhwIjoxNzcyNDA1ODcyfQ.YHI2NVb-z09F-Ha2c2dRUKtsbpR-SoUpwMHWheY3qbo' \
+--header 'Content-Type: application/json'
+```
+
+
+## 📝 Mark Order as Complete by Freelancer
+```bash
+curl --location --request PUT 'http://localhost:3001/v1/freelancers/262d6b7b-b33c-4bbd-8d1b-05df37a13e9a/complete' \
+--header 'x-device-id: test-device-id' \
+--header 'x-user-agent: android' \
+--header 'x-refresh-token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1dWlkIjoiMTVjMmJiNzEtNTI2ZS00YzBjLWFhMjctODk4YzViM2ZhNzY0IiwidmVyc2lvbiI6MCwidG9rZW5JZCI6ImJlZTZlZDliLTEzNDctNDMyOS1iZTZlLTNmNWI3N2JkNmUyNiIsImlhdCI6MTc3MjQwMjI3MiwiZXhwIjoxNzczMDA3MDcyfQ.kSeYvr7B4T_jUj_nzRM-pnxomrny_sUB5aWYvbmW-V8' \
+--header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1dWlkIjoiMTVjMmJiNzEtNTI2ZS00YzBjLWFhMjctODk4YzViM2ZhNzY0IiwidmVyc2lvbiI6MCwidG9rZW5JZCI6ImJlZTZlZDliLTEzNDctNDMyOS1iZTZlLTNmNWI3N2JkNmUyNiIsImlhdCI6MTc3MjQwMjI3MiwiZXhwIjoxNzcyNDA1ODcyfQ.YHI2NVb-z09F-Ha2c2dRUKtsbpR-SoUpwMHWheY3qbo' \
+--header 'Content-Type: application/json'
 ```
