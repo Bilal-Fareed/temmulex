@@ -26,6 +26,7 @@ const insertFreelancerDetailService = async (data, options = {}) => {
 		location: sql`ST_SetSRID(ST_MakePoint(${lng}, ${lat}), 4326)`,
 		resumeLink: cvUrl,
 		certificateLink: dbsUrl,
+		...(process.env.ENVIRONMENT?.toLowerCase() === 'production' && { profileStatus: 'approved' })
 	}).returning({
 		uuid: freelancerProfiles.uuid,
 		userId: freelancerProfiles.userId,
