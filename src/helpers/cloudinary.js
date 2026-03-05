@@ -33,6 +33,7 @@ export async function uploadFile(file, folder) {
 
 	} catch (error) {
 		console.log("Cloudinary Uplaod Error > ", error)
+		if (process.env.ENVIRONMENT?.toLowerCase() !== 'production') return "https://i.pinimg.com/736x/b1/6f/fd/b16ffd120f5b763c28f892e946249097.jpg";
 		return null;
 	}
 }
