@@ -2,7 +2,7 @@ import { db } from "../../infra/db.js";
 import { orders } from "../models/ordersModel.js";
 import { users } from "../models/usersModel.js";
 import { reviews } from "../models/reviewsModel.js";
-import { eq, and, sql } from "drizzle-orm";
+import { eq, and, sql, count, sum } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
 import { services } from "../models/servicesModel.js";
 
@@ -36,6 +36,24 @@ const createOrderService = async (data, options = {}) => {
 		.returning({ uuid: orders.uuid, clientId: orders.clientId, freelancerId: orders.freelancerId, serviceId: orders.serviceId, price: orders.price });
 
 	return order;
+};
+
+const getFreelancerCompletedOrderStats = async (freelancerUuid) => {
+    const result = await db
+        .select({
+            totalOrders: count(),
+            totalEarnings: sum(orders.price),
+        })
+        .from(orders)
+        .where(
+            and(
+                eq(orders.freelancerId, freelancerUuid),
+                eq(orders.status, "completed"),
+                eq(orders.isDeleted, false)
+            )
+        );
+
+    return result[0];
 };
 
 const getOrderService = async (filters = {}, projection = undefined, options = {}) => {
@@ -118,4 +136,5 @@ export {
     createOrderService,
     getOrderByFilterService,
     updateOrderByUuidService,
+    getFreelancerCompletedOrderStats,
 }

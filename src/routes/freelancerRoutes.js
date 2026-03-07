@@ -17,6 +17,7 @@ import {
     getMyOrdersController,
     completeOrderController,
     addServiceController,
+    getDashboardDetailsController,
     updateFreelancerProfileController,
     getMyFreelancerProfileController,
 } from '../controllers/freelancerControllers.js';
@@ -38,5 +39,7 @@ router.post('/update-profile', authenticate, validate({ body: updateFreelancerPr
 router.get('/my-orders', authenticate, validate({ query: getMyOrdersSchema }), getMyOrdersController);
 
 router.put('/:order_id/complete', authenticate, validate({ params: completeOrderSchema }), completeOrderController);
+
+router.get('/dashboard', authenticate, getDashboardDetailsController);
 
 export default router;

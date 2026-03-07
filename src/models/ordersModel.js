@@ -21,6 +21,8 @@ const orders = pgTable("orders", {
     serviceId:  uuid("service_uuid").references(() => services.uuid),
     price: numeric().notNull(),
     status: varchar("status").default("pending"),
+    paymentStatus: varchar("payment_status").default("pending"),
+    paymentReference: varchar("payment_reference_id").default(null),
     isDeleted: boolean("is_deleted").default(false),
     createdAt: timestamp("created_at").defaultNow(),
     updatedAt: timestamp("updated_at").defaultNow(),

@@ -10,7 +10,7 @@ import {
     deleteFreelancerServices,
     insertManyFreelancerServices,
 } from "../services/freelancerServicesService.js";
-import { getOrderService } from "../services/orderService.js";
+import { getOrderService, getFreelancerCompletedOrderStats } from "../services/orderService.js";
 import { deleteFreelancersLanguage } from '../services/freelancerLanguageService.js';
 import { insertManyFreelancerLanguagesService } from '../services/freelancerLanguageService.js';
 import { updateUserByUuidService, getUserByUuid } from '../services/userService.js';
@@ -118,7 +118,7 @@ const addServiceController = async (req, res) => {
 const updateServiceController = async (req, res) => {
     try {
 
-        console.log("UPDATE SERVICE CONTROLLER > GET MY PROFILE > try block executed");
+        console.log("FREELANCER CONTROLLER > GET MY PROFILE > try block executed");
 
         const { uuid } = req.user;
         const { serviceId, fixedPriceCents, description, title } = req.body;
@@ -143,7 +143,7 @@ const updateServiceController = async (req, res) => {
 
         res.status(200).json({ success: true, message: "Service updated successfully." });
     } catch (error) {
-        console.error("UPDATE SERVICE CONTROLLER > GET MY PROFILE >", error);
+        console.error("FREELANCER CONTROLLER > GET MY PROFILE >", error);
         res.status(500).json({ success: false, message: "Internal Server Error" });
     }
 };
@@ -239,10 +239,26 @@ const getMyOrdersController = async (req, res) => {
     }
 };
 
+const getDashboardDetailsController = async (req, res) => {
+    try {
+
+        console.log("FREELANCER CONTROLLER > GET DASHBOARD DETAILS > try block executed");
+
+        const { uuid } = req.user;
+
+        const result = await getFreelancerCompletedOrderStats(uuid);
+
+        res.status(200).json({ success: true, message: "Dashboard details fetched successfully.", data: result });
+    } catch (error) {
+        console.error("FREELANCER CONTROLLER > GET DASHBOARD DETAILS >", error);
+        res.status(500).json({ success: false, message: "Internal Server Error" });
+    }
+};
+
 const completeOrderController = async (req, res) => {
     try {
 
-        console.log("COMPLETE ORDER CONTROLLER > COMPLETE ORDER > try block executed");
+        console.log("FREELANCER CONTROLLER > COMPLETE ORDER > try block executed");
 
         const { uuid } = req.user;
         const { order_id } = req.params;
@@ -259,7 +275,7 @@ const completeOrderController = async (req, res) => {
 
         res.status(200).json({ success: true, message: "Order completed successfully." });
     } catch (error) {
-        console.error("COMPLETE ORDER CONTROLLER > COMPLETE ORDER >", error);
+        console.error("FREELANCER CONTROLLER > COMPLETE ORDER >", error);
         res.status(500).json({ success: false, message: "Internal Server Error" });
     }
 };
@@ -271,6 +287,7 @@ export {
     deleteServiceController,
     updateServiceController,
     completeOrderController,
+    getDashboardDetailsController,
     updateFreelancerProfileController,
     getMyFreelancerProfileController,
 }

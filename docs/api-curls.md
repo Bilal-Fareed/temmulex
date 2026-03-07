@@ -197,21 +197,9 @@ curl --location 'http://localhost:3001/v1/users/upload' \
 
 ## 📝 Get My Profile Details
 ```bash
-curl --location 'http://localhost:3001/v1/users/my-order?order_status=ongoing&page=1&limit=10' \
---header 'x-device-id: test-device-id' \
---header 'x-user-agent: android' \
---header 'x-refresh-token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1dWlkIjoiMjg1YmIwZTAtYTNkOC00MDU5LTg4NTUtNDk3MTE4NTMyMTIxIiwidmVyc2lvbiI6MCwidG9rZW5JZCI6ImVlYjhmNmExLWEzZTAtNGRhZS05NjRkLWY2OTM2MjQwYzVmOSIsImlhdCI6MTc2ODMyNzI5MSwiZXhwIjoxNzY4OTMyMDkxfQ.grt-eqI0s9_JxOC5EDUVOD6-Qk2pGI6k_XPX9Jq07EI' \
---header 'authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1dWlkIjoiMjg1YmIwZTAtYTNkOC00MDU5LTg4NTUtNDk3MTE4NTMyMTIxIiwidmVyc2lvbiI6MCwidG9rZW5JZCI6ImVlYjhmNmExLWEzZTAtNGRhZS05NjRkLWY2OTM2MjQwYzVmOSIsImlhdCI6MTc2ODMyNzI5MSwiZXhwIjoxNzY4MzMwODkxfQ.YWUa9AKGLroqHf6_XP2FebkYHYtTtFFXyE9M2EWyEqE'
-```
-
-
-## 📝 Get My Order List
-```bash
-curl --location 'http://localhost:3001/v1/users/my-order?order_status=completed&page=1&limit=10' \
---header 'x-device-id: test-device-id' \
---header 'x-user-agent: android' \
---header 'x-refresh-token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1dWlkIjoiMjg1YmIwZTAtYTNkOC00MDU5LTg4NTUtNDk3MTE4NTMyMTIxIiwidmVyc2lvbiI6MCwidG9rZW5JZCI6ImVlYjhmNmExLWEzZTAtNGRhZS05NjRkLWY2OTM2MjQwYzVmOSIsImlhdCI6MTc2ODMyNzI5MSwiZXhwIjoxNzY4OTMyMDkxfQ.grt-eqI0s9_JxOC5EDUVOD6-Qk2pGI6k_XPX9Jq07EI' \
---header 'authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1dWlkIjoiMjg1YmIwZTAtYTNkOC00MDU5LTg4NTUtNDk3MTE4NTMyMTIxIiwidmVyc2lvbiI6MCwidG9rZW5JZCI6ImVlYjhmNmExLWEzZTAtNGRhZS05NjRkLWY2OTM2MjQwYzVmOSIsImlhdCI6MTc2ODMyNzI5MSwiZXhwIjoxNzY4MzMwODkxfQ.YWUa9AKGLroqHf6_XP2FebkYHYtTtFFXyE9M2EWyEqE'
+curl --location 'http://localhost:3001/v1/users/my-profile' \
+--header 'x-refresh-token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1dWlkIjoiMTVjMmJiNzEtNTI2ZS00YzBjLWFhMjctODk4YzViM2ZhNzY0IiwidmVyc2lvbiI6MCwidG9rZW5JZCI6ImJlZTZlZDliLTEzNDctNDMyOS1iZTZlLTNmNWI3N2JkNmUyNiIsImlhdCI6MTc3MjQwMjI3MiwiZXhwIjoxNzczMDA3MDcyfQ.kSeYvr7B4T_jUj_nzRM-pnxomrny_sUB5aWYvbmW-V8' \
+--header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1dWlkIjoiMTVjMmJiNzEtNTI2ZS00YzBjLWFhMjctODk4YzViM2ZhNzY0IiwidmVyc2lvbiI6MCwidG9rZW5JZCI6ImJlZTZlZDliLTEzNDctNDMyOS1iZTZlLTNmNWI3N2JkNmUyNiIsImlhdCI6MTc3MjQwMjI3MiwiZXhwIjoxNzcyNDA1ODcyfQ.YHI2NVb-z09F-Ha2c2dRUKtsbpR-SoUpwMHWheY3qbo'
 ```
 
 
@@ -246,7 +234,7 @@ curl --location 'http://localhost:3001/v1/users/booking/feedback' \
 
 ## 📝 Get Orders List for Users
 ```bash
-curl --location 'http://localhost:3001/v1/users/my-order?order_status=completed' \
+curl --location 'http://localhost:3001/v1/users/my-orders?order_status=completed' \
 --header 'x-device-id: test-device-id' \
 --header 'x-user-agent: android' \
 --header 'x-refresh-token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1dWlkIjoiMTVjMmJiNzEtNTI2ZS00YzBjLWFhMjctODk4YzViM2ZhNzY0IiwidmVyc2lvbiI6MCwidG9rZW5JZCI6ImJlZTZlZDliLTEzNDctNDMyOS1iZTZlLTNmNWI3N2JkNmUyNiIsImlhdCI6MTc3MjQwMjI3MiwiZXhwIjoxNzczMDA3MDcyfQ.kSeYvr7B4T_jUj_nzRM-pnxomrny_sUB5aWYvbmW-V8' \
@@ -375,4 +363,27 @@ curl --location --request PUT 'http://localhost:3001/v1/freelancers/262d6b7b-b33
 --header 'x-refresh-token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1dWlkIjoiMTVjMmJiNzEtNTI2ZS00YzBjLWFhMjctODk4YzViM2ZhNzY0IiwidmVyc2lvbiI6MCwidG9rZW5JZCI6ImJlZTZlZDliLTEzNDctNDMyOS1iZTZlLTNmNWI3N2JkNmUyNiIsImlhdCI6MTc3MjQwMjI3MiwiZXhwIjoxNzczMDA3MDcyfQ.kSeYvr7B4T_jUj_nzRM-pnxomrny_sUB5aWYvbmW-V8' \
 --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1dWlkIjoiMTVjMmJiNzEtNTI2ZS00YzBjLWFhMjctODk4YzViM2ZhNzY0IiwidmVyc2lvbiI6MCwidG9rZW5JZCI6ImJlZTZlZDliLTEzNDctNDMyOS1iZTZlLTNmNWI3N2JkNmUyNiIsImlhdCI6MTc3MjQwMjI3MiwiZXhwIjoxNzcyNDA1ODcyfQ.YHI2NVb-z09F-Ha2c2dRUKtsbpR-SoUpwMHWheY3qbo' \
 --header 'Content-Type: application/json'
+```
+
+
+## 📝 Get Dashboard Details for Freelancer
+```bash
+curl --location 'http://localhost:3001/v1/freelancers/dashboard' \
+--header 'x-device-id: test-device-id' \
+--header 'x-user-agent: android' \
+--header 'x-refresh-token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1dWlkIjoiMjVkNmNmZTUtYjRlOC00YzVhLThiM2YtNDQyOTgwZmY0NzY0IiwidmVyc2lvbiI6MCwidG9rZW5JZCI6IjkyY2RhOWZmLTI4YzMtNDE3OS04YWYxLWU1MzBjZDE2Njg3NCIsImlhdCI6MTc3MjQwNDMyNCwiZXhwIjoxNzczMDA5MTI0fQ.ZBaW2-QS58whJCSRZhVt3GJ85dzjGt4oOxkt8W1Fxgg' \
+--header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1dWlkIjoiMjVkNmNmZTUtYjRlOC00YzVhLThiM2YtNDQyOTgwZmY0NzY0IiwidmVyc2lvbiI6MCwidG9rZW5JZCI6IjkyY2RhOWZmLTI4YzMtNDE3OS04YWYxLWU1MzBjZDE2Njg3NCIsImlhdCI6MTc3MjQwNDMyNCwiZXhwIjoxNzcyNDA3OTI0fQ.N97QJryBcfXpqqFl_9ZfoFnQ4T4ym4ymBYPrd6X6nlg' \
+--header 'Content-Type: application/json'
+```
+
+
+## 📝 Contact us message
+```bash
+curl --location 'http://localhost:3001/v1/contact-us' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "full_name": "test user",
+    "email": "test@gmail.com",
+    "message": "Random message for the product owner"
+}'
 ```
