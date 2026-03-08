@@ -10,6 +10,7 @@ import {
     deleteFreelancerServices,
     insertManyFreelancerServices,
 } from "../services/freelancerServicesService.js";
+import { getUserSpecificConversationListService, getConversationMessagesService, getConversationService, addMessageServices } from "../services/conversationService.js";
 import { getOrderService, getFreelancerCompletedOrderStats } from "../services/orderService.js";
 import { deleteFreelancersLanguage } from '../services/freelancerLanguageService.js';
 import { insertManyFreelancerLanguagesService } from '../services/freelancerLanguageService.js';
@@ -18,6 +19,7 @@ import { PROFILE_UPDATE_OTP_MESSAGE_SUBCODE } from '../helpers/constants.js';
 import { getOrderByUuid, updateOrderByUuidService } from '../services/orderService.js';
 import { redisClient } from "../../infra/redis.js";
 import { sendOtpEmail } from "../helpers/mailer.js";
+import { socketUsers, emitNewMessage } from "../../socketServer.js";
 
 const getMyFreelancerProfileController = async (req, res) => {
     try {
@@ -255,6 +257,59 @@ const getDashboardDetailsController = async (req, res) => {
     }
 };
 
+const getFreelancerChatsController = async (req, res) => {
+    try {
+
+        console.log("FREELANCER CONTROLLER > GET CHATS LIST > try block executed");
+
+        const { uuid } = req.user;
+        const { page = 1, limit = 10 } = req.query;
+
+        const conversationList = await getUserSpecificConversationListService({
+            freelancerId: uuid,
+            page,
+            limit
+        })
+
+        res.status(200).json({ success: true, message: "Conversation List Fetched Successfully", data: conversationList });
+    } catch (error) {
+        console.error("FREELANCER CONTROLLER > GET CHATS LIST >", error);
+        res.status(500).json({ success: false, message: "Internal Server Error" });
+    }
+};
+
+const getConversationMessagesController = async (req, res) => {
+    try {
+
+        console.log("FREELANCER CONTROLLER > GET CONVERSATION MESSAGES > try block executed");
+
+        const { uuid } = req.user;
+        
+        let { page = 1, limit = 50, client_id, conversation_id } = req.query;
+
+        if (client_id && conversation_id) return res.status(400).json({ success: false, message: "Bad Request." })
+        
+        if (client_id) {
+            const conversation = await getConversationService({
+                freelancerId: uuid,
+                clientId: client_id
+            })
+            conversation_id = conversation.uuid
+        }
+
+        if(!conversation_id) return res.status(403).json({ success: false, message: "No conversation found." })
+
+        const messages = await getConversationMessagesService({
+            conversationId: conversation_id
+        }, {}, { page, limit });
+
+        res.status(200).json({ success: true, message: "Conversation List Fetched Successfully", data: messages });
+    } catch (error) {
+        console.error("FREELANCER CONTROLLER > GET CONVERSATION MESSAGES >", error);
+        res.status(500).json({ success: false, message: "Internal Server Error" });
+    }
+};
+
 const completeOrderController = async (req, res) => {
     try {
 
@@ -280,6 +335,62 @@ const completeOrderController = async (req, res) => {
     }
 };
 
+const sendMessagesController = async (req, res) => {
+    try {
+
+        console.log("FREELANCER CONTROLLER > SEND MESSAGES > try block executed");
+
+        const { uuid } = req.user;
+        const { receiverId, content = null } = req.body;
+        const files = req.files ?? {};
+        let uploadType = 'text', fileUrl = null;
+
+        const conversation = await getConversationService({
+            freelancerId: uuid,
+            clientId: receiverId
+        })
+
+        if (!conversation) return res.status(403).json({ success: false, message: "No conversation found." })
+
+        if (files?.audio?.[0] || files?.image?.[0]) {
+            if (files?.audio?.[0]) uploadType = 'image';
+            else if (files?.image?.[0]) uploadType = 'audio';
+
+            const fileUploadDecision = {
+                "image": uploadFile(files?.profile_picture?.[0], "chat/images"),
+                "audio": uploadFile(files?.cv?.[0], "chat/audios"),
+            }
+
+            fileUrl = await fileUploadDecision[uploadType];
+        }
+
+        await addMessageServices([{
+            senderId: uuid,
+            conversationId: conversation.uuid,
+            content: content,
+            attachmentUrl: fileUrl,
+            contenType: uploadType
+        }])
+
+        const receiverSocket = socketUsers.get(receiverId)
+
+        if (receiverSocket) {
+            emitNewMessage(receiverSocket, 'receive_message', {
+                senderId: uuid,
+                conversationId: conversation.uuid,
+                content: content,
+                attachmentUrl: fileUrl,
+                contenType: uploadType
+            })
+        }
+
+        res.status(200).json({ success: true, message: "Message Send Successfully" });
+    } catch (error) {
+        console.error("FREELANCER CONTROLLER > SEND MESSAGES >", error);
+        res.status(500).json({ success: false, message: "Internal Server Error" });
+    }
+};
+
 export {
     uploadFileController,
     addServiceController,
@@ -287,7 +398,10 @@ export {
     deleteServiceController,
     updateServiceController,
     completeOrderController,
+    sendMessagesController,
+    getFreelancerChatsController,
     getDashboardDetailsController,
     updateFreelancerProfileController,
     getMyFreelancerProfileController,
+    getConversationMessagesController,
 }

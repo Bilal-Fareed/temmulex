@@ -2,24 +2,30 @@ import { Router } from 'express';
 import { authenticate } from '../middlewares/authMiddleware.js';
 import { multerHandler } from '../middlewares/multerMiddleware.js';
 import { validate } from '../middlewares/validationMiddleware.js';
+import { sendMessageSchema } from '../schemas/openSchemas.js';
 import {
     addServiceSchema,
     completeOrderSchema,
     updateServiceSchema,
     getMyOrdersSchema,
-    updateFreelancerProfileSchema,
     deleteServiceSchema,
+    getConversationSchema,
+    getConversationMessagesSchema,
+    updateFreelancerProfileSchema,
 } from '../schemas/freelancerSchemas.js'
 import {
     uploadFileController,
     updateServiceController,
     deleteServiceController,
     getMyOrdersController,
+    sendMessagesController,
     completeOrderController,
     addServiceController,
+    getFreelancerChatsController,
     getDashboardDetailsController,
     updateFreelancerProfileController,
     getMyFreelancerProfileController,
+    getConversationMessagesController,
 } from '../controllers/freelancerControllers.js';
 
 const router = Router();
@@ -41,5 +47,11 @@ router.get('/my-orders', authenticate, validate({ query: getMyOrdersSchema }), g
 router.put('/:order_id/complete', authenticate, validate({ params: completeOrderSchema }), completeOrderController);
 
 router.get('/dashboard', authenticate, getDashboardDetailsController);
+
+router.get('/my-chats', authenticate, validate({ query: getConversationSchema }), getFreelancerChatsController);
+
+router.get('/messages', authenticate, validate({ query: getConversationMessagesSchema }), getConversationMessagesController);
+
+router.post('/send-message', multerHandler, authenticate, validate({ body: sendMessageSchema }), sendMessagesController);
 
 export default router;

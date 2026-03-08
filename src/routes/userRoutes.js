@@ -3,6 +3,7 @@ import { multerHandler } from '../middlewares/multerMiddleware.js';
 import { authenticate, authenticateTemporaryToken } from '../middlewares/authMiddleware.js';
 import { validate } from '../middlewares/validationMiddleware.js';
 import { parseMultipartJSON } from '../middlewares/multipartJsonParserMiddleware.js'; 
+import { sendMessageSchema } from '../schemas/openSchemas.js';
 import {
     signupSchema,
     signinSchema,
@@ -15,7 +16,9 @@ import {
     updateUserProfileSchema,
     orderFeedbackSchema,
     nearbyTopRatedShopperSchema,
-    sendOtpSchema
+    getConversationSchema,
+    sendOtpSchema,
+    getConversationMessagesSchema,
 } from '../schemas/userSchemas.js';
 import {
     userSignupController,
@@ -30,7 +33,10 @@ import {
     orderFeedbackController,
     deleteAccountController,
     sendOtpController,
+    sendMessagesController,
+    getUserChatsController,
     getNearbyTopRatedShoppersController,
+    getConversationMessagesController,
     getMyProfileController,
     placeOrderController,
 } from '../controllers/userControllers.js';
@@ -66,5 +72,11 @@ router.get('/my-orders', authenticate, validate({ query: getMyOrdersSchema }), g
 router.post('/place-order', authenticate, validate({ body: placeOrderSchema }), placeOrderController);
 
 router.post('/booking/feedback', authenticate, validate({ body: orderFeedbackSchema }), orderFeedbackController);
+
+router.get('/my-chats', authenticate, validate({ query: getConversationSchema }), getUserChatsController);
+
+router.get('/messages', authenticate, validate({ query: getConversationMessagesSchema }), getConversationMessagesController);
+
+router.post('/send-message', multerHandler, authenticate, validate({ body: sendMessageSchema }), sendMessagesController);
 
 export default router;
