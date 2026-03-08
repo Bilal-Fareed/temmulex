@@ -9,10 +9,10 @@ const socketUsers = new Map()
 const SocketServer = async (_server) => {
     _socketServer = new socketIo(_server, {
         connectionStateRecovery: {},
-        adapter: createAdapter(
-            redisClient.instance,
-            redisClient.instance.duplicate()
-        )
+        // adapter: createAdapter(
+        //     redisClient.instance,
+        //     redisClient.instance.duplicate()
+        // )
     });
 
     _socketServer.use((socket, next) => {
