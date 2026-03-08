@@ -16,6 +16,7 @@ const messages = pgTable("messages", {
     senderId: uuid("sender_uuid").notNull(),
     conversationId: uuid("conversation_uuid").references(() => conversations.uuid).notNull(),
     content: text("content"),
+    contenType: varchar("content_type", { length: 255 }).default('text'),
     attachmentUrl: varchar("attachment_url", { length: 255 }),
     isRead: boolean("is_read").default(false),
     isDeleted: boolean("is_deleted").default(false),

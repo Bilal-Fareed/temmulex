@@ -1,0 +1,1 @@
+ALTER TABLE "messages" ADD COLUMN "content_type" varchar(255) DEFAULT 'text';

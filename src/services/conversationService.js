@@ -76,6 +76,7 @@ const getConversationMessagesService = async (filters = {}, projection = undefin
             senderId: messages.senderId,
             conversationId: messages.conversationId,
             isRead: messages.isRead,
+            contentType: messages.contenType,
             messageContent: messages.content,
             attachmentUrl: messages.attachmentUrl,
             messageCreatedAt: messages.createdAt
@@ -87,7 +88,15 @@ const getConversationMessagesService = async (filters = {}, projection = undefin
         .offset(offset);
 }
 
+const addMessageServices = async (messageData = [], options = {}) => {
+	const { transaction } = options;
+	const executor = transaction || db;
+
+	await executor.insert(messages).values(messageData);
+};
+
 export {
+    addMessageServices,
     getConversationService,
     insertConversationServices,
     getConversationMessagesService,

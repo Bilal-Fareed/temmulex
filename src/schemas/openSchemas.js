@@ -8,12 +8,9 @@ const contactUsSchema = vine.object({
 });
 
 const sendMessageSchema = vine.object({
-    conversationUuid: vine.string(),
-    senderId: vine.string(),
     receiverId: vine.string(),
     content: vine.string().optional(),
-    attachmentUrl: vine.string().optional()
-})
+});
 
 
 export {

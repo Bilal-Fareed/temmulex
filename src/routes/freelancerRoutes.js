@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { authenticate } from '../middlewares/authMiddleware.js';
 import { multerHandler } from '../middlewares/multerMiddleware.js';
 import { validate } from '../middlewares/validationMiddleware.js';
+import { sendMessageSchema } from '../schemas/openSchemas.js';
 import {
     addServiceSchema,
     completeOrderSchema,
@@ -17,6 +18,7 @@ import {
     updateServiceController,
     deleteServiceController,
     getMyOrdersController,
+    sendMessagesController,
     completeOrderController,
     addServiceController,
     getFreelancerChatsController,
@@ -49,5 +51,7 @@ router.get('/dashboard', authenticate, getDashboardDetailsController);
 router.get('/my-chats', authenticate, validate({ query: getConversationSchema }), getFreelancerChatsController);
 
 router.get('/messages', authenticate, validate({ query: getConversationMessagesSchema }), getConversationMessagesController);
+
+router.post('/send-message', multerHandler, authenticate, validate({ body: sendMessageSchema }), sendMessagesController);
 
 export default router;

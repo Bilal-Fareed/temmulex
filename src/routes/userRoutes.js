@@ -3,6 +3,7 @@ import { multerHandler } from '../middlewares/multerMiddleware.js';
 import { authenticate, authenticateTemporaryToken } from '../middlewares/authMiddleware.js';
 import { validate } from '../middlewares/validationMiddleware.js';
 import { parseMultipartJSON } from '../middlewares/multipartJsonParserMiddleware.js'; 
+import { sendMessageSchema } from '../schemas/openSchemas.js';
 import {
     signupSchema,
     signinSchema,
@@ -32,6 +33,7 @@ import {
     orderFeedbackController,
     deleteAccountController,
     sendOtpController,
+    sendMessagesController,
     getUserChatsController,
     getNearbyTopRatedShoppersController,
     getConversationMessagesController,
@@ -74,5 +76,7 @@ router.post('/booking/feedback', authenticate, validate({ body: orderFeedbackSch
 router.get('/my-chats', authenticate, validate({ query: getConversationSchema }), getUserChatsController);
 
 router.get('/messages', authenticate, validate({ query: getConversationMessagesSchema }), getConversationMessagesController);
+
+router.post('/send-message', multerHandler, authenticate, validate({ body: sendMessageSchema }), sendMessagesController);
 
 export default router;
