@@ -9,6 +9,7 @@ import {
     getMyOrdersSchema,
     updateFreelancerProfileSchema,
     deleteServiceSchema,
+    getConversationSchema,
 } from '../schemas/freelancerSchemas.js'
 import {
     uploadFileController,
@@ -17,6 +18,7 @@ import {
     getMyOrdersController,
     completeOrderController,
     addServiceController,
+    getFreelancerChatsController,
     getDashboardDetailsController,
     updateFreelancerProfileController,
     getMyFreelancerProfileController,
@@ -41,5 +43,7 @@ router.get('/my-orders', authenticate, validate({ query: getMyOrdersSchema }), g
 router.put('/:order_id/complete', authenticate, validate({ params: completeOrderSchema }), completeOrderController);
 
 router.get('/dashboard', authenticate, getDashboardDetailsController);
+
+router.get('/my-chats', authenticate, validate({ query: getConversationSchema }), getFreelancerChatsController);
 
 export default router;

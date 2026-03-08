@@ -10,6 +10,7 @@ import {
     deleteFreelancerServices,
     insertManyFreelancerServices,
 } from "../services/freelancerServicesService.js";
+import { getUserSpecificConversationListService } from "../services/conversationService.js";
 import { getOrderService, getFreelancerCompletedOrderStats } from "../services/orderService.js";
 import { deleteFreelancersLanguage } from '../services/freelancerLanguageService.js';
 import { insertManyFreelancerLanguagesService } from '../services/freelancerLanguageService.js';
@@ -255,6 +256,27 @@ const getDashboardDetailsController = async (req, res) => {
     }
 };
 
+const getFreelancerChatsController = async (req, res) => {
+    try {
+
+        console.log("USER CONTROLLER > GET CHATS LIST > try block executed");
+
+        const { uuid } = req.user;
+        const { page = 1, limit = 10 } = req.query;
+
+        const conversationList = await getUserSpecificConversationListService({
+            freelancerId: uuid,
+            page,
+            limit
+        })
+
+        res.status(200).json({ success: true, message: "Conversation List Fetched Successfully", data: conversationList });
+    } catch (error) {
+        console.error("USER CONTROLLER > GET CHATS LIST >", error);
+        res.status(500).json({ success: false, message: "Internal Server Error" });
+    }
+};
+
 const completeOrderController = async (req, res) => {
     try {
 
@@ -287,6 +309,7 @@ export {
     deleteServiceController,
     updateServiceController,
     completeOrderController,
+    getFreelancerChatsController,
     getDashboardDetailsController,
     updateFreelancerProfileController,
     getMyFreelancerProfileController,

@@ -46,11 +46,17 @@ const completeOrderSchema = vine.object({
     order_id: vine.string().uuid({ version: [4] }),
 });
 
+const getConversationSchema = vine.object({
+    page: vine.number().min(1).max(1000).optional(),
+    limit: vine.number().min(1).max(100).optional(),
+})
+
 export {
     addServiceSchema,
     getMyOrdersSchema,
     completeOrderSchema,
     updateServiceSchema,
     deleteServiceSchema,
+    getConversationSchema,
     updateFreelancerProfileSchema,
 }
