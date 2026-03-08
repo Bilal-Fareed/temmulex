@@ -5,6 +5,7 @@ import { insertFreelancerDetailService, getFreelancerProfileDetailByUserUuid, ge
 import { insertManyFreelancerLanguagesService } from "../services/freelancerLanguageService.js";
 import { insertManyFreelancerServices, getFreelancerServices } from "../services/freelancerServicesService.js";
 import { getOrderService, rateOrder } from "../services/orderService.js";
+import { getUserSpecificConversationListService, getConversationMessagesService, getConversationService, addMessageServices } from "../services/conversationService.js";
 import { redisClient } from "../../infra/redis.js";
 import { sendOtpEmail } from "../helpers/mailer.js";
 import { createOrderService } from "../services/orderService.js"
@@ -12,6 +13,7 @@ import { deleteUserSessionByUserId, insertUserSession } from "../services/sessio
 import { randomUUID } from 'crypto';
 import { PROFILE_UPDATE_OTP_MESSAGE_SUBCODE } from '../helpers/constants.js';
 import { db } from "../../infra/db.js";
+import { socketUsers, emitNewMessage } from "../../socketServer.js";
 
 const userSignupController = async (req, res) => {
     try {
@@ -524,7 +526,7 @@ const placeOrderController = async (req, res) => {
 
         const freelancerDetails = await getFreelancerProfileDetailByUserUuid(freelancer_id);
         
-        if(!freelancerDetails)  return res.status(400).json({success: false, message: "The user with whome you are trying to book is not a freelancer."})
+        if(!freelancerDetails) return res.status(400).json({success: false, message: "The user with whome you are trying to book is not a freelancer."})
 
         const freelancerService = await getFreelancerServices(freelancerDetails.uuid, service_id);
 
@@ -569,12 +571,122 @@ const orderFeedbackController = async (req, res) => {
     }
 };
 
+const getUserChatsController = async (req, res) => {
+    try {
+
+        console.log("USER CONTROLLER > GET CHATS LIST > try block executed");
+
+        const { uuid } = req.user;
+        const { page = 1, limit = 10 } = req.query;
+
+        const conversationList = await getUserSpecificConversationListService({
+            clientId: uuid,
+            page,
+            limit
+        })
+
+        res.status(200).json({ success: true, message: "Conversation List Fetched Successfully", data: conversationList });
+    } catch (error) {
+        console.error("USER CONTROLLER > GET CHATS LIST >", error);
+        res.status(500).json({ success: false, message: "Internal Server Error" });
+    }
+};
+
+const getConversationMessagesController = async (req, res) => {
+    try {
+
+        console.log("USER CONTROLLER > GET CONVERSATION MESSAGES > try block executed");
+
+        const { uuid } = req.user;
+        
+        let { page = 1, limit = 50, freelancer_id, conversation_id } = req.query;
+
+        if (freelancer_id && conversation_id) return res.status(400).json({ success: false, message: "Bad Request." })
+        
+        if (freelancer_id) {
+            const conversation = await getConversationService({
+                freelancerId: freelancer_id,
+                clientId: uuid
+            })
+            conversation_id = conversation.uuid
+        }
+
+        if(!conversation_id) return res.status(403).json({ success: false, message: "No conversation found." })
+
+        const messages = await getConversationMessagesService({
+            conversationId: conversation_id
+        }, {}, { page, limit });
+
+        res.status(200).json({ success: true, message: "Conversation List Fetched Successfully", data: messages });
+    } catch (error) {
+        console.error("USER CONTROLLER > GET CONVERSATION MESSAGES >", error);
+        res.status(500).json({ success: false, message: "Internal Server Error" });
+    }
+};
+
+const sendMessagesController = async (req, res) => {
+    try {
+
+        console.log("USER CONTROLLER > SEND MESSAGES > try block executed");
+
+        const { uuid } = req.user;
+        const { receiverId, content = null } = req.body;
+        const files = req.files ?? {};
+        let uploadType = 'text', fileUrl = null;
+
+        const conversation = await getConversationService({
+            freelancerId: receiverId,
+            clientId: uuid
+        })
+
+        if (!conversation) return res.status(403).json({ success: false, message: "No conversation found." })
+
+        if (files?.audio?.[0] || files?.image?.[0]) {
+            if (files?.audio?.[0]) uploadType = 'image';
+            else if (files?.image?.[0]) uploadType = 'audio';
+
+            const fileUploadDecision = {
+                "image": uploadFile(files?.profile_picture?.[0], "chat/images"),
+                "audio": uploadFile(files?.cv?.[0], "chat/audios"),
+            }
+
+            fileUrl = await fileUploadDecision[uploadType];
+        }
+
+        await addMessageServices([{
+            senderId: uuid,
+            conversationId: conversation.uuid,
+            content: content,
+            attachmentUrl: fileUrl,
+            contenType: uploadType
+        }])
+
+        const receiverSocket = socketUsers.get(receiverId)
+
+        if (receiverSocket) {
+            emitNewMessage(receiverSocket, 'receive_message', {
+                senderId: uuid,
+                conversationId: conversation.uuid,
+                content: content,
+                attachmentUrl: fileUrl,
+                contenType: uploadType
+            })
+        }
+
+        res.status(200).json({ success: true, message: "Message Send Successfully" });
+    } catch (error) {
+        console.error("USER CONTROLLER > SEND MESSAGES >", error);
+        res.status(500).json({ success: false, message: "Internal Server Error" });
+    }
+};
+
 export {
     userSignupController,
     loginController,
     logoutController,
     orderFeedbackController,
     verifyOtpController,
+    sendMessagesController,
     forgotPasswordController,
     updatePasswordController,
     sendOtpController,
@@ -584,6 +696,8 @@ export {
     placeOrderController,
     updateUserProfileController,
     getMyOrdersController,
+    getUserChatsController,
     uploadFileController,
+    getConversationMessagesController,
     getNearbyTopRatedShoppersController,
 }

@@ -153,7 +153,7 @@ CREATE TABLE "users" (
 ALTER TABLE "conversations" ADD CONSTRAINT "conversations_order_uuid_orders_uuid_fk" FOREIGN KEY ("order_uuid") REFERENCES "public"."orders"("uuid") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "conversations" ADD CONSTRAINT "conversations_client_uuid_users_uuid_fk" FOREIGN KEY ("client_uuid") REFERENCES "public"."users"("uuid") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "conversations" ADD CONSTRAINT "conversations_freelancer_uuid_users_uuid_fk" FOREIGN KEY ("freelancer_uuid") REFERENCES "public"."users"("uuid") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "messages" ADD CONSTRAINT "messages_conversation_uuid_conversations_uuid_fk" FOREIGN KEY ("conversation_uuid") REFERENCES "public"."conversations"("uuid") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "messages" ADD CONSTRAINT "messages_conversation_uuid_conversations_uuid_fk" FOREIGN KEY ("conversation_uuid") REFERENCES "public"."conversations"("uuid") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "orders" ADD CONSTRAINT "orders_client_uuid_users_uuid_fk" FOREIGN KEY ("client_uuid") REFERENCES "public"."users"("uuid") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "orders" ADD CONSTRAINT "orders_freelancer_uuid_users_uuid_fk" FOREIGN KEY ("freelancer_uuid") REFERENCES "public"."users"("uuid") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "reviews" ADD CONSTRAINT "reviews_order_uuid_orders_uuid_fk" FOREIGN KEY ("order_uuid") REFERENCES "public"."orders"("uuid") ON DELETE no action ON UPDATE no action;--> statement-breakpoint

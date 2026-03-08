@@ -116,7 +116,7 @@ const rateOrder = async (data, options = {}) => {
 }
 
 const getOrderByFilterService = async (filters = {}, projection = undefined, options = {}) => {
-    return await db.query.orders.find({
+    return await db.query.orders.findFirst({
         where: buildWhere(filters),
 		...(projection && Object.keys(projection).length > 0 && { columns: projection }),
     });

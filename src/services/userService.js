@@ -1,6 +1,6 @@
 import { db } from "../../infra/db.js";
 import { users } from "../models/usersModel.js";
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 
 const buildWhere = (filters) => {
 	return and(
@@ -11,7 +11,7 @@ const buildWhere = (filters) => {
 };
 
 const getUserService = async (filters = {}, projection = undefined, options = {}) => {
-	return await db.query.users.find({
+	return await db.query.users.findFirst({
 		where: buildWhere(filters),
 		...(projection && Object.keys(projection).length > 0 && { columns: projection }),
 	});

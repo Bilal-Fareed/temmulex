@@ -7,6 +7,13 @@ const contactUsSchema = vine.object({
     message: vine.string().maxLength(1000),
 });
 
+const sendMessageSchema = vine.object({
+    receiverId: vine.string(),
+    content: vine.string().optional(),
+});
+
+
 export {
-    contactUsSchema
+    contactUsSchema,
+    sendMessageSchema,
 }

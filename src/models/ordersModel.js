@@ -33,7 +33,6 @@ const orderRelations = relations(orders, ({ one }) => ({
     freelancer: one(users, { fields: [orders.freelancerId], references: [users.uuid] }),
     service: one(services, { fields: [orders.serviceId], references: [services.uuid] }),
     reviews: one(reviews),
-    conversations: one(conversations),
 }));
 
 export {

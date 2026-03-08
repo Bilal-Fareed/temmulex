@@ -13,7 +13,6 @@ import { messages } from "./messagesModel.js";
 const conversations = pgTable("conversations", {
     id: serial("id").primaryKey(),
     uuid: uuid("uuid").defaultRandom().notNull().unique(),
-    orderId: uuid("order_uuid").references(() => orders.uuid).notNull(),
     clientId: uuid("client_uuid").references(() => users.uuid).notNull(),
     freelancerId: uuid("freelancer_uuid").references(() => users.uuid).notNull(),
     isDeleted: boolean("is_deleted").default(false),
@@ -22,7 +21,6 @@ const conversations = pgTable("conversations", {
 });
 
 const conversationRelations = relations(conversations, ({ many, one }) => ({
-    order: one(orders, { fields: [conversations.orderId], references: [orders.uuid] }),
     client: one(users, { fields: [conversations.clientId], references: [users.uuid] }),
     freelancer: one(users, { fields: [conversations.freelancerId], references: [users.uuid] }),
     messages: many(messages),

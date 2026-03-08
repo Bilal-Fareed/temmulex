@@ -17,8 +17,23 @@ const upload = multer({
             return cb(null, true);
         }
 
+        // Audio files
+        if (fieldname === "audio") {
+            const allowedImageTypes = [
+                "audio/mpeg",
+                "audio/mp3",
+                "audio/wav"
+            ];
+
+            if (!allowedImageTypes.includes(mimetype)) {
+                return cb(new Error("Audio must be of type (mpeg, mp3, wav)"));
+            }
+
+            return cb(null, true);
+        }
+
         // Profile picture (images only)
-        if (fieldname === "profile_picture") {
+        if (fieldname === "profile_picture" || fieldname === "image") {
             const allowedImageTypes = [
                 "image/jpeg",
                 "image/png",
@@ -26,7 +41,7 @@ const upload = multer({
             ];
 
             if (!allowedImageTypes.includes(mimetype)) {
-                return cb(new Error("Profile picture must be an image (jpg, png, webp)"));
+                return cb(new Error("Image must be of type (jpg, png, webp)"));
             }
 
             return cb(null, true);
@@ -41,7 +56,9 @@ const multerHandler = (req, res, next) => {
     const multerFields = upload.fields([
         { name: 'cv', maxCount: 1 },
         { name: 'dbs', maxCount: 1 },
-        { name: 'profile_picture', maxCount: 1 }
+        { name: 'profile_picture', maxCount: 1 },
+        { name: 'image', maxCount: 1 },
+        { name: 'audio', maxCount: 1 }
     ]);
 
     multerFields(req, res, (err) => {
