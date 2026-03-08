@@ -7,9 +7,10 @@ import {
     completeOrderSchema,
     updateServiceSchema,
     getMyOrdersSchema,
-    updateFreelancerProfileSchema,
     deleteServiceSchema,
     getConversationSchema,
+    getConversationMessagesSchema,
+    updateFreelancerProfileSchema,
 } from '../schemas/freelancerSchemas.js'
 import {
     uploadFileController,
@@ -22,6 +23,7 @@ import {
     getDashboardDetailsController,
     updateFreelancerProfileController,
     getMyFreelancerProfileController,
+    getConversationMessagesController,
 } from '../controllers/freelancerControllers.js';
 
 const router = Router();
@@ -45,5 +47,7 @@ router.put('/:order_id/complete', authenticate, validate({ params: completeOrder
 router.get('/dashboard', authenticate, getDashboardDetailsController);
 
 router.get('/my-chats', authenticate, validate({ query: getConversationSchema }), getFreelancerChatsController);
+
+router.get('/messages', authenticate, validate({ query: getConversationMessagesSchema }), getConversationMessagesController);
 
 export default router;

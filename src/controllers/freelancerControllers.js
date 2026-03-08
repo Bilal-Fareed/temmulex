@@ -10,7 +10,7 @@ import {
     deleteFreelancerServices,
     insertManyFreelancerServices,
 } from "../services/freelancerServicesService.js";
-import { getUserSpecificConversationListService } from "../services/conversationService.js";
+import { getUserSpecificConversationListService, getConversationService, getConversationMessagesService } from "../services/conversationService.js";
 import { getOrderService, getFreelancerCompletedOrderStats } from "../services/orderService.js";
 import { deleteFreelancersLanguage } from '../services/freelancerLanguageService.js';
 import { insertManyFreelancerLanguagesService } from '../services/freelancerLanguageService.js';
@@ -259,7 +259,7 @@ const getDashboardDetailsController = async (req, res) => {
 const getFreelancerChatsController = async (req, res) => {
     try {
 
-        console.log("USER CONTROLLER > GET CHATS LIST > try block executed");
+        console.log("FREELANCER CONTROLLER > GET CHATS LIST > try block executed");
 
         const { uuid } = req.user;
         const { page = 1, limit = 10 } = req.query;
@@ -272,7 +272,39 @@ const getFreelancerChatsController = async (req, res) => {
 
         res.status(200).json({ success: true, message: "Conversation List Fetched Successfully", data: conversationList });
     } catch (error) {
-        console.error("USER CONTROLLER > GET CHATS LIST >", error);
+        console.error("FREELANCER CONTROLLER > GET CHATS LIST >", error);
+        res.status(500).json({ success: false, message: "Internal Server Error" });
+    }
+};
+
+const getConversationMessagesController = async (req, res) => {
+    try {
+
+        console.log("FREELANCER CONTROLLER > GET CONVERSATION MESSAGES > try block executed");
+
+        const { uuid } = req.user;
+        
+        let { page = 1, limit = 50, client_id, conversation_id } = req.query;
+
+        if (client_id && conversation_id) return res.status(400).json({ success: false, message: "Bad Request." })
+        
+        if (client_id) {
+            const conversation = await getConversationService({
+                freelancerId: uuid,
+                clientId: client_id
+            })
+            conversation_id = conversation.uuid
+        }
+
+        if(!conversation_id) return res.status(403).json({ success: false, message: "No conversation found." })
+
+        const messages = await getConversationMessagesService({
+            conversationId: conversation_id
+        }, {}, { page, limit });
+
+        res.status(200).json({ success: true, message: "Conversation List Fetched Successfully", data: messages });
+    } catch (error) {
+        console.error("FREELANCER CONTROLLER > GET CONVERSATION MESSAGES >", error);
         res.status(500).json({ success: false, message: "Internal Server Error" });
     }
 };
@@ -313,4 +345,5 @@ export {
     getDashboardDetailsController,
     updateFreelancerProfileController,
     getMyFreelancerProfileController,
+    getConversationMessagesController,
 }
