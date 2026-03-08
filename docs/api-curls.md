@@ -1,5 +1,20 @@
 # API Endpoint cURL Examples
 
+
+## ============================================== OPEN REQUEST CURLS ============================================
+
+## 📝 Contact us message
+```bash
+curl --location 'http://localhost:3001/v1/contact-us' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "full_name": "test user",
+    "email": "test@gmail.com",
+    "message": "Random message for the product owner"
+}'
+```
+
+
 ## ============================================== USER REQUEST CURLS ============================================
 
 ## 📝 Signup As Client
@@ -273,6 +288,16 @@ curl --location 'http://localhost:3001/v1/users/booking/feedback' \
 ```
 
 
+## 📝 Get Chat List for Users
+```bash
+curl --location 'http://localhost:3001/v1/users/my-chats?page=1&limit=10' \
+--header 'x-device-id: test-device-id' \
+--header 'x-user-agent: android' \
+--header 'x-refresh-token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1dWlkIjoiMjVkNmNmZTUtYjRlOC00YzVhLThiM2YtNDQyOTgwZmY0NzY0IiwidmVyc2lvbiI6MCwidG9rZW5JZCI6IjkyY2RhOWZmLTI4YzMtNDE3OS04YWYxLWU1MzBjZDE2Njg3NCIsImlhdCI6MTc3MjQwNDMyNCwiZXhwIjoxNzczMDA5MTI0fQ.ZBaW2-QS58whJCSRZhVt3GJ85dzjGt4oOxkt8W1Fxgg' \
+--header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1dWlkIjoiMjVkNmNmZTUtYjRlOC00YzVhLThiM2YtNDQyOTgwZmY0NzY0IiwidmVyc2lvbiI6MCwidG9rZW5JZCI6IjkyY2RhOWZmLTI4YzMtNDE3OS04YWYxLWU1MzBjZDE2Njg3NCIsImlhdCI6MTc3MjQwNDMyNCwiZXhwIjoxNzcyNDA3OTI0fQ.N97QJryBcfXpqqFl_9ZfoFnQ4T4ym4ymBYPrd6X6nlg' \
+--header 'Content-Type: application/json'
+```
+
 
 ## ============================================== FREELANCER REQUEST CURLS ============================================
 
@@ -377,13 +402,12 @@ curl --location 'http://localhost:3001/v1/freelancers/dashboard' \
 ```
 
 
-## 📝 Contact us message
+## 📝 Get Chat List for Freelancers
 ```bash
-curl --location 'http://localhost:3001/v1/contact-us' \
---header 'Content-Type: application/json' \
---data-raw '{
-    "full_name": "test user",
-    "email": "test@gmail.com",
-    "message": "Random message for the product owner"
-}'
+curl --location 'http://localhost:3001/v1/freelancers/my-chats?page=1&limit=10' \
+--header 'x-device-id: test-device-id' \
+--header 'x-user-agent: android' \
+--header 'x-refresh-token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1dWlkIjoiMjVkNmNmZTUtYjRlOC00YzVhLThiM2YtNDQyOTgwZmY0NzY0IiwidmVyc2lvbiI6MCwidG9rZW5JZCI6IjkyY2RhOWZmLTI4YzMtNDE3OS04YWYxLWU1MzBjZDE2Njg3NCIsImlhdCI6MTc3MjQwNDMyNCwiZXhwIjoxNzczMDA5MTI0fQ.ZBaW2-QS58whJCSRZhVt3GJ85dzjGt4oOxkt8W1Fxgg' \
+--header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1dWlkIjoiMjVkNmNmZTUtYjRlOC00YzVhLThiM2YtNDQyOTgwZmY0NzY0IiwidmVyc2lvbiI6MCwidG9rZW5JZCI6IjkyY2RhOWZmLTI4YzMtNDE3OS04YWYxLWU1MzBjZDE2Njg3NCIsImlhdCI6MTc3MjQwNDMyNCwiZXhwIjoxNzcyNDA3OTI0fQ.N97QJryBcfXpqqFl_9ZfoFnQ4T4ym4ymBYPrd6X6nlg' \
+--header 'Content-Type: application/json'
 ```
