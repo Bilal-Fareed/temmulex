@@ -1,6 +1,6 @@
 import { getLanguages } from "../services/languageServices.js";
 import { getServices } from "../services/serviceServices.js";
-import { insertContactUsQueruServices } from "../services/contactUsService.js";
+import { insertContactUsQueryServices } from "../services/contactUsService.js";
 
 const getServicesController = async (req, res) => {
     try {
@@ -28,7 +28,7 @@ const insertQueryController = async (req, res) => {
     try {
         console.log("INSERT QUERY OPEN CONTROLLER >  try block executed");
         const { full_name, email, message } = req.body;
-        await insertContactUsQueruServices([{
+        await insertContactUsQueryServices([{
             fullName: full_name,
             email,
             message

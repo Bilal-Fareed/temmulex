@@ -1,6 +1,6 @@
 import { db } from "../../infra/db.js";
 import { users } from "../models/usersModel.js";
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 
 const buildWhere = (filters) => {
 	return and(

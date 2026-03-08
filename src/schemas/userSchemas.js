@@ -121,6 +121,11 @@ const orderFeedbackSchema = vine.object({
     rating: vine.number().min(1).max(5)
 }); 
 
+const getConversationSchema = vine.object({
+    page: vine.number().min(1).max(1000).optional(),
+    limit: vine.number().min(1).max(100).optional(),
+})
+
 export {
     passwordSchema,
     signinSchema,
@@ -134,5 +139,6 @@ export {
     commonHeadersSchema,
     getMyOrdersSchema,
     placeOrderSchema,
+    getConversationSchema,
     updateUserProfileSchema,
 };

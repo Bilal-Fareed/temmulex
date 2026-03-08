@@ -5,6 +5,7 @@ import { insertFreelancerDetailService, getFreelancerProfileDetailByUserUuid, ge
 import { insertManyFreelancerLanguagesService } from "../services/freelancerLanguageService.js";
 import { insertManyFreelancerServices, getFreelancerServices } from "../services/freelancerServicesService.js";
 import { getOrderService, rateOrder } from "../services/orderService.js";
+import { getUserSpecificConversationListService } from "../services/conversationService.js";
 import { redisClient } from "../../infra/redis.js";
 import { sendOtpEmail } from "../helpers/mailer.js";
 import { createOrderService } from "../services/orderService.js"
@@ -569,6 +570,27 @@ const orderFeedbackController = async (req, res) => {
     }
 };
 
+const getUserChatsController = async (req, res) => {
+    try {
+
+        console.log("USER CONTROLLER > GET CHATS LIST > try block executed");
+
+        const { uuid } = req.user;
+        const { page = 1, limit = 10 } = req.query;
+
+        const conversationList = await getUserSpecificConversationListService({
+            clientId: uuid,
+            page,
+            limit
+        })
+
+        res.status(200).json({ success: true, message: "Conversation List Fetched Successfully", data: conversationList });
+    } catch (error) {
+        console.error("USER CONTROLLER > GET CHATS LIST >", error);
+        res.status(500).json({ success: false, message: "Internal Server Error" });
+    }
+};
+
 export {
     userSignupController,
     loginController,
@@ -584,6 +606,7 @@ export {
     placeOrderController,
     updateUserProfileController,
     getMyOrdersController,
+    getUserChatsController,
     uploadFileController,
     getNearbyTopRatedShoppersController,
 }

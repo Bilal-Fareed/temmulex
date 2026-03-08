@@ -24,7 +24,7 @@ const messages = pgTable("messages", {
 });
 
 const messageRelations = relations(messages, ({ one }) => ({
-    conversation: one(conversations, { fields: [messages.conversationId], references: [conversations.uuid] }),
+    conversation: one(conversations, { fields: [messages.conversationId], references: [conversations.uuid], onDelete: "cascade" }),
 }));
 
 export {
