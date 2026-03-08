@@ -16,7 +16,8 @@ import {
     orderFeedbackSchema,
     nearbyTopRatedShopperSchema,
     getConversationSchema,
-    sendOtpSchema
+    sendOtpSchema,
+    getConversationMessagesSchema,
 } from '../schemas/userSchemas.js';
 import {
     userSignupController,
@@ -33,6 +34,7 @@ import {
     sendOtpController,
     getUserChatsController,
     getNearbyTopRatedShoppersController,
+    getConversationMessagesController,
     getMyProfileController,
     placeOrderController,
 } from '../controllers/userControllers.js';
@@ -70,5 +72,7 @@ router.post('/place-order', authenticate, validate({ body: placeOrderSchema }), 
 router.post('/booking/feedback', authenticate, validate({ body: orderFeedbackSchema }), orderFeedbackController);
 
 router.get('/my-chats', authenticate, validate({ query: getConversationSchema }), getUserChatsController);
+
+router.get('/messages', authenticate, validate({ query: getConversationMessagesSchema }), getConversationMessagesController);
 
 export default router;

@@ -299,6 +299,17 @@ curl --location 'http://localhost:3001/v1/users/my-chats?page=1&limit=10' \
 ```
 
 
+## 📝 Get Chat Messages for Users
+```bash
+curl --location 'http://localhost:3001/v1/users/messages?page=1&limit=10&freelancer_id=de6fe813-c292-4da1-a817-eecb2cea9142' \
+--header 'x-device-id: test-device-id' \
+--header 'x-user-agent: android' \
+--header 'x-refresh-token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1dWlkIjoiMjVkNmNmZTUtYjRlOC00YzVhLThiM2YtNDQyOTgwZmY0NzY0IiwidmVyc2lvbiI6MCwidG9rZW5JZCI6IjkyY2RhOWZmLTI4YzMtNDE3OS04YWYxLWU1MzBjZDE2Njg3NCIsImlhdCI6MTc3MjQwNDMyNCwiZXhwIjoxNzczMDA5MTI0fQ.ZBaW2-QS58whJCSRZhVt3GJ85dzjGt4oOxkt8W1Fxgg' \
+--header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1dWlkIjoiMjVkNmNmZTUtYjRlOC00YzVhLThiM2YtNDQyOTgwZmY0NzY0IiwidmVyc2lvbiI6MCwidG9rZW5JZCI6IjkyY2RhOWZmLTI4YzMtNDE3OS04YWYxLWU1MzBjZDE2Njg3NCIsImlhdCI6MTc3MjQwNDMyNCwiZXhwIjoxNzcyNDA3OTI0fQ.N97QJryBcfXpqqFl_9ZfoFnQ4T4ym4ymBYPrd6X6nlg' \
+--header 'Content-Type: application/json'
+```
+
+
 ## ============================================== FREELANCER REQUEST CURLS ============================================
 
 ## 📝 Get Freelancer Profile Details

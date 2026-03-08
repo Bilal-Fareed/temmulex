@@ -5,7 +5,7 @@ import { insertFreelancerDetailService, getFreelancerProfileDetailByUserUuid, ge
 import { insertManyFreelancerLanguagesService } from "../services/freelancerLanguageService.js";
 import { insertManyFreelancerServices, getFreelancerServices } from "../services/freelancerServicesService.js";
 import { getOrderService, rateOrder } from "../services/orderService.js";
-import { getUserSpecificConversationListService } from "../services/conversationService.js";
+import { getUserSpecificConversationListService, getConversationMessagesService, getConversationService } from "../services/conversationService.js";
 import { redisClient } from "../../infra/redis.js";
 import { sendOtpEmail } from "../helpers/mailer.js";
 import { createOrderService } from "../services/orderService.js"
@@ -525,7 +525,7 @@ const placeOrderController = async (req, res) => {
 
         const freelancerDetails = await getFreelancerProfileDetailByUserUuid(freelancer_id);
         
-        if(!freelancerDetails)  return res.status(400).json({success: false, message: "The user with whome you are trying to book is not a freelancer."})
+        if(!freelancerDetails) return res.status(400).json({success: false, message: "The user with whome you are trying to book is not a freelancer."})
 
         const freelancerService = await getFreelancerServices(freelancerDetails.uuid, service_id);
 
@@ -591,6 +591,38 @@ const getUserChatsController = async (req, res) => {
     }
 };
 
+const getConversationMessagesController = async (req, res) => {
+    try {
+
+        console.log("USER CONTROLLER > GET CONVERSATION MESSAGES > try block executed");
+
+        const { uuid } = req.user;
+        
+        let { page = 1, limit = 50, freelancer_id, conversation_id } = req.query;
+
+        if (freelancer_id && conversation_id) return res.status(400).json({ success: false, message: "Bad Request." })
+        
+        if (freelancer_id) {
+            const conversation = await getConversationService({
+                freelancerId: freelancer_id,
+                clientId: uuid
+            })
+            conversation_id = conversation.uuid
+        }
+
+        if(!conversation_id) return res.status(403).json({ success: false, message: "No conversation found." })
+
+        const messages = await getConversationMessagesService({
+            conversationId: conversation_id
+        }, {}, { page, limit });
+
+        res.status(200).json({ success: true, message: "Conversation List Fetched Successfully", data: messages });
+    } catch (error) {
+        console.error("USER CONTROLLER > GET CONVERSATION MESSAGES >", error);
+        res.status(500).json({ success: false, message: "Internal Server Error" });
+    }
+};
+
 export {
     userSignupController,
     loginController,
@@ -608,5 +640,6 @@ export {
     getMyOrdersController,
     getUserChatsController,
     uploadFileController,
+    getConversationMessagesController,
     getNearbyTopRatedShoppersController,
 }

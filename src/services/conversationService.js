@@ -12,8 +12,8 @@ const buildWhere = (filters) => {
 	);
 };
 
-const getConversationListService = async (filters = {}, projection = undefined, options = {}) => {
-	return await db.query.conversations.find({
+const getConversationService = async (filters = {}, projection = undefined, options = {}) => {
+	return await db.query.conversations.findFirst({
 		where: buildWhere(filters),
 		...(projection && Object.keys(projection).length > 0 && { columns: projection }),
 	});
@@ -36,11 +36,13 @@ const getUserSpecificConversationListService = async (filters = {}, projection =
         .select({
             conversationUuid: conversations.uuid,
             freelancerId: conversations.freelancerId,
+            clientId: conversations.clientId,
             recieverFirstName: users.firstName,
             recieverLastName: users.lastName,
-            freelancerAvatar: users.profilePicture,
+            profilePicture: users.profilePicture,
             messageContent: messages.content,
             attachmentUrl: messages.attachmentUrl,
+            isRead: messages.isRead,
             messageCreatedAt: messages.createdAt
         })
         .from(conversations)
@@ -61,8 +63,33 @@ const insertConversationServices = async (conversation = [], options = {}) => {
 	await executor.insert(conversations).values(conversation);
 };
 
+const getConversationMessagesService = async (filters = {}, projection = undefined, options = {}) => {
+
+    const { page, limit } = options;
+    const { conversationId } = filters;
+
+    const offset = (page - 1) * limit;
+    
+    return await db
+        .select({
+            uuid: messages.uuid,
+            senderId: messages.senderId,
+            conversationId: messages.conversationId,
+            isRead: messages.isRead,
+            messageContent: messages.content,
+            attachmentUrl: messages.attachmentUrl,
+            messageCreatedAt: messages.createdAt
+        })
+        .from(messages)
+        .where(eq(messages.conversationId, conversationId))
+        .orderBy(desc(messages.createdAt))
+        .limit(limit)
+        .offset(offset);
+}
+
 export {
+    getConversationService,
     insertConversationServices,
-    getConversationListService,
+    getConversationMessagesService,
     getUserSpecificConversationListService,
 }

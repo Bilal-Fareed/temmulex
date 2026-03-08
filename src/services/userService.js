@@ -11,7 +11,7 @@ const buildWhere = (filters) => {
 };
 
 const getUserService = async (filters = {}, projection = undefined, options = {}) => {
-	return await db.query.users.find({
+	return await db.query.users.findFirst({
 		where: buildWhere(filters),
 		...(projection && Object.keys(projection).length > 0 && { columns: projection }),
 	});

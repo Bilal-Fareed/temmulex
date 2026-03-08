@@ -126,6 +126,13 @@ const getConversationSchema = vine.object({
     limit: vine.number().min(1).max(100).optional(),
 })
 
+const getConversationMessagesSchema = vine.object({
+    freelancer_id: vine.string().uuid({ version: [4] }).optional(),
+    conversation_id: vine.string().uuid({ version: [4] }).optional(),
+    page: vine.number().min(1).max(1000).optional(),
+    limit: vine.number().min(1).max(100).optional(),
+})
+
 export {
     passwordSchema,
     signinSchema,
@@ -141,4 +148,5 @@ export {
     placeOrderSchema,
     getConversationSchema,
     updateUserProfileSchema,
+    getConversationMessagesSchema,
 };
