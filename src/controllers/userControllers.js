@@ -233,7 +233,8 @@ const loginController = async (req, res) => {
                 dob: user.dob,
                 phone: user.phone,
                 profilePicture: user.profilePicture,
-                name: user.firstName + user.lastName,
+                firstName: user.firstName,
+                lastName: user.lastName,
                 isBlocked: user.isBlocked,
                 createdAt: user.createdAt,
                 ...(user_type === "freelancer" && {
