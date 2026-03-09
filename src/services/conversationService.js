@@ -95,9 +95,26 @@ const addMessageServices = async (messageData = [], options = {}) => {
 	await executor.insert(messages).values(messageData);
 };
 
+const markMessageAsReadService = async (filters = {}, options = {}) => {
+	const { transaction } = options;
+	const { recieverId, conversationId } = filters;
+	const executor = transaction || db;
+
+	await executor
+		.update(messages)
+        .set({ isRead: true })
+		.where(
+			and(
+				eq(messages.senderId, recieverId),
+				eq(messages.conversationId, conversationId),
+			)
+		);
+};
+
 export {
     addMessageServices,
     getConversationService,
+    markMessageAsReadService,
     insertConversationServices,
     getConversationMessagesService,
     getUserSpecificConversationListService,
