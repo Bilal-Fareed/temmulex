@@ -2,6 +2,7 @@ import { Server as socketIo } from "socket.io";
 import { redisClient } from "./infra/redis.js";
 import { createAdapter } from "@socket.io/redis-adapter";
 import { verifyAccessToken } from "./src/helpers/security.js";
+import { markMessageAsReadService } from "./src/services/conversationService.js";
 
 let _socketServer = null;
 const socketUsers = new Map()
@@ -52,6 +53,18 @@ const SocketServer = async (_server) => {
 
             if (receiverSocket) {
                 _socketServer.to(receiverSocket).emit("typing", { senderId })
+            }
+
+        })
+
+        socket.on("message_read", async ({ conversationId, receiverId }) => {
+
+            await markMessageAsReadService({ conversationId, receiverId })
+
+            const receiverSocket = socketUsers.get(receiverId)
+
+            if (receiverSocket) {
+                _socketServer.to(receiverSocket).emit("message_read", { conversationId })
             }
 
         })
