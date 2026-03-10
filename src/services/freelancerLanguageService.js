@@ -23,7 +23,7 @@ const deleteFreelancersLanguage = async (filters = {}, options = {}) => {
 	const { transaction } = options;
 	const executor = transaction || db;
 
-	return await executor.delete(freelancerLanguages).where(...buildWhere(filters)).returning();;
+	return await executor.delete(freelancerLanguages).where(buildWhere(filters)).returning();;
 };
 
 const insertManyFreelancerLanguagesService = async (languages = [], options = {}) => {
