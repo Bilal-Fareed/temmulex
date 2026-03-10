@@ -60,7 +60,7 @@ const insertConversationServices = async (conversation = [], options = {}) => {
 	const { transaction } = options;
 	const executor = transaction || db;
 
-	await executor.insert(conversations).values(conversation);
+	return await executor.insert(conversations).values(conversation).returning();
 };
 
 const getConversationMessagesService = async (filters = {}, projection = undefined, options = {}) => {

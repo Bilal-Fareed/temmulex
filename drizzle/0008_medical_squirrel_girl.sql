@@ -1,0 +1,1 @@
+ALTER TABLE "orders" ALTER COLUMN "payment_reference_id" SET DATA TYPE text;

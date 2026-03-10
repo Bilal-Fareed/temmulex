@@ -6,6 +6,7 @@ import {
     uuid,
     numeric,
     varchar,
+    text,
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 import { users } from "./usersModel.js";
@@ -22,7 +23,7 @@ const orders = pgTable("orders", {
     price: numeric().notNull(),
     status: varchar("status").default("pending"),
     paymentStatus: varchar("payment_status").default("pending"),
-    paymentReference: varchar("payment_reference_id").default(null),
+    paymentReference: text("payment_reference_id").default(null),
     isDeleted: boolean("is_deleted").default(false),
     createdAt: timestamp("created_at").defaultNow(),
     updatedAt: timestamp("updated_at").defaultNow(),

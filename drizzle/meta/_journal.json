@@ -57,6 +57,13 @@
       "when": 1772970095945,
       "tag": "0007_reflective_romulus",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1773164553494,
+      "tag": "0008_medical_squirrel_girl",
+      "breakpoints": true
     }
   ]
 }

@@ -2,7 +2,7 @@ import { db } from "../../infra/db.js";
 import { orders } from "../models/ordersModel.js";
 import { users } from "../models/usersModel.js";
 import { reviews } from "../models/reviewsModel.js";
-import { eq, and, sql, count, sum } from "drizzle-orm";
+import { eq, and, sql, count, sum, inArray } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
 import { services } from "../models/servicesModel.js";
 
@@ -12,6 +12,20 @@ const buildWhere = (filters) => {
             eq(orders[key], value)
         )
     );
+};
+
+const updateOrderPaymentStatusService = async (data, filters = {}, options = {}) => {
+    const { transaction } = options;
+    const executor = transaction || db;
+
+    const { paymentStatus } = data
+
+    const [order] = await executor.update(orders).set({
+        paymentStatus: paymentStatus,
+    }).where(...buildWhere(filters));
+
+    return order;
+
 };
 
 const updateOrderByUuidService = async (uuid, updatedObject, options = {}) => {
@@ -61,6 +75,17 @@ const getOrderService = async (filters = {}, projection = undefined, options = {
     const client = alias(users, "client");
     const freelancer = alias(users, "freelancer");
 
+    let whereClause = buildWhere(filters);
+
+    const { clientId, status } = filters;
+
+    if (clientId && status == 'ongoing') {
+        whereClause = and(
+            eq(orders.clientId, clientId),
+            inArray(orders.status, ['pending', 'ongoing'])
+        )
+    }
+
     const { page, limit } = options;
 
     const offset = (page - 1) * limit;
@@ -94,7 +119,7 @@ const getOrderService = async (filters = {}, projection = undefined, options = {
         .leftJoin(freelancer, eq(freelancer.uuid, orders.freelancerId))
         .leftJoin(reviews, eq(reviews.orderId, orders.uuid))
 
-        .where(buildWhere(filters))
+        .where(whereClause)
         .offset(offset)
         .limit(limit);
 }
@@ -136,5 +161,6 @@ export {
     createOrderService,
     getOrderByFilterService,
     updateOrderByUuidService,
+    updateOrderPaymentStatusService,
     getFreelancerCompletedOrderStats,
 }
