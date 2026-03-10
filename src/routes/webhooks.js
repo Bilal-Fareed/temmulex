@@ -33,14 +33,14 @@ router.post('/stripe', express.raw({ type: 'application/json' }), async (req, re
         case 'payment_intent.succeeded': {
             await updateOrderPaymentStatusService({
                 paymentStatus: 'confirmed',
-            }, { paymentIntentId: paymentIntent.id, });
+            }, { paymentReference: paymentIntent.id });
             break;
         }
 
         case 'payment_intent.payment_failed': {
             await updateOrderPaymentStatusService({
                 paymentStatus: 'failed',
-            }, { paymentIntentId: paymentIntent.id, });
+            }, { paymentReference: paymentIntent.id, });
             break;
         }
 
