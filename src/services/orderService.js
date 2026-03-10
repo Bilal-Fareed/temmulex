@@ -22,7 +22,7 @@ const updateOrderPaymentStatusService = async (data, filters = {}, options = {})
 
     const [order] = await executor.update(orders).set({
         paymentStatus: paymentStatus,
-    }).where(...buildWhere(filters));
+    }).where(buildWhere(filters));
 
     return order;
 

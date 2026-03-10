@@ -56,7 +56,7 @@ const updateFreelancerDetailService = async (data, filters = {}, options = {}) =
 		location: sql`ST_SetSRID(ST_MakePoint(${lng}, ${lat}), 4326)`,
 		resumeLink: cvUrl,
 		certificateLink: dbsUrl,
-	}).where(...buildWhere(filters));
+	}).where(buildWhere(filters));
 
 	return freelancer;
 
