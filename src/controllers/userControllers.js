@@ -5,7 +5,13 @@ import { insertFreelancerDetailService, getFreelancerProfileDetailByUserUuid, ge
 import { insertManyFreelancerLanguagesService } from "../services/freelancerLanguageService.js";
 import { insertManyFreelancerServices, getFreelancerServices } from "../services/freelancerServicesService.js";
 import { getOrderService, rateOrder } from "../services/orderService.js";
-import { getUserSpecificConversationListService, getConversationMessagesService, getConversationService, addMessageServices } from "../services/conversationService.js";
+import {
+    addMessageServices,
+    getConversationService,
+    insertConversationServices,
+    getConversationMessagesService,
+    getUserSpecificConversationListService,
+} from "../services/conversationService.js";
 import { redisClient } from "../../infra/redis.js";
 import { sendOtpEmail } from "../helpers/mailer.js";
 import { createOrderService } from "../services/orderService.js"
@@ -14,6 +20,9 @@ import { randomUUID } from 'crypto';
 import { PROFILE_UPDATE_OTP_MESSAGE_SUBCODE } from '../helpers/constants.js';
 import { db } from "../../infra/db.js";
 import { socketUsers, emitNewMessage } from "../../socketServer.js";
+import Stripe from "stripe";
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 const userSignupController = async (req, res) => {
     try {
@@ -533,14 +542,33 @@ const placeOrderController = async (req, res) => {
 
         if(!freelancerService) return res.status(400).json({success: false, message: "This selected service is not offered by the freelancer."})
 
+        // Create a PaymentIntent with the order amount and currency
+        const paymentIntent = await stripe.paymentIntents.create({
+            amount: freelancerService.fixedPriceCents,
+            currency: "usd",
+            // In the latest version of the API, specifying the `automatic_payment_methods` parameter is optional because Stripe enables its functionality by default.
+            automatic_payment_methods: {
+                enabled: true,
+            },
+        });
+
         const order = await createOrderService({
             clientId: uuid, 
             freelancerId: freelancer_id, 
             serviceId: service_id, 
-            price: freelancerService.fixedPriceCents
+            price: freelancerService.fixedPriceCents,
+            paymentReference: paymentIntent.id,
         })
 
-        res.status(200).json({ success: true, message: "Your order have been placed successfully", order_id: order?.uuid });
+        res.status(200).json({
+            success: true,
+            message: "Your order have been placed successfully",
+            data: {
+                ...order,
+                clientSecret: paymentIntent.client_secret,
+            }
+        });
+
     } catch (error) {
         console.error("USER CONTROLLER > PLACE ORDER >", error);
         res.status(500).json({ success: false, message: "Internal Server Error" });
@@ -605,11 +633,18 @@ const getConversationMessagesController = async (req, res) => {
         if (freelancer_id && conversation_id) return res.status(400).json({ success: false, message: "Bad Request." })
         
         if (freelancer_id) {
-            const conversation = await getConversationService({
+            let conversation = await getConversationService({
                 freelancerId: freelancer_id,
                 clientId: uuid
             })
-            conversation_id = conversation.uuid
+
+            if (!conversation) {
+                conversation = await insertConversationServices([
+                    { clientId: uuid, freelancerId: freelancer_id }
+                ])
+            }
+
+            conversation_id = conversation?.uuid
         }
 
         if(!conversation_id) return res.status(403).json({ success: false, message: "No conversation found." })
@@ -618,7 +653,7 @@ const getConversationMessagesController = async (req, res) => {
             conversationId: conversation_id
         }, {}, { page, limit });
 
-        res.status(200).json({ success: true, message: "Conversation List Fetched Successfully", data: messages });
+        res.status(200).json({ success: true, message: "Messages fetched Successfully", data: messages });
     } catch (error) {
         console.error("USER CONTROLLER > GET CONVERSATION MESSAGES >", error);
         res.status(500).json({ success: false, message: "Internal Server Error" });

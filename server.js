@@ -18,8 +18,8 @@ const server = express();
 const _server = http.createServer(server);
 await SocketServer(_server);
 
-// import webhookRoute from "./src/routes/webhooks.js";
-// server.use("/webhooks", webhookRoute);
+import webhookRoute from "./src/routes/webhooks.js";
+server.use("/webhooks", webhookRoute);
 
 server.use(express.json());
 const corsConfig = process.env.ENVIRONMENT?.toLowerCase() === "production"

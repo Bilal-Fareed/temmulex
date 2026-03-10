@@ -294,7 +294,7 @@ const getConversationMessagesController = async (req, res) => {
                 freelancerId: uuid,
                 clientId: client_id
             })
-            conversation_id = conversation.uuid
+            conversation_id = conversation?.uuid
         }
 
         if(!conversation_id) return res.status(403).json({ success: false, message: "No conversation found." })
