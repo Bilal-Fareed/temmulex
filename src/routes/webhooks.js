@@ -1,7 +1,7 @@
 import express, { Router } from "express";
 import Stripe from "stripe";
-import { insertConversationServices } from "../services/logService";
-import { updateOrderPaymentStatusService } from "../services/orderService";
+import { insertConversationServices } from "../services/logService.js";
+import { updateOrderPaymentStatusService } from "../services/orderService.js";
 
 const router = Router();
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
