@@ -9,4 +9,5 @@ export * from "./freelancerServicesModel.js"
 export * from "./languagesModel.js";
 export * from "./servicesModel.js";
 export * from "./usersModel.js";
-export * from "./contactUsModel.js"
+export * from "./contactUsModel.js";
+export * from "./paymentEventLogsModel.js";
