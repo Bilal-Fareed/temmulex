@@ -20,11 +20,9 @@ const updateOrderPaymentStatusService = async (data, filters = {}, options = {})
 
     const { paymentStatus } = data
 
-    const [order] = await executor.update(orders).set({
+    return await executor.update(orders).set({
         paymentStatus: paymentStatus,
     }).where(buildWhere(filters));
-
-    return order;
 
 };
 
