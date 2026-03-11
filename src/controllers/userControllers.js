@@ -20,6 +20,7 @@ import { randomUUID } from 'crypto';
 import { PROFILE_UPDATE_OTP_MESSAGE_SUBCODE } from '../helpers/constants.js';
 import { db } from "../../infra/db.js";
 import { socketUsers, emitNewMessage } from "../../socketServer.js";
+import { dollarsToCents } from "../helpers/constants.js";
 import Stripe from "stripe";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
@@ -89,7 +90,7 @@ const userSignupController = async (req, res) => {
                             services.map((service) => ({
                                 freelancerId: freelancer.uuid,
                                 serviceId: service.serviceId,
-                                fixedPriceCents: service.fixedPriceCents,
+                                fixedPriceCents: dollarsToCents(service.fixedPriceDollars),
                                 currency: service.currency
                             })), { transaction: tx }
                         )
@@ -544,7 +545,7 @@ const placeOrderController = async (req, res) => {
 
         // Create a PaymentIntent with the order amount and currency
         const paymentIntent = await stripe.paymentIntents.create({
-            amount: Number(freelancerService?.fixedPriceCents || 0) * 1000,
+            amount: freelancerService?.fixedPriceCents,
             currency: "usd",
             // In the latest version of the API, specifying the `automatic_payment_methods` parameter is optional because Stripe enables its functionality by default.
             automatic_payment_methods: {

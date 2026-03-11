@@ -19,6 +19,7 @@ import { PROFILE_UPDATE_OTP_MESSAGE_SUBCODE } from '../helpers/constants.js';
 import { getOrderByUuid, updateOrderByUuidService } from '../services/orderService.js';
 import { redisClient } from "../../infra/redis.js";
 import { sendOtpEmail } from "../helpers/mailer.js";
+import { dollarsToCents } from "../helpers/constants.js";
 import { socketUsers, emitNewMessage } from "../../socketServer.js";
 
 const getMyFreelancerProfileController = async (req, res) => {
@@ -97,14 +98,14 @@ const addServiceController = async (req, res) => {
         console.log("FREELANCER CONTROLLER > ADD SERVICE > try block executed");
 
         const { uuid } = req.user;
-        const { serviceId, fixedPriceCents, description, currency, title } = req.body;
+        const { serviceId, fixedPriceDollars, description, currency, title } = req.body;
 
         const freelancer = await getFreelancerProfileDetailByUserUuid(uuid);
 
         const addedService = await insertManyFreelancerServices({
             freelancerId: freelancer.uuid,
             serviceId: serviceId,
-            fixedPriceCents: fixedPriceCents,
+            fixedPriceCents: dollarsToCents(fixedPriceDollars),
             currency: currency,
             description: description,
             title: title
@@ -123,7 +124,7 @@ const updateServiceController = async (req, res) => {
         console.log("FREELANCER CONTROLLER > GET MY PROFILE > try block executed");
 
         const { uuid } = req.user;
-        const { serviceId, fixedPriceCents, description, title } = req.body;
+        const { serviceId, fixedPriceDollars, description, title } = req.body;
 
         const freelancer = await getFreelancerProfileDetailByUserUuid(uuid);
 
@@ -137,7 +138,7 @@ const updateServiceController = async (req, res) => {
                 serviceId: serviceId,
             },
             {
-                fixedPriceCents: fixedPriceCents,
+                fixedPriceCents: dollarsToCents(fixedPriceDollars),
                 description: description,
                 title: title
             }
