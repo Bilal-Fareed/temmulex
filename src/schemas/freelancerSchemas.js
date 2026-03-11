@@ -3,7 +3,7 @@ import vine from '@vinejs/vine';
 const addServiceSchema = vine.object({
     serviceId: vine.string().uuid({ version: [4] }),
     title: vine.string().maxLength(255).minLength(3),
-    fixedPriceCents: vine.number(),
+    fixedPriceDollars: vine.number(),
     description: vine.string(),
     currency: vine.string().minLength(3).maxLength(5).regex(/[A-Z]/, "Currency must contain capital alphabets"),
 });
@@ -11,7 +11,7 @@ const addServiceSchema = vine.object({
 const updateServiceSchema = vine.object({
     serviceId: vine.string().uuid({ version: [4] }),
     title: vine.string().maxLength(255).minLength(3).optional(),
-    fixedPriceCents: vine.number().optional(),
+    fixedPriceDollars: vine.number().optional(),
     description: vine.string().optional(),
 });
 

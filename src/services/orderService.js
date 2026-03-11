@@ -91,7 +91,7 @@ const getOrderService = async (filters = {}, projection = undefined, options = {
     return await db
         .select({
             orderId: orders.uuid,
-            price: orders.price,
+            price: sql`${orders.price} / 100.0`,
             status: orders.status,
             createdAt: orders.createdAt,
 
