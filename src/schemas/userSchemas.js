@@ -30,8 +30,8 @@ const signupSchema = vine.object({
     location: vine.object({ lat: vine.number().min(-90).max(90), lng: vine.number().min(-180).max(180) }).optional().requiredWhen('user_type', '=', 'freelancer'),
     services: vine.array(vine.object({
         serviceId: vine.string().uuid({ version: [4] }),
-        fixedPriceDollars: vine.number(),
-        currency: vine.string().minLength(3).maxLength(5).regex(/[A-Z]/, "Currency must contain capital alphabets"),
+        fixedPriceDollars: vine.number().optional().transform((value) => value ?? 0),
+        currency: vine.string().minLength(3).maxLength(5).regex(/[A-Z]/, "Currency must contain capital alphabets").optional().transform((value) => value ?? 'USD'),
     })).optional().requiredWhen('user_type', '=', 'freelancer'),
 });
 

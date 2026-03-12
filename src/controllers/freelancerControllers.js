@@ -157,7 +157,7 @@ const updateFreelancerProfileController = async (req, res) => {
         console.log("FREELANCER CONTROLLER > UPDATE FREELANCER PROFILE > try block executed");
 
         const { uuid } = req.user;
-        const { profile_picture_url, title, first_name, last_name, email, phone, dob, country, languages, cv_url, dbs_url, location } = req.body;
+        const { profile_picture_url, title, first_name, last_name, email, phone, dob, country, languages, cv_url, dbs_url, location, otp } = req.body;
 
         const user = await getUserByUuid(uuid);
 
