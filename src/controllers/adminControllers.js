@@ -1,0 +1,89 @@
+import { getAdminByEmail, getAdminByUuid, updateAdminByUuidService } from "../services/adminService.js";
+import { verifyPassword, generateAccessToken } from "../helpers/security.js";
+import { adminDashboardUserStats } from "../services/userService.js";
+import { adminDashboardOrderStats, getOrderService } from "../services/orderService.js";
+
+const adminLoginController = async (req, res) => {
+    try {
+        console.log("ADMIN CONTROLLER > LOGIN > try block executed");
+
+        const { email, password } = req.body;
+
+        const admin = await getAdminByEmail(email);
+        if (!admin || admin?.password) return res.status(403).json({ success: false, message: 'Invalid credentials.' });
+
+        const isValid = await verifyPassword(password, admin.password);
+        if (!isValid) return res.status(403).json({ success: false, message: 'Invalid credentials.' });
+        
+        const accessToken = generateAccessToken({
+            uuid: admin.uuid,
+            email: admin.email,
+            version: admin.refreshTokenVersion,
+        }, { expiryTime: '12h' });
+
+        res.status(200).json({
+            success: true,
+            user: {
+                uuid: admin.uuid,
+                email: admin.email,
+                firstName: admin.firstName,
+                lastName: admin.lastName,
+            },
+            accessToken,
+        });
+    } catch (error) {
+        console.error("ADMIN CONTROLLER > LOGIN >", error);
+        res.status(500).json({ success: false, message: "Internal Server Error" });
+    }
+};
+
+const adminLogoutController = async (req, res) => {
+    try {
+        console.log("ADMIN CONTROLLER > LOGOUT > try block executed");
+        const { uuid } = req.user;
+
+        if (!uuid) {
+            res.status(400).json({ success: false, message: 'Failed to logout' });
+            return;
+        }
+
+        const admin = await getAdminByUuid(uuid);
+
+        if (!admin) return res.status(404).json({ success: false, message: "Failed to logout" });
+
+        await updateAdminByUuidService(uuid, { refreshTokenVersion: admin.refreshTokenVersion + 1 });
+
+        res.status(200).json({ success: true, message: "Admin Logged Out" });
+    } catch (error) {
+        console.error("ADMIN CONTROLLER > LOGOUT >", error);
+        res.status(500).json({ success: false, message: "Internal Server Error" });
+    }
+};
+
+const adminDashboardController = async (req, res) => {
+    try {
+        console.log("ADMIN CONTROLLER > ADMIN DASHBOARD STATS > try block executed");
+
+        const [userStats, orderStats, orderList] = await Promise.all([
+            adminDashboardUserStats(),
+            adminDashboardOrderStats(),
+            getOrderService({}, undefined, { page: 1, limit: 5 })
+        ])
+
+        res.status(200).json({ success: true, message: "Admin Logged Out", data: {
+            userStats,
+            orderStats,
+            orderList
+        } });
+
+    } catch (error) {
+        console.error("ADMIN CONTROLLER > ADMIN DASHBOARD STATS >", error);
+        res.status(500).json({ success: false, message: "Internal Server Error" });
+    }
+};
+
+export {
+    adminLoginController,
+    adminLogoutController,
+    adminDashboardController,
+}

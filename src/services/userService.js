@@ -1,6 +1,7 @@
 import { db } from "../../infra/db.js";
 import { users } from "../models/usersModel.js";
-import { eq, and } from "drizzle-orm";
+import { freelancerProfiles } from "../models/freelancerProfilesModel.js"
+import { eq, and, sql } from "drizzle-orm";
 
 const buildWhere = (filters) => {
 	return and(
@@ -55,6 +56,22 @@ const updateUserByUuidService = async (uuid, updatedObject, options = {}) => {
 		.where(eq(users.uuid, uuid));
 };
 
+const adminDashboardUserStats = async () => {
+	const [stats] = await db
+		.select({
+			totalUsers: sql`COUNT(*)`,
+			activeShopperss: sql`COUNT(*) FILTER (WHERE ${freelancerProfiles.userId} IS NOT NULL AND ${freelancerProfiles.profileStatus} = 'approved')`,
+			pendingApprovals: sql`COUNT(*) FILTER (WHERE ${freelancerProfiles.userId} IS NOT NULL AND ${freelancerProfiles.profileStatus} = 'pending')`
+		})
+		.from(users)
+		.leftJoin(
+			freelancerProfiles,
+			eq(freelancerProfiles.userId, users.uuid)
+		);
+
+	return stats;
+}
+
 
 export {
 	getUserService,
@@ -62,5 +79,6 @@ export {
 	getUserByEmail,
 	updateUserByUuidService,
 	getUserByUuid,
+	adminDashboardUserStats,
 }
 

@@ -458,3 +458,32 @@ curl --location 'http://localhost:3001/v1/freelancers/send-message' \
 --form 'receiverId="de6fe813-c292-4da1-a817-eecb2cea9142"' \
 --form 'image=@"/C:/Users/DELL/Downloads/b16ffd120f5b763c28f892e946249097.jpg"'
 ```
+
+
+## ============================================== ADMIN REQUEST CURLS ============================================
+
+## 📝 Contact us message
+```bash
+curl --location 'http://localhost:3001/api/admin/login' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "email":"admin@gmail.com",
+    "password": "aBc123@!"
+}'
+```
+
+
+## 📝 Admin logout
+```bash
+curl --location --request POST 'http://localhost:3001/api/admin/logout' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1dWlkIjoiODc5ZTZkOTgtNGMyNy00Y2MzLTg4ZWItOTlhMGQ4YjhmZDE4IiwiZW1haWwiOiJhZG1pbkBnbWFpbC5jb20iLCJ2ZXJzaW9uIjowLCJpYXQiOjE3NzM0Mzk5MDAsImV4cCI6MTc3MzQ4MzEwMH0.hnQfSeA6DChL_hCM-XZmuwg4-3nt88spmHObA60xi8E'
+```
+
+
+## 📝 Admin dashboard
+```bash
+curl --location 'http://localhost:3001/api/admin/dashboard'
+```
+
+

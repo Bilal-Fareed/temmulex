@@ -91,7 +91,7 @@ const getOrderService = async (filters = {}, projection = undefined, options = {
     return await db
         .select({
             orderId: orders.uuid,
-            price: sql`${orders.price} / 100.0`,
+            price: sql`ROUND(${orders.price} / 100.0, 2)`,
             status: orders.status,
             createdAt: orders.createdAt,
 
@@ -152,6 +152,18 @@ const getOrderByUuid = async (uuid, projection = undefined, options = {}) => {
 	});
 }
 
+const adminDashboardOrderStats = async () => {
+	const [stats] = await db
+		.select({
+			ongoingOrders: sql`COUNT(*) FILTER (WHERE ${orders.status} = 'ongoing')`,
+			completedOrders: sql`COUNT(*) FILTER (WHERE ${orders.status} = 'completed')`,
+			disputedOrders: sql`COUNT(*) FILTER (WHERE ${orders.paymentStatus} = 'pending')`,
+			cancelledOrders: sql`COUNT(*) FILTER (WHERE ${orders.status} = 'cancelled')`
+		})
+		.from(orders);
+	return stats;
+}
+
 export {
     rateOrder,
     getOrderByUuid,
@@ -159,6 +171,7 @@ export {
     createOrderService,
     getOrderByFilterService,
     updateOrderByUuidService,
+    adminDashboardOrderStats,
     updateOrderPaymentStatusService,
     getFreelancerCompletedOrderStats,
 }
