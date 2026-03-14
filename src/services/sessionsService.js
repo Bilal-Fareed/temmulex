@@ -21,7 +21,7 @@ const getUserSessionForAuth = async (data, options = {}) => {
 	const executor = transaction || db;
 	
 	const { tokenId, deviceId, userUuid, userType, revoked } = data
-	await executor
+	return await executor
 		.select()
 		.from(sessions)
 		.where(
