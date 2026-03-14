@@ -2,7 +2,8 @@ import { getAdminByEmail, getAdminByUuid, updateAdminByUuidService } from "../se
 import { verifyPassword, generateAccessToken } from "../helpers/security.js";
 import { adminDashboardUserStats, getUsersList } from "../services/userService.js";
 import { getShoppersList } from "../services/freelancerProfileService.js";
-import { adminDashboardOrderStats, getOrderService } from "../services/orderService.js";
+import { getSupportListService } from "../services/contactUsService.js";
+import { adminDashboardOrderStats, getOrderService, getAdminOrdersListService } from "../services/orderService.js";
 
 const adminLoginController = async (req, res) => {
     try {
@@ -110,17 +111,49 @@ const adminShoppersListController = async (req, res) => {
 
         const { page, limit, search_text, profile_status } = req.query;
 
-        const clientList = await getShoppersList({
+        const shoppersList = await getShoppersList({
             page,
             limit,
             search_text,
             profile_status
         });
 
-        res.status(200).json({ success: true, message: "Client List Fetched Successfully", data: clientList });
+        res.status(200).json({ success: true, message: "Shoppers List Fetched Successfully", data: shoppersList });
 
     } catch (error) {
         console.error("ADMIN CONTROLLER > ADMIN SHOPPERS LIST >", error);
+        res.status(500).json({ success: false, message: "Internal Server Error" });
+    }
+};
+
+const adminOrdersListController = async (req, res) => {
+    try {
+        console.log("ADMIN CONTROLLER > ADMIN ORDERS LIST > try block executed");
+
+        const { page, limit, search_text, order_status } = req.query;
+
+        const ordersList = await getAdminOrdersListService({ search_text, order_status }, { page, limit });
+
+        res.status(200).json({ success: true, message: "Orders List Fetched Successfully", data: ordersList });
+
+    } catch (error) {
+        console.error("ADMIN CONTROLLER > ADMIN ORDERS LIST >", error);
+        res.status(500).json({ success: false, message: "Internal Server Error" });
+    }
+};
+
+const adminSupportListController = async (req, res) => {
+    try {
+        console.log("ADMIN CONTROLLER > ADMIN SUPPORT LIST > try block executed");
+
+        const { page, limit, search_text, ticket_status } = req.query;
+
+        const supportList = await getSupportListService({ search_text, ticket_status, page, limit });
+
+        res.status(200).json({ success: true, message: "Tickets List Fetched Successfully", data: supportList });
+
+    } catch (error) {
+        console.error("ADMIN CONTROLLER > ADMIN SUPPORT LIST >", error);
         res.status(500).json({ success: false, message: "Internal Server Error" });
     }
 };
@@ -129,6 +162,8 @@ export {
     adminLoginController,
     adminLogoutController,
     adminDashboardController,
+    adminSupportListController,
     adminClientListController,
     adminShoppersListController,
+    adminOrdersListController,
 }
