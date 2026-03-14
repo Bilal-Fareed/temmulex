@@ -40,7 +40,7 @@ server.use("/v1/users", userRoutes);
 import freelancerRoutes from "./src/routes/freelancerRoutes.js";
 server.use("/v1/freelancers", freelancerRoutes);
 
-// import adminRoutes from "./src/routes/adminRoutes.js";
-// server.use("/api/admin", adminRoutes);
+import adminRoutes from "./src/routes/adminRoutes.js";
+server.use("/api/admin", adminRoutes);
 
 _server.listen(port, () => console.log("Server Running On Port: ", port));

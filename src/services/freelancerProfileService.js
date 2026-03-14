@@ -1,11 +1,8 @@
 import { db } from '../../infra/db.js';
 import { freelancerProfiles } from "../models/freelancerProfilesModel.js";
 import { users } from "../models/usersModel.js";
-import { languages } from "../models/languagesModel.js";
-import { services } from "../models/servicesModel.js";
-import { freelancerLanguages } from '../models/freelancerLanguagesModel.js';
-import { freelancerServices } from '../models/freelancerServicesModel.js';
 import { eq, sql, and } from "drizzle-orm";
+import { dollarsToCents } from "../helpers/constants.js";
 
 const buildWhere = (filters) => {
 	return and(
@@ -109,7 +106,7 @@ const getNearbyFreelancers = async (filters) => {
 		const pgArray = `'{${serviceIds.join(",")}}'::uuid[]`;
 
 		conditions.push(
-			sql`EXISTS ( SELECT 1 FROM freelancer_services fs LEFT JOIN services s ON fs.service_id = s.uuid WHERE fs.freelancer_id = ${freelancerProfiles.uuid} AND fs.service_id = ANY(${sql.raw(pgArray)}) AND COALESCE(fs.is_deleted,false)=false ${sql.raw(price_range ? `AND fixed_price_cents >= ${price_range.starting_price} AND fixed_price_cents <= ${price_range.ending_price}` : '')} )`
+			sql`EXISTS ( SELECT 1 FROM freelancer_services fs LEFT JOIN services s ON fs.service_id = s.uuid WHERE fs.freelancer_id = ${freelancerProfiles.uuid} AND fs.service_id = ANY(${sql.raw(pgArray)}) AND COALESCE(fs.is_deleted,false)=false ${sql.raw(price_range ? `AND fixed_price_cents >= ${dollarsToCents(price_range.starting_price)} AND fixed_price_cents <= ${dollarsToCents(price_range.ending_price)}` : '')} )`
 		);
 	}
 
@@ -133,7 +130,7 @@ const getNearbyFreelancers = async (filters) => {
 			createdAt: freelancerProfiles.createdAt,
 			distance: sql`ST_DistanceSphere(${freelancerProfiles.location}, ${sql.raw(point)})`,
 			languages: sql`COALESCE(( SELECT json_agg(DISTINCT l.name) FROM freelancer_languages fl JOIN languages l ON l.uuid = fl.language_id WHERE fl.freelancer_id = ${freelancerProfiles.uuid} AND COALESCE(fl.is_deleted,false)=false ), '[]')`,
-			services: sql`COALESCE(( SELECT json_agg(DISTINCT jsonb_build_object('description', fs.description, 'title', fs.title, 'name', s.name, 'fixed_price_cents', fs.fixed_price_cents, 'currency', fs.currency, 'service_type', s.service_type, 'uuid', s.uuid)) FROM freelancer_services fs JOIN services s ON s.uuid = fs.service_id WHERE fs.freelancer_id = ${freelancerProfiles.uuid} AND COALESCE(fs.is_deleted,false)=false ), '[]')`,
+			services: sql`COALESCE(( SELECT json_agg(DISTINCT jsonb_build_object('description', fs.description, 'title', fs.title, 'name', s.name, 'fixedPriceDollars', ROUND(fs.fixed_price_cents / 100.0, 2), 'currency', fs.currency, 'serviceType', s.service_type, 'uuid', s.uuid)) FROM freelancer_services fs JOIN services s ON s.uuid = fs.service_id WHERE fs.freelancer_id = ${freelancerProfiles.uuid} AND COALESCE(fs.is_deleted,false)=false ), '[]')`,
 		})
 		.from(users)
 		.innerJoin(freelancerProfiles, eq(users.uuid, freelancerProfiles.userId))
@@ -162,7 +159,7 @@ const getFreelancerDetails = async (uuid) => {
 			profileStatus: freelancerProfiles.profileStatus,
 			createdAt: freelancerProfiles.createdAt,
 			languages: sql`COALESCE(( SELECT json_agg(DISTINCT jsonb_build_object('name', l.name, 'uuid', l.uuid)) FROM freelancer_languages fl JOIN languages l ON l.uuid = fl.language_id WHERE fl.freelancer_id = ${freelancerProfiles.uuid} AND COALESCE(fl.is_deleted,false)=false ), '[]')`,
-			services: sql`COALESCE(( SELECT json_agg(DISTINCT jsonb_build_object('description', fs.description, 'title', fs.title, 'name', s.name, 'fixed_price_cents', fs.fixed_price_cents, 'currency', fs.currency, 'service_type', s.service_type, 'uuid', s.uuid)) FROM freelancer_services fs JOIN services s ON s.uuid = fs.service_id WHERE fs.freelancer_id = ${freelancerProfiles.uuid} AND COALESCE(fs.is_deleted,false)=false ), '[]')`,
+			services: sql`COALESCE(( SELECT json_agg(DISTINCT jsonb_build_object('description', fs.description, 'title', fs.title, 'name', s.name, 'fixedPriceDollars', ROUND(fs.fixed_price_cents / 100.0, 2), 'currency', fs.currency, 'serviceType', s.service_type, 'uuid', s.uuid)) FROM freelancer_services fs JOIN services s ON s.uuid = fs.service_id WHERE fs.freelancer_id = ${freelancerProfiles.uuid} AND COALESCE(fs.is_deleted,false)=false ), '[]')`,
 		})
 		.from(users)
 		.innerJoin(freelancerProfiles, eq(users.uuid, freelancerProfiles.userId))
@@ -171,7 +168,64 @@ const getFreelancerDetails = async (uuid) => {
 	return result;
 }
 
+const getShoppersList = async (filters) => {
+
+	const {
+		page = 1,
+		limit = 10,
+		profile_status,
+		search_text,
+	} = filters;
+
+	const offset = (page - 1) * limit;
+
+	const conditions = [];
+
+	if (search_text){
+		conditions.push(
+			sql`( ${users.firstName} || ' ' || ${users.lastName} ) ILIKE ${'%' + search_text + '%'}`
+		);
+	}
+
+	switch (profile_status) {
+		case 'pending':
+			conditions.push(eq(freelancerProfiles.profileStatus, 'pending'));
+			break;
+		case 'approved':
+			conditions.push(eq(freelancerProfiles.profileStatus, 'approved'));
+			break;
+		case 'rejected':
+			conditions.push(eq(freelancerProfiles.profileStatus, 'rejected'));
+			break;
+	}
+
+	const result = await db
+		.select({
+			userId: users.uuid,
+			firstName: users.firstName,
+			lastName: users.lastName,
+			email: users.email,
+			phone: users.phone,
+			title: users.title,
+			isVerified: users.isVerified,
+			country: users.country,
+			profilePicture: users.profilePicture,
+			resumeLink: freelancerProfiles.resumeLink,
+			certificateLink: freelancerProfiles.certificateLink,
+			profileStatus: freelancerProfiles.profileStatus,
+			createdAt: freelancerProfiles.createdAt,
+		})
+		.from(users)
+		.innerJoin(freelancerProfiles, eq(users.uuid, freelancerProfiles.userId))
+		.where(and(...conditions))
+		.limit(limit)
+		.offset(offset);
+
+	return result;
+}
+
 export {
+	getShoppersList,
 	insertFreelancerDetailService,
 	getFreelancerProfileDetailByUserUuid,
 	getNearbyFreelancers,

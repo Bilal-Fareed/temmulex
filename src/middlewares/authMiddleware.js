@@ -1,5 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { getUserByUuid } from '../services/userService.js';
+import { getAdminByUuid } from '../services/adminService.js';
 import { getUserSessionForAuth, insertUserSession } from '../services/sessionsService.js';
 import { generateAccessToken, generateRefreshToken, verifyAccessToken, verifyRefreshToken } from '../helpers/security.js';
 
@@ -127,7 +128,37 @@ const authenticateTemporaryToken = async (req, res, next) => {
 	}
 };
 
+const authenticateAdminToken = async (req, res, next) => {
+	const accessToken = req.headers.authorization?.split(' ')[1];
+
+	if (!accessToken) {
+		return res.status(401).json({ message: 'Access token missing' });
+	}
+
+	try {
+		const decodedAccess = verifyAccessToken(accessToken);
+
+		if (!decodedAccess || !decodedAccess?.uuid) return res.status(401).json({ message: 'Invalid or expired token' });
+
+		const admin = await getAdminByUuid(decodedAccess.uuid);
+		if (admin?.refreshTokenVersion !== decodedAccess.version) {
+			return res.status(401).json({ message: 'Session revoked' });
+		}
+
+		req.user = {
+			uuid: decodedAccess.uuid,
+			email: decodedAccess.email,
+			version: decodedAccess.version,
+		};
+		next();
+	} catch (error) {
+		console.error("ADMIN AUTH MIDDLEWARE > CATCH > ", error);
+		return res.status(401).json({ message: 'Invalid or expired token' });
+	}
+};
+
 export {
 	authenticate,
+	authenticateAdminToken,
 	authenticateTemporaryToken,
 };
