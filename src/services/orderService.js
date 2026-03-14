@@ -14,15 +14,11 @@ const buildWhere = (filters) => {
     );
 };
 
-const updateOrderPaymentStatusService = async (data, filters = {}, options = {}) => {
+const updateOrderPaymentStatusService = async (data = {}, filters = {}, options = {}) => {
     const { transaction } = options;
     const executor = transaction || db;
 
-    const { paymentStatus } = data
-
-    return await executor.update(orders).set({
-        paymentStatus: paymentStatus,
-    }).where(buildWhere(filters));
+    return await executor.update(orders).set(data).where(buildWhere(filters));
 
 };
 
