@@ -1,6 +1,6 @@
 import { db } from "../../infra/db.js";
 import { users } from "../models/usersModel.js";
-import { freelancerProfiles } from "../models/freelancerProfilesModel.js"
+import { freelancerProfiles } from "../models/freelancerProfilesModel.js";
 import { eq, and, sql } from "drizzle-orm";
 
 const buildWhere = (filters) => {
@@ -72,8 +72,63 @@ const adminDashboardUserStats = async () => {
 	return stats;
 }
 
+const getUsersList = async (filters) => {
+
+	const {
+		page = 1,
+		limit = 10,
+		profile_status,
+		search_text,
+	} = filters;
+
+	const offset = (page - 1) * limit;
+
+	const conditions = [
+		sql`NOT EXISTS (SELECT 1 FROM freelancer_profiles fp WHERE fp.user_id = ${users.uuid})`,
+	];
+
+	if (search_text){
+		conditions.push(
+			sql`( ${users.firstName} || ' ' || ${users.lastName} ) ILIKE ${'%' + search_text + '%'}`
+		);
+	}
+
+	switch (profile_status) {
+		case 'active':
+			conditions.push(eq(users.isBlocked, false));
+			break;
+		case 'blocked':
+			conditions.push(eq(users.isBlocked, true));
+			break;
+		case 'deleted':
+			conditions.push(eq(users.isDeleted, true));
+			break;
+	}
+
+	const result = await db
+		.select({
+			userId: users.uuid,
+			firstName: users.firstName,
+			lastName: users.lastName,
+			email: users.email,
+			title: users.title,
+			isVerified: users.isVerified,
+			isDeleted: users.isDeleted,
+			country: users.country,
+			profilePicture: users.profilePicture,
+			createdAt: users.createdAt,
+		})
+		.from(users)
+		.where(and(...conditions))
+		.limit(limit)
+		.offset(offset);
+
+	return result;
+}
+
 
 export {
+	getUsersList,
 	getUserService,
 	createUserService,
 	getUserByEmail,

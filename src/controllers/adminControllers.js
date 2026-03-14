@@ -1,6 +1,6 @@
 import { getAdminByEmail, getAdminByUuid, updateAdminByUuidService } from "../services/adminService.js";
 import { verifyPassword, generateAccessToken } from "../helpers/security.js";
-import { adminDashboardUserStats } from "../services/userService.js";
+import { adminDashboardUserStats, getUsersList } from "../services/userService.js";
 import { adminDashboardOrderStats, getOrderService } from "../services/orderService.js";
 
 const adminLoginController = async (req, res) => {
@@ -70,7 +70,7 @@ const adminDashboardController = async (req, res) => {
             getOrderService({}, undefined, { page: 1, limit: 5 })
         ])
 
-        res.status(200).json({ success: true, message: "Admin Logged Out", data: {
+        res.status(200).json({ success: true, message: "Admin Dashboard Data Fetched Successfully", data: {
             userStats,
             orderStats,
             orderList
@@ -82,8 +82,30 @@ const adminDashboardController = async (req, res) => {
     }
 };
 
+const adminClientListController = async (req, res) => {
+    try {
+        console.log("ADMIN CONTROLLER > ADMIN CLIENT LIST > try block executed");
+
+        const { page, limit, search_text, profile_status } = req.query;
+
+        const clientList = await getUsersList({
+            page,
+            limit,
+            search_text,
+            profile_status
+        });
+
+        res.status(200).json({ success: true, message: "Client List Fetched Successfully", data: clientList });
+
+    } catch (error) {
+        console.error("ADMIN CONTROLLER > ADMIN CLIENT LIST >", error);
+        res.status(500).json({ success: false, message: "Internal Server Error" });
+    }
+};
+
 export {
     adminLoginController,
     adminLogoutController,
     adminDashboardController,
+    adminClientListController,
 }

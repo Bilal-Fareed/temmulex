@@ -475,7 +475,7 @@ curl --location 'http://localhost:3001/api/admin/login' \
 
 ## 📝 Admin logout
 ```bash
-curl --location --request POST 'http://localhost:3001/api/admin/logout' \
+curl --location --request PUT 'http://localhost:3001/api/admin/logout' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1dWlkIjoiODc5ZTZkOTgtNGMyNy00Y2MzLTg4ZWItOTlhMGQ4YjhmZDE4IiwiZW1haWwiOiJhZG1pbkBnbWFpbC5jb20iLCJ2ZXJzaW9uIjowLCJpYXQiOjE3NzM0Mzk5MDAsImV4cCI6MTc3MzQ4MzEwMH0.hnQfSeA6DChL_hCM-XZmuwg4-3nt88spmHObA60xi8E'
 ```
@@ -487,3 +487,9 @@ curl --location 'http://localhost:3001/api/admin/dashboard'
 ```
 
 
+## 📝 Admin Client List
+```bash
+curl --location 'http://localhost:3001/api/admin/clients?page=1&limit=10&profile_status=active&search_text=irs' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1dWlkIjoiODc5ZTZkOTgtNGMyNy00Y2MzLTg4ZWItOTlhMGQ4YjhmZDE4IiwiZW1haWwiOiJhZG1pbkBnbWFpbC5jb20iLCJ2ZXJzaW9uIjowLCJpYXQiOjE3NzM0Mzk5MDAsImV4cCI6MTc3MzQ4MzEwMH0.hnQfSeA6DChL_hCM-XZmuwg4-3nt88spmHObA60xi8E'
+```
