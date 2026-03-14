@@ -1,0 +1,1 @@
+ALTER TABLE "contact_us" ADD COLUMN "is_resolved" boolean DEFAULT false;

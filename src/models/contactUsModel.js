@@ -14,6 +14,7 @@ const contactUs = pgTable("contact_us", {
     fullName: varchar("full_name", { length: 255 }),
     email: varchar("email", { length: 255 }),
     message: text("message"),
+    isResolved: boolean("is_resolved").default(false),
     isDeleted: boolean("is_deleted").default(false),
     createdAt: timestamp("created_at").defaultNow(),
     updatedAt: timestamp("updated_at").defaultNow(),

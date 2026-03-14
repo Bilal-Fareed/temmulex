@@ -91,7 +91,7 @@ const getOrderService = async (filters = {}, projection = undefined, options = {
     return await db
         .select({
             orderId: orders.uuid,
-            price: sql`${orders.price} / 100.0`,
+            price: sql`ROUND(${orders.price} / 100.0, 2)`,
             status: orders.status,
             createdAt: orders.createdAt,
 
@@ -152,6 +152,81 @@ const getOrderByUuid = async (uuid, projection = undefined, options = {}) => {
 	});
 }
 
+const adminDashboardOrderStats = async () => {
+	const [stats] = await db
+		.select({
+			ongoingOrders: sql`COUNT(*) FILTER (WHERE ${orders.status} = 'ongoing')`,
+			completedOrders: sql`COUNT(*) FILTER (WHERE ${orders.status} = 'completed')`,
+			disputedOrders: sql`COUNT(*) FILTER (WHERE ${orders.paymentStatus} = 'pending')`,
+			cancelledOrders: sql`COUNT(*) FILTER (WHERE ${orders.status} = 'cancelled')`
+		})
+		.from(orders);
+	return stats;
+}
+
+const getAdminOrdersListService = async (filters = {}, options = {}) => {
+
+    const client = alias(users, "client");
+    const freelancer = alias(users, "freelancer");
+
+    const conditions = [];
+    const { search_text, order_status } = filters;
+    const { page, limit } = options;
+    const offset = (page - 1) * limit;
+
+    if (search_text)
+        conditions.push(sql`(${orders.uuid}) ILIKE ${'%' + search_text + '%'}`);
+
+    switch (order_status) {
+        case 'pending':
+            conditions.push(eq(orders.status, 'pending'));
+            break;
+        case 'ongoing':
+            conditions.push(eq(orders.status, 'ongoing'));
+            break;
+        case 'completed':
+            conditions.push(eq(orders.status, 'completed'));
+            break;
+        case 'disputed':
+            conditions.push(...[eq(orders.status, 'completed'), eq(orders.paymentStatus, 'pending')]);
+            break;
+    }
+
+    return await db
+        .select({
+            orderId: orders.uuid,
+            price: sql`ROUND(${orders.price} / 100.0, 2)`,
+            status: orders.status,
+            createdAt: orders.createdAt,
+            paymentStatus: orders.paymentStatus,
+
+            serviceId: services.uuid,
+            serviceName: services.name,
+            serviceType: services.service_type,
+
+            clientUuid: client.uuid,
+            clientName: sql`${client.firstName} || ' ' || ${client.lastName}`,
+            clientEmail: client.email,
+
+            freelancerUuid: freelancer.uuid,
+            freelancerName: sql`${freelancer.firstName} || ' ' || ${freelancer.lastName}`,
+            freelancerEmail: freelancer.email,
+
+            reviewId: reviews.uuid,
+            rating: reviews.rating,
+        })
+        .from(orders)
+
+        .leftJoin(client, eq(client.uuid, orders.clientId))
+        .leftJoin(services, eq(services.uuid, orders.serviceId))
+        .leftJoin(freelancer, eq(freelancer.uuid, orders.freelancerId))
+        .leftJoin(reviews, eq(reviews.orderId, orders.uuid))
+
+        .where(...conditions)
+        .offset(offset)
+        .limit(limit);
+}
+
 export {
     rateOrder,
     getOrderByUuid,
@@ -159,6 +234,8 @@ export {
     createOrderService,
     getOrderByFilterService,
     updateOrderByUuidService,
+    adminDashboardOrderStats,
+    getAdminOrdersListService,
     updateOrderPaymentStatusService,
     getFreelancerCompletedOrderStats,
 }
