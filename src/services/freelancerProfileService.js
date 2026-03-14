@@ -161,7 +161,7 @@ const getFreelancerDetails = async (uuid) => {
 			profileStatus: freelancerProfiles.profileStatus,
 			createdAt: freelancerProfiles.createdAt,
 			languages: sql`COALESCE(( SELECT json_agg(DISTINCT jsonb_build_object('name', l.name, 'uuid', l.uuid)) FROM freelancer_languages fl JOIN languages l ON l.uuid = fl.language_id WHERE fl.freelancer_id = ${freelancerProfiles.uuid} AND COALESCE(fl.is_deleted,false)=false ), '[]')`,
-			services: sql`COALESCE(( SELECT json_agg(DISTINCT jsonb_build_object('description', fs.description, 'title', fs.title, 'name', s.name, 'fixed_price_cents', fs.fixed_price_cents, 'currency', fs.currency, 'service_type', s.service_type, 'uuid', s.uuid)) FROM freelancer_services fs JOIN services s ON s.uuid = fs.service_id WHERE fs.freelancer_id = ${freelancerProfiles.uuid} AND COALESCE(fs.is_deleted,false)=false ), '[]')`,
+			services: sql`COALESCE(( SELECT json_agg(DISTINCT jsonb_build_object('description', fs.description, 'title', fs.title, 'name', s.name, 'fixedPriceDollars', fs.fixed_price_cents / 100.0, 'currency', fs.currency, 'serviceType', s.service_type, 'uuid', s.uuid)) FROM freelancer_services fs JOIN services s ON s.uuid = fs.service_id WHERE fs.freelancer_id = ${freelancerProfiles.uuid} AND COALESCE(fs.is_deleted,false)=false ), '[]')`,
 		})
 		.from(users)
 		.innerJoin(freelancerProfiles, eq(users.uuid, freelancerProfiles.userId))
