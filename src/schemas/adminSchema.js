@@ -13,7 +13,15 @@ const adminClientListSchema = vine.object({
     limit: vine.number().min(1).max(100).optional(),
 }); 
 
+const adminShopperListSchema = vine.object({
+    profile_status: vine.enum(['pending', 'approved', 'rejected']).optional(),
+    search_text: vine.string().minLength(0).maxLength(1000).optional(),
+    page: vine.number().min(1).max(1000).optional(),
+    limit: vine.number().min(1).max(100).optional(),
+}); 
+
 export {
     adminLoginSchema,
     adminClientListSchema,
+    adminShopperListSchema,
 }

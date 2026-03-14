@@ -1,6 +1,7 @@
 import { getAdminByEmail, getAdminByUuid, updateAdminByUuidService } from "../services/adminService.js";
 import { verifyPassword, generateAccessToken } from "../helpers/security.js";
 import { adminDashboardUserStats, getUsersList } from "../services/userService.js";
+import { getShoppersList } from "../services/freelancerProfileService.js";
 import { adminDashboardOrderStats, getOrderService } from "../services/orderService.js";
 
 const adminLoginController = async (req, res) => {
@@ -103,9 +104,31 @@ const adminClientListController = async (req, res) => {
     }
 };
 
+const adminShoppersListController = async (req, res) => {
+    try {
+        console.log("ADMIN CONTROLLER > ADMIN SHOPPERS LIST > try block executed");
+
+        const { page, limit, search_text, profile_status } = req.query;
+
+        const clientList = await getShoppersList({
+            page,
+            limit,
+            search_text,
+            profile_status
+        });
+
+        res.status(200).json({ success: true, message: "Client List Fetched Successfully", data: clientList });
+
+    } catch (error) {
+        console.error("ADMIN CONTROLLER > ADMIN SHOPPERS LIST >", error);
+        res.status(500).json({ success: false, message: "Internal Server Error" });
+    }
+};
+
 export {
     adminLoginController,
     adminLogoutController,
     adminDashboardController,
     adminClientListController,
+    adminShoppersListController,
 }

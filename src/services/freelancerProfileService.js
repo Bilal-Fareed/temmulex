@@ -170,7 +170,64 @@ const getFreelancerDetails = async (uuid) => {
 	return result;
 }
 
+const getShoppersList = async (filters) => {
+
+	const {
+		page = 1,
+		limit = 10,
+		profile_status,
+		search_text,
+	} = filters;
+
+	const offset = (page - 1) * limit;
+
+	const conditions = [];
+
+	if (search_text){
+		conditions.push(
+			sql`( ${users.firstName} || ' ' || ${users.lastName} ) ILIKE ${'%' + search_text + '%'}`
+		);
+	}
+
+	switch (profile_status) {
+		case 'pending':
+			conditions.push(eq(freelancerProfiles.profileStatus, 'pending'));
+			break;
+		case 'approved':
+			conditions.push(eq(freelancerProfiles.profileStatus, 'approved'));
+			break;
+		case 'rejected':
+			conditions.push(eq(freelancerProfiles.profileStatus, 'rejected'));
+			break;
+	}
+
+	const result = await db
+		.select({
+			userId: users.uuid,
+			firstName: users.firstName,
+			lastName: users.lastName,
+			email: users.email,
+			phone: users.phone,
+			title: users.title,
+			isVerified: users.isVerified,
+			country: users.country,
+			profilePicture: users.profilePicture,
+			resumeLink: freelancerProfiles.resumeLink,
+			certificateLink: freelancerProfiles.certificateLink,
+			profileStatus: freelancerProfiles.profileStatus,
+			createdAt: freelancerProfiles.createdAt,
+		})
+		.from(users)
+		.innerJoin(freelancerProfiles, eq(users.uuid, freelancerProfiles.userId))
+		.where(and(...conditions))
+		.limit(limit)
+		.offset(offset);
+
+	return result;
+}
+
 export {
+	getShoppersList,
 	insertFreelancerDetailService,
 	getFreelancerProfileDetailByUserUuid,
 	getNearbyFreelancers,
