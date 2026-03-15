@@ -3,7 +3,9 @@ import { authenticateAdminToken } from '../middlewares/authMiddleware.js';
 import { validate } from '../middlewares/validationMiddleware.js';
 import {
     adminLoginSchema,
+    adminBlockUserSchema,
     adminSupportListSchema,
+    adminUpdateOrderSchema,
     adminClientListSchema,
     adminShopperListSchema,
     adminGetShopperDetailsSchema,
@@ -15,9 +17,11 @@ import {
 import {
     adminLoginController,
     adminLogoutController,
+    adminBlockUserController,
     adminDashboardController,
     adminOrdersListController,
     adminClientListController,
+    adminUpdateOrderController,
     adminShoppersListController,
     adminGetOrderDetailController,
     adminGetClientDetailController,
@@ -37,6 +41,8 @@ router.get('/clients', authenticateAdminToken, validate({ query: adminClientList
 
 router.get('/client/details/:user_id', authenticateAdminToken, validate({ params: adminGetUserDetailsSchema }), adminGetClientDetailController);
 
+router.put('/block-user/:user_id', authenticateAdminToken, validate({ params: adminBlockUserSchema }), adminBlockUserController);
+
 router.get('/shoppers', authenticateAdminToken, validate({ query: adminShopperListSchema }), adminShoppersListController);
 
 router.get('/shopper/details/:shopper_id', authenticateAdminToken, validate({ params: adminGetShopperDetailsSchema }), adminGetShopperDetailController);
@@ -44,6 +50,8 @@ router.get('/shopper/details/:shopper_id', authenticateAdminToken, validate({ pa
 router.get('/orders', authenticateAdminToken, validate({ query: adminOrderListSchema }), adminOrdersListController);
 
 router.get('/order/details/:order_id', authenticateAdminToken, validate({ params: adminGetOrderDetailsSchema }), adminGetOrderDetailController);
+
+router.put('/update/order', authenticateAdminToken, validate({ body: adminUpdateOrderSchema }), adminUpdateOrderController);
 
 router.get('/support', authenticateAdminToken, validate({ query: adminSupportListSchema }), adminOrdersListController);
 

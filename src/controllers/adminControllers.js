@@ -1,8 +1,15 @@
 import { getAdminByEmail, getAdminByUuid, updateAdminByUuidService } from "../services/adminService.js";
 import { verifyPassword, generateAccessToken } from "../helpers/security.js";
-import { adminDashboardUserStats, getUsersList, getUserByUuid } from "../services/userService.js";
+import { adminDashboardUserStats, getUsersList, getUserByUuid, updateUserByUuidService } from "../services/userService.js";
 import { getShoppersList, getFreelancerDetails } from "../services/freelancerProfileService.js";
-import { adminDashboardOrderStats, getOrderService, getAdminOrdersListService, getUserOrderCountsAndValue } from "../services/orderService.js";
+import {
+    getOrderService,
+    adminDashboardOrderStats,
+    getAdminOrdersListService,
+    getUserOrderCountsAndValue,
+    getOrderByFilterService,
+    updateOrderByUuidService,
+} from "../services/orderService.js";
 import {
     getSupportListService,
     getContactUsQueryByIdServices,
@@ -141,6 +148,25 @@ const adminGetClientDetailController = async (req, res) => {
     }
 };
 
+const adminBlockUserController = async (req, res) => {
+    try {
+        console.log("ADMIN CONTROLLER > ADMIN BLOCK USER > try block executed");
+
+        const { user_id } = req.params;
+
+        await updateUserByUuidService(user_id, { isBlocked: true });
+
+        res.status(200).json({
+            success: true,
+            message: "User Blocked Successfully",
+        });
+
+    } catch (error) {
+        console.error("ADMIN CONTROLLER > ADMIN BLOCK USER >", error);
+        res.status(500).json({ success: false, message: "Internal Server Error" });
+    }
+};
+
 const adminGetShopperDetailController = async (req, res) => {
     try {
         console.log("ADMIN CONTROLLER > ADMIN SHOPPER DETAILS > try block executed");
@@ -225,6 +251,27 @@ const adminGetOrderDetailController = async (req, res) => {
     }
 };
 
+const adminUpdateOrderController = async (req, res) => {
+    try {
+        console.log("ADMIN CONTROLLER > ADMIN UPDATE ORDER STATUS > try block executed");
+
+        const { order_id, status } = req.body;
+
+        const order = await getOrderByFilterService({ uuid: order_id });
+
+        if (!order) return res.status(404).json({ success: false, message: "Order Not Found" });
+        else if (order.status === 'ongoing' || order.status == 'pending' && ['hold', 'cancelled'].includes(status)) await updateOrderByUuidService(order_id, { status: status });
+        else if (['completed', 'cancelled'].includes(order.status)) return res.status(403).json({ success: false, message: `Cannot mark order ${status} as order is already marked as ${order.status}` });
+        else return res.status(400).json({ success: false, message: "Something went wrong, unable to update the status of the order" });
+
+        res.status(200).json({ success: true, message: "Order Status Updated Successfully" });
+
+    } catch (error) {
+        console.error("ADMIN CONTROLLER > ADMIN UPDATE ORDER STATUS > ", error);
+        res.status(500).json({ success: false, message: "Internal Server Error" });
+    }
+};
+
 const adminSupportListController = async (req, res) => {
     try {
         console.log("ADMIN CONTROLLER > ADMIN SUPPORT LIST > try block executed");
@@ -263,9 +310,11 @@ const adminResolveSupportTicketController = async (req, res) => {
 
 export {
     adminLoginController,
+    adminBlockUserController,
     adminLogoutController,
     adminDashboardController,
     adminSupportListController,
+    adminUpdateOrderController,
     adminClientListController,
     adminShoppersListController,
     adminGetClientDetailController,
