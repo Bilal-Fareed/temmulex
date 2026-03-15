@@ -19,6 +19,7 @@ import {
     getConversationSchema,
     sendOtpSchema,
     getConversationMessagesSchema,
+    registerNotificationTokenSchema,
 } from '../schemas/userSchemas.js';
 import {
     userSignupController,
@@ -39,6 +40,7 @@ import {
     getConversationMessagesController,
     getMyProfileController,
     placeOrderController,
+    storeFirebaseNotificationTokenController,
 } from '../controllers/userControllers.js';
 
 const router = Router();
@@ -48,6 +50,8 @@ router.post('/signup', multerHandler, parseMultipartJSON(['languages', 'location
 router.post('/upload', multerHandler, authenticate, uploadFileController);
 
 router.post('/login', validate({ body: signinSchema, headers: commonHeadersSchema }), loginController);
+
+router.post('/notifications/register-device', authenticate, validate({ body: registerNotificationTokenSchema, headers: commonHeadersSchema }), storeFirebaseNotificationTokenController)
 
 router.post('/logout', authenticate, logoutController);
 
