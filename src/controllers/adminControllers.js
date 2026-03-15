@@ -205,6 +205,26 @@ const adminOrdersListController = async (req, res) => {
     }
 };
 
+const adminGetOrderDetailController = async (req, res) => {
+    try {
+        console.log("ADMIN CONTROLLER > ADMIN ORDER DETAILS > try block executed");
+
+        const { order_id } = req.params;
+
+        const [orderData] = await getOrderService({ uuid: order_id }, undefined, { page: 1, limit: 1 });
+
+        res.status(200).json({
+            success: true,
+            message: "Shopper Details Fetched Successfully",
+            data: orderData
+        });
+
+    } catch (error) {
+        console.error("ADMIN CONTROLLER > ADMIN ORDER DETAILS >", error);
+        res.status(500).json({ success: false, message: "Internal Server Error" });
+    }
+};
+
 const adminSupportListController = async (req, res) => {
     try {
         console.log("ADMIN CONTROLLER > ADMIN SUPPORT LIST > try block executed");
@@ -251,5 +271,6 @@ export {
     adminGetClientDetailController,
     adminGetShopperDetailController,
     adminOrdersListController,
+    adminGetOrderDetailController,
     adminResolveSupportTicketController,
 }

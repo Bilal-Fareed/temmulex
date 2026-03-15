@@ -46,6 +46,10 @@ const adminGetShopperDetailsSchema = vine.object({
     shopper_id: vine.string().uuid(),
 }); 
 
+const adminGetOrderDetailsSchema = vine.object({
+    order_id: vine.string().uuid(),
+}); 
+
 export {
     adminLoginSchema,
     adminOrderListSchema,
@@ -53,6 +57,7 @@ export {
     adminShopperListSchema,
     adminSupportListSchema,
     adminGetUserDetailsSchema,
+    adminGetOrderDetailsSchema,
     adminGetShopperDetailsSchema,
     adminResolveSupportTicketSchema,
 }

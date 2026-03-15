@@ -90,6 +90,7 @@ const getOrderService = async (filters = {}, projection = undefined, options = {
             price: sql`ROUND(${orders.price} / 100.0, 2)`,
             status: orders.status,
             createdAt: orders.createdAt,
+            paymentStatus: orders.paymentStatus,
 
             serviceId: services.uuid,
             serviceName: services.name,
