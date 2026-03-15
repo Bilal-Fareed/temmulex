@@ -1,0 +1,1 @@
+ALTER TABLE "freelancer_services" ALTER COLUMN "currency" SET DEFAULT 'GBP';

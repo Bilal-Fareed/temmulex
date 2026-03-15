@@ -6,7 +6,7 @@ const freelancerServices = pgTable("freelancer_services", {
     serviceId: uuid("service_id").notNull().references(() => services.uuid, { onDelete: "cascade" }),
     freelancerId: uuid("freelancer_id").notNull().references(() => freelancerProfiles.uuid, { onDelete: "cascade" }),
     fixedPriceCents: integer("fixed_price_cents").notNull(),
-    currency: char("currency", { length: 3 }).notNull().default("USD"),
+    currency: char("currency", { length: 3 }).notNull().default("GBP"),
     title: varchar("title", { length: 150 }),
     description: text("description"),
     isDeleted: boolean("is_deleted").default(false),

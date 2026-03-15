@@ -546,7 +546,7 @@ const placeOrderController = async (req, res) => {
         // Create a PaymentIntent with the order amount and currency
         const paymentIntent = await stripe.paymentIntents.create({
             amount: freelancerService?.fixedPriceCents,
-            currency: "usd",
+            currency: "GBP",
             // In the latest version of the API, specifying the `automatic_payment_methods` parameter is optional because Stripe enables its functionality by default.
             automatic_payment_methods: {
                 enabled: true,
