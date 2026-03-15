@@ -163,7 +163,7 @@ const updateFreelancerProfileController = async (req, res) => {
 
         if (user?.isDeleted || user?.isBlocked) return res.status(400).json({ success: false, message: "Please contact support, your account has been deleted or blocked." });
 
-        const freelancer = await getFreelancerProfileDetailByUserUuid()
+        const freelancer = await getFreelancerProfileDetailByUserUuid(user.uuid);
 
         if (otp) {
             const storedOtp = await redisClient.get(`otp:${email}`);
