@@ -153,8 +153,8 @@ const updateUserProfileController = async (req, res) => {
                 await updateUserByUuidService(uuid, {
                     email,
                     title,
-                    first_name,
-                    last_name,
+                    firstName: first_name,
+                    lastName: last_name,
                     country,
                     dob,
                     phone,
@@ -175,8 +175,8 @@ const updateUserProfileController = async (req, res) => {
 
         await updateUserByUuidService(uuid, {
             title,
-            first_name,
-            last_name,
+            firstName: first_name,
+            lastName: last_name,
             country,
             dob,
             phone,
