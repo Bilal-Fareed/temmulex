@@ -20,13 +20,16 @@ const upload = multer({
         // Audio files
         if (fieldname === "audio") {
             const allowedImageTypes = [
+                "audio/wav",
+                "audio/aac",
                 "audio/mpeg",
                 "audio/mp3",
-                "audio/wav"
+                "audio/mp4",
+                "audio/x-m4a",
             ];
 
             if (!allowedImageTypes.includes(mimetype)) {
-                return cb(new Error("Audio must be of type (mpeg, mp3, wav)"));
+                return cb(new Error("Audio must be of type (mpeg, mp3, wav, aac, mp4, m4a)"));
             }
 
             return cb(null, true);

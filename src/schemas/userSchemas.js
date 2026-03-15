@@ -31,7 +31,7 @@ const signupSchema = vine.object({
     services: vine.array(vine.object({
         serviceId: vine.string().uuid({ version: [4] }),
         fixedPriceDollars: vine.number().optional().transform((value) => value ?? 0),
-        currency: vine.string().minLength(3).maxLength(5).regex(/[A-Z]/, "Currency must contain capital alphabets").optional().transform((value) => value ?? 'USD'),
+        currency: vine.string().minLength(3).maxLength(5).regex(/[A-Z]/, "Currency must contain capital alphabets").optional().transform((value) => value ?? 'GBP'),
     })).optional().requiredWhen('user_type', '=', 'freelancer'),
 });
 

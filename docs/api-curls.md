@@ -462,7 +462,7 @@ curl --location 'http://localhost:3001/v1/freelancers/send-message' \
 
 ## ============================================== ADMIN REQUEST CURLS ============================================
 
-## 📝 Contact us message
+## 📝 Admin login
 ```bash
 curl --location 'http://localhost:3001/api/admin/login' \
 --header 'Content-Type: application/json' \
