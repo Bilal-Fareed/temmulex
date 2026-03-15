@@ -34,10 +34,41 @@ const adminSupportListSchema = vine.object({
     limit: vine.number().min(1).max(100).optional(),
 }); 
 
+const adminResolveSupportTicketSchema = vine.object({
+    ticket_no: vine.string().uuid(),
+}); 
+
+const adminUpdateOrderSchema = vine.object({
+    order_id: vine.string().uuid(),
+    status: vine.enum(['completed', 'hold', 'cancelled'])
+}); 
+
+const adminGetUserDetailsSchema = vine.object({
+    user_id: vine.string().uuid(),
+}); 
+
+const adminBlockUserSchema = vine.object({
+    user_id: vine.string().uuid(),
+}); 
+
+const adminGetShopperDetailsSchema = vine.object({
+    shopper_id: vine.string().uuid(),
+}); 
+
+const adminGetOrderDetailsSchema = vine.object({
+    order_id: vine.string().uuid(),
+}); 
+
 export {
     adminLoginSchema,
+    adminBlockUserSchema,
     adminOrderListSchema,
     adminClientListSchema,
+    adminUpdateOrderSchema,
     adminShopperListSchema,
     adminSupportListSchema,
+    adminGetUserDetailsSchema,
+    adminGetOrderDetailsSchema,
+    adminGetShopperDetailsSchema,
+    adminResolveSupportTicketSchema,
 }

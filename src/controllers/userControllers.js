@@ -208,7 +208,7 @@ const loginController = async (req, res) => {
 
         if (user_type === "freelancer") {
             const freelancerProfileDetails = await getFreelancerProfileDetailByUserUuid(user.uuid);
-            if (!freelancerProfileDetails) return res.status(404).json({ success: false, message: 'Please create a freelancer profile first to proceed further.' });
+            if (!freelancerProfileDetails) return res.status(404).json({ success: false, message: 'Please create a shopper profile first to proceed further.' });
             user = {
                 ...user,
                 location: freelancerProfileDetails.location,
@@ -537,11 +537,13 @@ const placeOrderController = async (req, res) => {
 
         const freelancerDetails = await getFreelancerProfileDetailByUserUuid(freelancer_id);
         
-        if(!freelancerDetails) return res.status(400).json({success: false, message: "The user with whome you are trying to book is not a freelancer."})
+        if(!freelancerDetails) return res.status(400).json({success: false, message: "The user with whome you are trying to book is not a shopper."})
 
         const freelancerService = await getFreelancerServices(freelancerDetails.uuid, service_id);
 
-        if(!freelancerService) return res.status(400).json({success: false, message: "This selected service is not offered by the freelancer."})
+        if(!freelancerService) return res.status(400).json({success: false, message: "This selected service is not offered by the shopper."})
+
+        if (!freelancerService?.fixedPriceCents) return res.status(400).json({ success: false, message: "The Shopper has not finalized the pricing for this service yet." })
 
         // Create a PaymentIntent with the order amount and currency
         const paymentIntent = await stripe.paymentIntents.create({

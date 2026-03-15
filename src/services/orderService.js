@@ -90,6 +90,7 @@ const getOrderService = async (filters = {}, projection = undefined, options = {
             price: sql`ROUND(${orders.price} / 100.0, 2)`,
             status: orders.status,
             createdAt: orders.createdAt,
+            paymentStatus: orders.paymentStatus,
 
             serviceId: services.uuid,
             serviceName: services.name,
@@ -160,6 +161,23 @@ const adminDashboardOrderStats = async () => {
 	return stats;
 }
 
+const getUserOrderCountsAndValue = async (filter = {}) => {
+
+    const { clientId, freelancerId } = filter;
+
+    const orderCondition = freelancerId
+        ? sql`${orders.freelancerId} = ${freelancerId}`
+        : sql`${orders.clientId} = ${clientId}`;
+
+    const [orderDetail] = await db
+        .select({
+            totalOrders: sql`COUNT(*) FILTER (WHERE ${orderCondition})`,
+            totalValue: sql`SUM(price) FILTER (WHERE ${orderCondition})`,
+        })
+        .from(orders);
+    return orderDetail;
+}
+
 const getAdminOrdersListService = async (filters = {}, options = {}) => {
 
     const client = alias(users, "client");
@@ -228,6 +246,7 @@ export {
     getOrderByUuid,
     getOrderService,
     createOrderService,
+    getUserOrderCountsAndValue,
     getOrderByFilterService,
     updateOrderByUuidService,
     adminDashboardOrderStats,
