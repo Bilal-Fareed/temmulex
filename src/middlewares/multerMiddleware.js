@@ -10,7 +10,7 @@ const upload = multer({
         const { fieldname, mimetype } = file;
 
         // PDF fields
-        if (fieldname === "cv" || fieldname === "dbs") {
+        if (fieldname === "cv" || fieldname === "dbs" || fieldname === "pdf") {
             if (mimetype !== "application/pdf") {
                 return cb(new Error(`${fieldname} must be a PDF file`));
             }
