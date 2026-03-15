@@ -2,8 +2,12 @@ import { getAdminByEmail, getAdminByUuid, updateAdminByUuidService } from "../se
 import { verifyPassword, generateAccessToken } from "../helpers/security.js";
 import { adminDashboardUserStats, getUsersList } from "../services/userService.js";
 import { getShoppersList } from "../services/freelancerProfileService.js";
-import { getSupportListService } from "../services/contactUsService.js";
 import { adminDashboardOrderStats, getOrderService, getAdminOrdersListService } from "../services/orderService.js";
+import {
+    getSupportListService,
+    getContactUsQueryByIdServices,
+    updateContactUsQueryService,
+} from "../services/contactUsService.js";
 
 const adminLoginController = async (req, res) => {
     try {
@@ -158,6 +162,26 @@ const adminSupportListController = async (req, res) => {
     }
 };
 
+const adminResolveSupportTicketController = async (req, res) => {
+    try {
+        console.log("ADMIN CONTROLLER > ADMIN RESOLVE SUPPORT TICKET > try block executed");
+
+        const { ticket_no } = req.params;
+
+        const ticket = await getContactUsQueryByIdServices(ticket_no);
+
+        if (ticket.isResolved) return res.status(400).json({ success: false, message: "Tickets is already resolved" });
+
+        await updateContactUsQueryService({ uuid: ticket_no }, { isResolved: true })
+
+        res.status(200).json({ success: true, message: "Tickets Updated Successfully" });
+
+    } catch (error) {
+        console.error("ADMIN CONTROLLER > ADMIN RESOLVE SUPPORT TICKET > ", error);
+        res.status(500).json({ success: false, message: "Internal Server Error" });
+    }
+};
+
 export {
     adminLoginController,
     adminLogoutController,
@@ -166,4 +190,5 @@ export {
     adminClientListController,
     adminShoppersListController,
     adminOrdersListController,
+    adminResolveSupportTicketController,
 }

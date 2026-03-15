@@ -7,6 +7,7 @@ import {
     adminClientListSchema,
     adminShopperListSchema,
     adminOrderListSchema,
+    adminResolveSupportTicketSchema,
 } from '../schemas/adminSchema.js';
 import {
     adminLoginController,
@@ -15,6 +16,7 @@ import {
     adminOrdersListController,
     adminClientListController,
     adminShoppersListController,
+    adminResolveSupportTicketController,
 } from '../controllers/adminControllers.js';
 
 const router = Router();
@@ -32,5 +34,7 @@ router.get('/shoppers', authenticateAdminToken, validate({ query: adminShopperLi
 router.get('/orders', authenticateAdminToken, validate({ query: adminOrderListSchema }), adminOrdersListController);
 
 router.get('/support', authenticateAdminToken, validate({ query: adminSupportListSchema }), adminOrdersListController);
+
+router.put('/resolve/ticket/:ticket_no', authenticateAdminToken, validate({ params: adminResolveSupportTicketSchema }), adminResolveSupportTicketController);
 
 export default router;

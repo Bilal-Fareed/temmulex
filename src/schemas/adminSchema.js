@@ -34,10 +34,15 @@ const adminSupportListSchema = vine.object({
     limit: vine.number().min(1).max(100).optional(),
 }); 
 
+const adminResolveSupportTicketSchema = vine.object({
+    ticket_no: vine.string().uuid(),
+}); 
+
 export {
     adminLoginSchema,
     adminOrderListSchema,
     adminClientListSchema,
     adminShopperListSchema,
     adminSupportListSchema,
+    adminResolveSupportTicketSchema,
 }

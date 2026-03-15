@@ -517,3 +517,11 @@ curl --location 'http://localhost:3001/api/admin/support?page=1&limit=10&ticket_
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1dWlkIjoiODc5ZTZkOTgtNGMyNy00Y2MzLTg4ZWItOTlhMGQ4YjhmZDE4IiwiZW1haWwiOiJhZG1pbkBnbWFpbC5jb20iLCJ2ZXJzaW9uIjowLCJpYXQiOjE3NzM0Mzk5MDAsImV4cCI6MTc3MzQ4MzEwMH0.hnQfSeA6DChL_hCM-XZmuwg4-3nt88spmHObA60xi8E'
 ```
+
+
+## Mark Contact Us Ticket as Resolved
+```bash
+curl --location --request PUT 'http://localhost:3001/api/admin/resolve/ticket/d7abd124-274d-4545-8d12-eea75a9ff03e'
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1dWlkIjoiODc5ZTZkOTgtNGMyNy00Y2MzLTg4ZWItOTlhMGQ4YjhmZDE4IiwiZW1haWwiOiJhZG1pbkBnbWFpbC5jb20iLCJ2ZXJzaW9uIjowLCJpYXQiOjE3NzM0Mzk5MDAsImV4cCI6MTc3MzQ4MzEwMH0.hnQfSeA6DChL_hCM-XZmuwg4-3nt88spmHObA60xi8E'
+```
