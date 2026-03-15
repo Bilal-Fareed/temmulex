@@ -6,7 +6,9 @@ import {
     adminSupportListSchema,
     adminClientListSchema,
     adminShopperListSchema,
+    adminGetShopperDetailsSchema,
     adminOrderListSchema,
+    adminGetUserDetailsSchema,
     adminResolveSupportTicketSchema,
 } from '../schemas/adminSchema.js';
 import {
@@ -16,6 +18,8 @@ import {
     adminOrdersListController,
     adminClientListController,
     adminShoppersListController,
+    adminGetClientDetailController,
+    adminGetShopperDetailController,
     adminResolveSupportTicketController,
 } from '../controllers/adminControllers.js';
 
@@ -29,7 +33,11 @@ router.get('/dashboard', authenticateAdminToken, adminDashboardController);
 
 router.get('/clients', authenticateAdminToken, validate({ query: adminClientListSchema }), adminClientListController);
 
+router.get('/client/details/:user_id'/*, authenticateAdminToken*/, validate({ params: adminGetUserDetailsSchema }), adminGetClientDetailController);
+
 router.get('/shoppers', authenticateAdminToken, validate({ query: adminShopperListSchema }), adminShoppersListController);
+
+router.get('/shopper/details/:shopper_id'/*, authenticateAdminToken*/, validate({ params: adminGetShopperDetailsSchema }), adminGetShopperDetailController);
 
 router.get('/orders', authenticateAdminToken, validate({ query: adminOrderListSchema }), adminOrdersListController);
 

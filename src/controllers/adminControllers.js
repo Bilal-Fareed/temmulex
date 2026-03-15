@@ -1,8 +1,8 @@
 import { getAdminByEmail, getAdminByUuid, updateAdminByUuidService } from "../services/adminService.js";
 import { verifyPassword, generateAccessToken } from "../helpers/security.js";
-import { adminDashboardUserStats, getUsersList } from "../services/userService.js";
-import { getShoppersList } from "../services/freelancerProfileService.js";
-import { adminDashboardOrderStats, getOrderService, getAdminOrdersListService } from "../services/orderService.js";
+import { adminDashboardUserStats, getUsersList, getUserByUuid } from "../services/userService.js";
+import { getShoppersList, getFreelancerDetails } from "../services/freelancerProfileService.js";
+import { adminDashboardOrderStats, getOrderService, getAdminOrdersListService, getUserOrderCountsAndValue } from "../services/orderService.js";
 import {
     getSupportListService,
     getContactUsQueryByIdServices,
@@ -109,6 +109,65 @@ const adminClientListController = async (req, res) => {
     }
 };
 
+const adminGetClientDetailController = async (req, res) => {
+    try {
+        console.log("ADMIN CONTROLLER > ADMIN CLIENT DETAILS > try block executed");
+
+        const { user_id } = req.params;
+
+        const clientData = await getUserByUuid(user_id, {
+            password: false,
+            refreshTokenVersion: false,
+            updatedAt: false,
+            id: false
+        });
+
+        const orderDetail = await getUserOrderCountsAndValue({
+            clientId: user_id
+        })
+
+        res.status(200).json({
+            success: true,
+            message: "Client Details Fetched Successfully",
+            data: {
+                ...clientData,
+                ...orderDetail
+            }
+        });
+
+    } catch (error) {
+        console.error("ADMIN CONTROLLER > ADMIN CLIENT DETAILS >", error);
+        res.status(500).json({ success: false, message: "Internal Server Error" });
+    }
+};
+
+const adminGetShopperDetailController = async (req, res) => {
+    try {
+        console.log("ADMIN CONTROLLER > ADMIN SHOPPER DETAILS > try block executed");
+
+        const { shopper_id } = req.params;
+
+        const shopperData = await getFreelancerDetails(shopper_id);
+
+        const orderDetail = await getUserOrderCountsAndValue({
+            freelancerId: shopper_id
+        })
+
+        res.status(200).json({
+            success: true,
+            message: "Shopper Details Fetched Successfully",
+            data: {
+                ...shopperData,
+                ...orderDetail
+            }
+        });
+
+    } catch (error) {
+        console.error("ADMIN CONTROLLER > ADMIN SHOPPER DETAILS >", error);
+        res.status(500).json({ success: false, message: "Internal Server Error" });
+    }
+};
+
 const adminShoppersListController = async (req, res) => {
     try {
         console.log("ADMIN CONTROLLER > ADMIN SHOPPERS LIST > try block executed");
@@ -189,6 +248,8 @@ export {
     adminSupportListController,
     adminClientListController,
     adminShoppersListController,
+    adminGetClientDetailController,
+    adminGetShopperDetailController,
     adminOrdersListController,
     adminResolveSupportTicketController,
 }
