@@ -15,6 +15,11 @@ const signinSchema = vine.object({
     user_type: vine.enum(['client', 'freelancer']),
 });
 
+// Register notification token schema
+const registerNotificationTokenSchema = vine.object({
+    token: vine.string(),
+});
+
 // Signup schema
 const signupSchema = vine.object({
     user_type: vine.enum(['client', 'freelancer']),
@@ -149,4 +154,5 @@ export {
     getConversationSchema,
     updateUserProfileSchema,
     getConversationMessagesSchema,
+    registerNotificationTokenSchema,
 };

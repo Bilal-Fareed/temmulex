@@ -17,34 +17,28 @@ const upload = multer({
             return cb(null, true);
         }
 
-        // Audio files
-        if (fieldname === "audio") {
-            const allowedImageTypes = [
-                "audio/wav",
-                "audio/aac",
-                "audio/mpeg",
-                "audio/mp3",
-                "audio/mp4",
-                "audio/x-m4a",
-            ];
-
-            if (!allowedImageTypes.includes(mimetype)) {
-                return cb(new Error("Audio must be of type (mpeg, mp3, wav, aac, mp4, m4a)"));
+        // Video files
+        if (fieldname === "video") {
+            if (!mimetype.startsWith("video/")) {
+                return cb(new Error("File must be a valid video format"));
             }
 
             return cb(null, true);
         }
 
-        // Profile picture (images only)
-        if (fieldname === "profile_picture" || fieldname === "image") {
-            const allowedImageTypes = [
-                "image/jpeg",
-                "image/png",
-                "image/webp",
-            ];
+        // Audio files
+        if (fieldname === "audio") {
+            if (!mimetype.startsWith("audio/")) {
+                return cb(new Error("File must be a valid audio format"));
+            }
 
-            if (!allowedImageTypes.includes(mimetype)) {
-                return cb(new Error("Image must be of type (jpg, png, webp)"));
+            return cb(null, true);
+        }
+
+        // Images only
+        if (fieldname === "profile_picture" || fieldname === "image") {
+            if (!mimetype.startsWith("image/")) {
+                return cb(new Error("File must be a valid image format"));
             }
 
             return cb(null, true);
@@ -61,7 +55,8 @@ const multerHandler = (req, res, next) => {
         { name: 'dbs', maxCount: 1 },
         { name: 'profile_picture', maxCount: 1 },
         { name: 'image', maxCount: 1 },
-        { name: 'audio', maxCount: 1 }
+        { name: 'audio', maxCount: 1 },
+        { name: 'video', maxCount: 1 },
     ]);
 
     multerFields(req, res, (err) => {

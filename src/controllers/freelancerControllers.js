@@ -1,4 +1,5 @@
 import { uploadFile } from "../helpers/cloudinary.js";
+import { sendNotification } from "../helpers/firebase.js";
 import {
     getFreelancerDetails,
     updateFreelancerDetailService,
@@ -10,6 +11,7 @@ import {
     deleteFreelancerServices,
     insertManyFreelancerServices,
 } from "../services/freelancerServicesService.js";
+import { getNotificationTokenService } from "../services/notificationTokenService.js";
 import { getUserSpecificConversationListService, getConversationMessagesService, getConversationService, addMessageServices } from "../services/conversationService.js";
 import { getOrderService, getFreelancerCompletedOrderStats } from "../services/orderService.js";
 import { deleteFreelancersLanguage } from '../services/freelancerLanguageService.js';
@@ -385,6 +387,18 @@ const sendMessagesController = async (req, res) => {
                 attachmentUrl: fileUrl,
                 contenType: uploadType
             })
+        } else {
+            const notificationTokens = await getNotificationTokenService({ userId: receiverId })
+            if (!notificationTokens || notificationTokens?.length === 0) console.log("Notification token not found.")
+            const tokens = notificationTokens.map(nt => nt.token);
+            sendNotification(tokens, 'New Message', content, {
+                senderId: uuid,
+                conversationId: conversation.uuid,
+                content: content,
+                attachmentUrl: fileUrl,
+                contenType: uploadType
+            })
+
         }
 
         res.status(200).json({ success: true, message: "Message Send Successfully" });

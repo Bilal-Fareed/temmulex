@@ -1,10 +1,12 @@
 import { uploadFile } from "../helpers/cloudinary.js";
+import { sendNotification } from "../helpers/firebase.js";
 import { hashPassword, verifyPassword, generateAccessToken, generateRefreshToken } from "../helpers/security.js";
 import { getUserByEmail, createUserService, getUserByUuid, updateUserByUuidService } from "../services/userService.js";
 import { insertFreelancerDetailService, getFreelancerProfileDetailByUserUuid, getNearbyFreelancers } from "../services/freelancerProfileService.js";
 import { insertManyFreelancerLanguagesService } from "../services/freelancerLanguageService.js";
 import { insertManyFreelancerServices, getFreelancerServices } from "../services/freelancerServicesService.js";
 import { getOrderService, rateOrder } from "../services/orderService.js";
+import { getNotificationTokenService, addNotificationTokenService } from "../services/notificationTokenService.js";
 import {
     addMessageServices,
     getConversationService,
@@ -684,10 +686,12 @@ const sendMessagesController = async (req, res) => {
             if (files?.audio?.[0]) uploadType = 'audio';
             else if (files?.image?.[0]) uploadType = 'image';
             else if (files?.pdf?.[0]) uploadType = 'pdf';
+            else if (files?.video?.[0]) uploadType = 'video';
 
             const fileUploadDecision = {
                 "image": uploadFile(files?.profile_picture?.[0], "chat/images"),
                 "audio": uploadFile(files?.cv?.[0], "chat/audios"),
+                "video": uploadFile(files?.pdf?.[0], "chat/videos"),
                 "pdf": uploadFile(files?.pdf?.[0], "chat/pdf"),
             }
 
@@ -712,11 +716,50 @@ const sendMessagesController = async (req, res) => {
                 attachmentUrl: fileUrl,
                 contenType: uploadType
             })
+        } else {
+            const notificationTokens = await getNotificationTokenService({ userId: receiverId })
+            if (!notificationTokens || notificationTokens?.length === 0) console.log("Notification token not found.")
+            const tokens = notificationTokens.map(nt => nt.token);
+            sendNotification(tokens, 'New Message', content, {
+                senderId: uuid,
+                conversationId: conversation.uuid,
+                content: content,
+                attachmentUrl: fileUrl,
+                contenType: uploadType
+            })
+
         }
 
         res.status(200).json({ success: true, message: "Message Send Successfully" });
     } catch (error) {
         console.error("USER CONTROLLER > SEND MESSAGES >", error);
+        res.status(500).json({ success: false, message: "Internal Server Error" });
+    }
+};
+
+const storeFirebaseNotificationTokenController = async (req, res) => {
+    try {
+
+        console.log("USER CONTROLLER > STORE FIREBASE NOTIFICATION TOKEN > try block executed");
+        
+        const { uuid } = req.user;
+        const { token } = req.body;
+        const deviceId = req.headers['x-device-id'], userAgent = req.headers['x-user-agent'] || 'android';
+
+        const tokenExists = await getNotificationTokenService({ deviceId, userId: uuid });
+
+        if (tokenExists) return res.status(200).json({ success: true, message: "Token already exists." });
+
+        await addNotificationTokenService({
+            userId: uuid,
+            token: token,
+            deviceId: deviceId,
+            userAgent: userAgent,
+        });
+
+        res.status(200).json({ success: true, message: "User notification token stored successfully" });
+    } catch (error) {
+        console.error("USER CONTROLLER > STORE FIREBASE NOTIFICATION TOKEN >", error);
         res.status(500).json({ success: false, message: "Internal Server Error" });
     }
 };
@@ -741,4 +784,5 @@ export {
     uploadFileController,
     getConversationMessagesController,
     getNearbyTopRatedShoppersController,
+    storeFirebaseNotificationTokenController,
 }
