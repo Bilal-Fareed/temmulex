@@ -92,6 +92,13 @@
       "when": 1773538619620,
       "tag": "0012_minor_meteorite",
       "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1773608429125,
+      "tag": "0013_silly_lethal_legion",
+      "breakpoints": true
     }
   ]
 }

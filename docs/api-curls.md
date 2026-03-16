@@ -14,6 +14,20 @@ curl --location 'http://localhost:3001/v1/contact-us' \
 }'
 ```
 
+## Store Notification Token
+```bash
+curl --location --request POST 'http://localhost:3001/v1/users/notifications/register-device' \
+--header 'x-device-id: test-device-id' \
+--header 'x-user-agent: android' \
+--header 'Content-Type: application/json' \
+--header 'x-refresh-token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1dWlkIjoiMjg1YmIwZTAtYTNkOC00MDU5LTg4NTUtNDk3MTE4NTMyMTIxIiwidmVyc2lvbiI6MCwidG9rZW5JZCI6ImVlYjhmNmExLWEzZTAtNGRhZS05NjRkLWY2OTM2MjQwYzVmOSIsImlhdCI6MTc2ODMyNzI5MSwiZXhwIjoxNzY4OTMyMDkxfQ.grt-eqI0s9_JxOC5EDUVOD6-Qk2pGI6k_XPX9Jq07EI' \
+--header 'authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1dWlkIjoiMjg1YmIwZTAtYTNkOC00MDU5LTg4NTUtNDk3MTE4NTMyMTIxIiwidmVyc2lvbiI6MCwidG9rZW5JZCI6ImVlYjhmNmExLWEzZTAtNGRhZS05NjRkLWY2OTM2MjQwYzVmOSIsImlhdCI6MTc2ODMyNzI5MSwiZXhwIjoxNzY4MzMwODkxfQ.YWUa9AKGLroqHf6_XP2FebkYHYtTtFFXyE9M2EWyEqE'
+--data-raw '{
+    "token": "25dD6cfe&5b4V$e84cSA5a8b3fU4T_42980ff#4764$"
+}'
+```
+
+
 
 ## ============================================== USER REQUEST CURLS ============================================
 
