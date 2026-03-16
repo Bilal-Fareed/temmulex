@@ -23,7 +23,7 @@ const adminLoginController = async (req, res) => {
         const { email, password } = req.body;
 
         const admin = await getAdminByEmail(email);
-        if (!admin || admin?.password) return res.status(403).json({ success: false, message: 'Invalid credentials.' });
+        if (!admin) return res.status(403).json({ success: false, message: 'Invalid credentials.' });
 
         const isValid = await verifyPassword(password, admin.password);
         if (!isValid) return res.status(403).json({ success: false, message: 'Invalid credentials.' });
