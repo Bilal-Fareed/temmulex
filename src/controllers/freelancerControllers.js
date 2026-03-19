@@ -355,14 +355,16 @@ const sendMessagesController = async (req, res) => {
 
         if (!conversation) return res.status(403).json({ success: false, message: "No conversation found." })
 
-        if (files?.audio?.[0] || files?.image?.[0]) {
-            if (files?.audio?.[0]) uploadType = 'audio';
-            else if (files?.image?.[0]) uploadType = 'image';
-            else if (files?.pdf?.[0]) uploadType = 'pdf';
+        if (files?.audio?.[0]) uploadType = 'audio';
+        else if (files?.image?.[0]) uploadType = 'image';
+        else if (files?.pdf?.[0]) uploadType = 'pdf';
+        else if (files?.video?.[0]) uploadType = 'video';
 
+        if (['audio', 'image', 'pdf', 'video'].includes(uploadType)) {
             const fileUploadDecision = {
                 "image": uploadFile(files?.profile_picture?.[0], "chat/images"),
                 "audio": uploadFile(files?.cv?.[0], "chat/audios"),
+                "video": uploadFile(files?.pdf?.[0], "chat/videos"),
                 "pdf": uploadFile(files?.pdf?.[0], "chat/pdf"),
             }
 
