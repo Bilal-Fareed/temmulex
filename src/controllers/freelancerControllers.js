@@ -346,7 +346,7 @@ const sendMessagesController = async (req, res) => {
         const { uuid } = req.user;
         const { receiverId, content = null } = req.body;
         const files = req.files ?? {};
-        let uploadType = 'text', fileUrl = null;
+        let uploadType = 'text', fileUrl = null, file = null;
 
         const conversation = await getConversationService({
             freelancerId: uuid,
@@ -355,51 +355,67 @@ const sendMessagesController = async (req, res) => {
 
         if (!conversation) return res.status(403).json({ success: false, message: "No conversation found." })
 
-        if (files?.audio?.[0]) uploadType = 'audio';
-        else if (files?.image?.[0]) uploadType = 'image';
-        else if (files?.pdf?.[0]) uploadType = 'pdf';
-        else if (files?.video?.[0]) uploadType = 'video';
+        // Flatten all uploaded files into a single array
+        const allFiles = Object.values(files).flat();
 
-        if (['audio', 'image', 'pdf', 'video'].includes(uploadType)) {
-            const fileUploadDecision = {
-                "image": uploadFile(files?.profile_picture?.[0], "chat/images"),
-                "audio": uploadFile(files?.cv?.[0], "chat/audios"),
-                "video": uploadFile(files?.pdf?.[0], "chat/videos"),
-                "pdf": uploadFile(files?.pdf?.[0], "chat/pdf"),
+        // Reject if more than 1 file
+        if (allFiles.length > 1)
+            return res.status(400).json({ success: false, message: "Only one file is allowed per message." });
+
+        // If a file exists
+        if (allFiles.length === 1) {
+            file = allFiles[0];
+
+            if (!file?.mimetype)
+                return res.status(400).json({ success: false, message: "Bad data: file mimetype missing." });
+
+            const mime = file.mimetype;
+
+            // Detect type via MIME
+            if (mime.startsWith("image/")) uploadType = "image";
+            else if (mime.startsWith("audio/")) uploadType = "audio";
+            else if (mime.startsWith("video/")) uploadType = "video";
+            else if (mime === "application/pdf") uploadType = "pdf";
+            else return res.status(400).json({ success: false, message: "Unsupported file type." });
+            
+            // Upload path mapping
+            const uploadPathMap = {
+                image: "chat/images",
+                audio: "chat/audios",
+                video: "chat/videos",
+                pdf: "chat/pdf",
             }
 
-            fileUrl = await fileUploadDecision[uploadType];
+            if (!file) return res.status(400).json({ success: false, message: "Message must contain a file." });
+
+            fileUrl = await uploadFile(file, uploadPathMap[uploadType]);
+
+            if (!fileUrl) return res.status(400).json({ success: false, message: "Unable to upload file." });
+
         }
 
-        await addMessageServices([{
+
+        const payload = {
             senderId: uuid,
             conversationId: conversation.uuid,
             content: content,
             attachmentUrl: fileUrl,
             contenType: uploadType
-        }])
+        }
+
+        await addMessageServices([payload]);
 
         const receiverSocket = socketUsers.get(receiverId)
 
         if (receiverSocket) {
-            emitNewMessage(receiverSocket, 'receive_message', {
-                senderId: uuid,
-                conversationId: conversation.uuid,
-                content: content,
-                attachmentUrl: fileUrl,
-                contenType: uploadType
-            })
+            emitNewMessage(receiverSocket, 'receive_message', payload);
         } else {
             const notificationTokens = await getNotificationTokenService({ userId: receiverId })
             if (!notificationTokens || notificationTokens?.length === 0) console.log("Notification token not found.")
-            const tokens = notificationTokens.map(nt => nt.token);
-            sendNotification(tokens, 'New Message', content, {
-                senderId: uuid,
-                conversationId: conversation.uuid,
-                content: content,
-                attachmentUrl: fileUrl,
-                contenType: uploadType
-            })
+            else {
+                const tokens = notificationTokens.map(nt => nt.token);
+                sendNotification(tokens, 'New Message', content, payload);
+            }
 
         }
 
