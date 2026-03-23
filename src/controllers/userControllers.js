@@ -719,15 +719,17 @@ const sendMessagesController = async (req, res) => {
         } else {
             const notificationTokens = await getNotificationTokenService({ userId: receiverId })
             if (!notificationTokens || notificationTokens?.length === 0) console.log("Notification token not found.")
-            const tokens = notificationTokens.map(nt => nt.token);
-            sendNotification(tokens, 'New Message', content, {
-                senderId: uuid,
-                conversationId: conversation.uuid,
-                content: content,
-                attachmentUrl: fileUrl,
-                contenType: uploadType
-            })
+            else {
+                const tokens = notificationTokens.map(nt => nt.token);
+                sendNotification(tokens, 'New Message', content, {
+                    senderId: uuid,
+                    conversationId: conversation.uuid,
+                    content: content,
+                    attachmentUrl: fileUrl,
+                    contenType: uploadType
+                })
 
+            }
         }
 
         res.status(200).json({ success: true, message: "Message Send Successfully" });
