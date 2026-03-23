@@ -5,7 +5,7 @@ import { eq, and } from "drizzle-orm";
 const buildWhere = (filters) => {
 	return and(
 		...Object.entries(filters).map(([key, value]) =>
-			eq(users[key], value)
+			eq(notificationTokens[key], value)
 		)
 	);
 };
