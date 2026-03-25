@@ -22,6 +22,7 @@ import {
     adminOrdersListController,
     adminClientListController,
     adminUpdateOrderController,
+    adminSupportListController,
     adminShoppersListController,
     adminGetOrderDetailController,
     adminGetClientDetailController,
@@ -53,7 +54,7 @@ router.get('/order/details/:order_id', authenticateAdminToken, validate({ params
 
 router.put('/update/order', authenticateAdminToken, validate({ body: adminUpdateOrderSchema }), adminUpdateOrderController);
 
-router.get('/support', authenticateAdminToken, validate({ query: adminSupportListSchema }), adminOrdersListController);
+router.get('/support', authenticateAdminToken, validate({ query: adminSupportListSchema }), adminSupportListController);
 
 router.put('/resolve/ticket/:ticket_no', authenticateAdminToken, validate({ params: adminResolveSupportTicketSchema }), adminResolveSupportTicketController);
 

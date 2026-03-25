@@ -241,7 +241,7 @@ const adminGetOrderDetailController = async (req, res) => {
 
         res.status(200).json({
             success: true,
-            message: "Shopper Details Fetched Successfully",
+            message: "Order Details Fetched Successfully",
             data: orderData
         });
 

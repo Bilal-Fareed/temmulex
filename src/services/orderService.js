@@ -202,7 +202,7 @@ const getAdminOrdersListService = async (filters = {}, options = {}) => {
             conditions.push(eq(orders.status, 'completed'));
             break;
         case 'disputed':
-            conditions.push(...[eq(orders.status, 'completed'), eq(orders.paymentStatus, 'pending')]);
+            conditions.push(and(eq(orders.status, 'completed'), eq(orders.paymentStatus, 'pending')));
             break;
     }
 

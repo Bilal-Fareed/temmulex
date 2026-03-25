@@ -7,7 +7,7 @@ const adminLoginSchema = vine.object({
 });
 
 const adminClientListSchema = vine.object({
-    profile_status: vine.enum(['active', 'inactive', 'blocked']).optional(),
+    profile_status: vine.enum(['active', 'deleted', 'blocked']).optional(),
     search_text: vine.string().minLength(0).maxLength(1000).optional(),
     page: vine.number().min(1).max(1000).optional(),
     limit: vine.number().min(1).max(100).optional(),
