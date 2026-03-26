@@ -56,6 +56,7 @@ const multerHandler = (req, res, next) => {
         { name: 'profile_picture', maxCount: 1 },
         { name: 'image', maxCount: 1 },
         { name: 'audio', maxCount: 1 },
+        { name: 'pdf', maxCount: 1},
         { name: 'video', maxCount: 1 },
     ]);
 
