@@ -1,5 +1,6 @@
 import { getAdminByEmail, getAdminByUuid, updateAdminByUuidService } from "../services/adminService.js";
 import { verifyPassword, generateAccessToken } from "../helpers/security.js";
+import { refundPayment, disbursePayment } from "../helpers/payment.js"; 
 import { adminDashboardUserStats, getUsersList, getUserByUuid, updateUserByUuidService } from "../services/userService.js";
 import { getShoppersList, getFreelancerDetails } from "../services/freelancerProfileService.js";
 import {
@@ -9,6 +10,9 @@ import {
     getUserOrderCountsAndValue,
     getOrderByFilterService,
     updateOrderByUuidService,
+    getOrderDetailsForAdminService,
+    getAdminOrdersListForPaymentService,
+    updateOrderPaymentStatusService,
 } from "../services/orderService.js";
 import {
     getSupportListService,
@@ -231,6 +235,22 @@ const adminOrdersListController = async (req, res) => {
     }
 };
 
+const adminPaymentListController = async (req, res) => {
+    try {
+        console.log("ADMIN CONTROLLER > ADMIN ORDERS LIST > try block executed");
+
+        const { page, limit, search_text, payment_status } = req.query;
+
+        const paymentsList = await getAdminOrdersListForPaymentService({ search_text, payment_status }, { page, limit });
+
+        res.status(200).json({ success: true, message: "Payment List Fetched Successfully", data: paymentsList });
+
+    } catch (error) {
+        console.error("ADMIN CONTROLLER > ADMIN ORDERS LIST >", error);
+        res.status(500).json({ success: false, message: "Internal Server Error" });
+    }
+};
+
 const adminGetOrderDetailController = async (req, res) => {
     try {
         console.log("ADMIN CONTROLLER > ADMIN ORDER DETAILS > try block executed");
@@ -308,12 +328,64 @@ const adminResolveSupportTicketController = async (req, res) => {
     }
 };
 
+const refundPaymentController = async (req, res) => {
+    try {
+        console.log("ADMIN CONTROLLER > ADMIN REFUND PAYMENT > try block executed");
+
+        const { order_id } = req.params;
+
+        const orderDetails = await getOrderDetailsForAdminService({ uuid: order_id });
+
+        if (['received'].includes(orderDetails.paymentStatus)){
+            await refundPayment(orderDetails.paymentReference);
+            await updateOrderPaymentStatusService({ paymentStatus: 'refunded' }, { uuid: order_id })
+            return res.status(200).json({ success: true, message: "Payment Refunded Successfully" });
+        } else {
+            res.status(400).json({ success: false, message: `Unable to refund payment` });
+        }
+
+    } catch (error) {
+        console.error("ADMIN CONTROLLER > ADMIN REFUND PAYMENT > ", error);
+        res.status(500).json({ success: false, message: "Internal Server Error" });
+    }
+};
+
+const disbursePaymentController = async (req, res) => {
+    try {
+        console.log("ADMIN CONTROLLER > ADMIN DISPURSE PAYMENT > try block executed");
+
+        const { order_id } = req.params;
+
+        const orderDetails = await getOrderDetailsForAdminService({ uuid: order_id });
+
+        const freelancerDetails = await getFreelancerProfileDetailByUserUuid(orderDetails.freelancerUuid);
+
+        if (!freelancerDetails.payoutsEnabled || !freelancerDetails.onboardingComplete || !freelancerDetails.chargesEnabled)
+            return res.status(400).json({ success: false, message: "Unable to payout shopper, incomplete connect account setup" });
+
+        if (orderDetails.status === 'completed' && orderDetails.paymentStatus === 'received') {
+            const transfer = await disbursePayment(orderDetails.netShopperPayout, 'GBP', freelancerDetails.stripeAccountId);
+            await updateOrderPaymentStatusService({ paymentStatus: 'disbursed', payoutTransferId: transfer.id }, { uuid: order_id });
+            return res.status(200).json({ success: true, message: "Payment Disbursed Successfully" });
+        } else {
+            res.status(400).json({ success: false, message: `Unable to disburse payout` });
+        }
+
+    } catch (error) {
+        console.error("ADMIN CONTROLLER > ADMIN DISPURSE PAYMENT > ", error);
+        res.status(500).json({ success: false, message: "Internal Server Error" });
+    }
+};
+
 export {
     adminLoginController,
+    refundPaymentController,
     adminBlockUserController,
     adminLogoutController,
     adminDashboardController,
+    disbursePaymentController,
     adminSupportListController,
+    adminPaymentListController,
     adminUpdateOrderController,
     adminClientListController,
     adminShoppersListController,

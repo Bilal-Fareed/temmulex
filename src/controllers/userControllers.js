@@ -1,5 +1,6 @@
 import { uploadFile } from "../helpers/cloudinary.js";
 import { sendNotification } from "../helpers/firebase.js";
+import { createStripeConnectAccount } from "../helpers/payment.js";
 import { hashPassword, verifyPassword, generateAccessToken, generateRefreshToken } from "../helpers/security.js";
 import { getUserByEmail, createUserService, getUserByUuid, updateUserByUuidService } from "../services/userService.js";
 import { insertFreelancerDetailService, getFreelancerProfileDetailByUserUuid, getNearbyFreelancers } from "../services/freelancerProfileService.js";
@@ -23,9 +24,7 @@ import { PROFILE_UPDATE_OTP_MESSAGE_SUBCODE } from '../helpers/constants.js';
 import { db } from "../../infra/db.js";
 import { socketUsers, emitNewMessage } from "../../socketServer.js";
 import { dollarsToCents } from "../helpers/constants.js";
-import Stripe from "stripe";
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+import { stripe } from "../helpers/payment.js";
 
 const userSignupController = async (req, res) => {
     try {
@@ -84,7 +83,9 @@ const userSignupController = async (req, res) => {
                 const { lat = 0, lng = 0 } = location;
                 const insertingFreelancersDetails = [];
 
-                const freelancer = await insertFreelancerDetailService({ userId: user.uuid, lat, lng, cvUrl, dbsUrl }, { transaction: tx });
+                const account = await createStripeConnectAccount({ email });
+
+                const freelancer = await insertFreelancerDetailService({ userId: user.uuid, lat, lng, cvUrl, dbsUrl, stripeAccountId: account?.id }, { transaction: tx });
 
                 if (services?.length) {
                     insertingFreelancersDetails.push(
@@ -562,6 +563,7 @@ const placeOrderController = async (req, res) => {
             freelancerId: freelancer_id, 
             serviceId: service_id, 
             price: freelancerService.fixedPriceCents,
+            commissionPercentage: process.env.COMMISSION_PERCENTAGE || 10,
             paymentReference: paymentIntent.id,
         })
 
