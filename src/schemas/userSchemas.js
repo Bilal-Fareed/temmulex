@@ -43,7 +43,7 @@ const signupSchema = vine.object({
     })).optional().requiredWhen('user_type', '=', 'freelancer'),
     qna: vine.array(vine.object({
         questionId: vine.string().uuid({ version: [4] }),
-        answer: vine.string().minLength(2).maxLength(10000).optional().transform((value) => value ?? 'no answer received'),
+        answer: vine.string().minLength(2).maxLength(1000).optional().transform((value) => value ?? 'no answer received'),
     })).optional().requiredWhen('user_type', '=', 'freelancer'),
 });
 
