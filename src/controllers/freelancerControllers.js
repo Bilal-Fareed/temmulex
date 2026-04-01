@@ -23,6 +23,7 @@ import { getOrderByUuid, updateOrderByUuidService } from '../services/orderServi
 import { redisClient } from "../../infra/redis.js";
 import { sendOtpEmail } from "../helpers/mailer.js";
 import { dollarsToCents } from "../helpers/constants.js";
+import { STRIPE_PAYMENT_SUBCODE } from "../helpers/constants.js"
 import { socketUsers, emitNewMessage } from "../../socketServer.js";
 
 const getMyFreelancerProfileController = async (req, res) => {
@@ -266,6 +267,7 @@ const getDashboardDetailsController = async (req, res) => {
             return res.status(403).json({ 
                 success: false,
                 onboardingLink: onboardingLink,
+                subcode: STRIPE_PAYMENT_SUBCODE,
                 message: "To start receiving orders and access your dashboard, please complete your payment account setup.",
             });
         }

@@ -2,7 +2,12 @@ import { getAdminByEmail, getAdminByUuid, updateAdminByUuidService } from "../se
 import { verifyPassword, generateAccessToken } from "../helpers/security.js";
 import { refundPayment, disbursePayment } from "../helpers/payment.js"; 
 import { adminDashboardUserStats, getUsersList, getUserByUuid, updateUserByUuidService } from "../services/userService.js";
-import { getShoppersList, getFreelancerDetails } from "../services/freelancerProfileService.js";
+import {
+    getShoppersList,
+    getFreelancerDetails,
+    getFreelancerProfileDetailByUserUuid,
+    updateFreelancerDetailDynamicallyService,
+} from "../services/freelancerProfileService.js";
 import {
     getOrderService,
     adminDashboardOrderStats,
@@ -167,6 +172,33 @@ const adminBlockUserController = async (req, res) => {
 
     } catch (error) {
         console.error("ADMIN CONTROLLER > ADMIN BLOCK USER >", error);
+        res.status(500).json({ success: false, message: "Internal Server Error" });
+    }
+};
+
+const adminUpdateShopperDetailsController = async (req, res) => {
+    try {
+        console.log("ADMIN CONTROLLER > ADMIN UPDATE SHOPPER STATUS > try block executed");
+
+        const { shopper_id, status } = req.params;
+
+        const shopper = await getFreelancerProfileDetailByUserUuid(shopper_id)
+
+        if (shopper.profileStatus != "pending")
+            return res.status(400).json({
+                success: false,
+                message: `Partner already ${shopper.profileStatus}, can not ${status} shopper!`
+            });
+
+        await updateFreelancerDetailDynamicallyService(shopper_id, { profileStatus: status });
+
+        res.status(200).json({
+            success: true,
+            message: `Shopper ${status} Successfully`,
+        });
+
+    } catch (error) {
+        console.error("ADMIN CONTROLLER > ADMIN UPDATE SHOPPER STATUS >", error);
         res.status(500).json({ success: false, message: "Internal Server Error" });
     }
 };
@@ -394,4 +426,5 @@ export {
     adminOrdersListController,
     adminGetOrderDetailController,
     adminResolveSupportTicketController,
+    adminUpdateShopperDetailsController,
 }

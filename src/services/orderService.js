@@ -302,7 +302,7 @@ const getAdminOrdersListForPaymentService = async (filters = {}, options = {}) =
     const offset = (page - 1) * limit;
 
     if (search_text)
-        conditions.push(sql`(${orders.uuid}) ILIKE ${'%' + search_text + '%'}`);
+        conditions.push(sql`(${orders.uuid})::text ILIKE ${'%' + search_text + '%'}`);
 
     switch (payment_status) {
         case 'pending':

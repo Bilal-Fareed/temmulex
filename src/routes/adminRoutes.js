@@ -4,15 +4,16 @@ import { validate } from '../middlewares/validationMiddleware.js';
 import {
     adminLoginSchema,
     adminBlockUserSchema,
+    adminOrderListSchema,
+    adminClientListSchema,
     adminSupportListSchema,
     adminUpdateOrderSchema,
     adminPaymentListSchema,
-    adminClientListSchema,
     adminShopperListSchema,
-    adminGetShopperDetailsSchema,
-    adminOrderListSchema,
     adminGetUserDetailsSchema,
     adminGetOrderDetailsSchema,
+    adminGetShopperDetailsSchema,
+    adminUpdateShopperStatusSchema,
     adminResolveSupportTicketSchema,
     adminRefundOrDisbursePaymentSchema,
 } from '../schemas/adminSchema.js';
@@ -32,6 +33,7 @@ import {
     adminGetOrderDetailController,
     adminGetClientDetailController,
     adminGetShopperDetailController,
+    adminUpdateShopperDetailsController,
     adminResolveSupportTicketController,
 } from '../controllers/adminControllers.js';
 
@@ -64,6 +66,8 @@ router.post('/refund/payment/:order_id', authenticateAdminToken, validate({ para
 router.post('/disburse/payment/:order_id', authenticateAdminToken, validate({ params: adminRefundOrDisbursePaymentSchema }), disbursePaymentController);
 
 router.put('/update/order', authenticateAdminToken, validate({ body: adminUpdateOrderSchema }), adminUpdateOrderController);
+
+router.put('/:status/shopper/:shopper_id', authenticateAdminToken, validate({ params: adminUpdateShopperStatusSchema }), adminUpdateShopperDetailsController);
 
 router.get('/support', authenticateAdminToken, validate({ query: adminSupportListSchema }), adminSupportListController);
 

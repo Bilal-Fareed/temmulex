@@ -525,6 +525,30 @@ curl --location 'http://localhost:3001/api/admin/orders?page=1&limit=10&order_st
 ```
 
 
+## 📝 Admin Payment List
+```bash
+curl --location 'http://localhost:3001/api/admin/payments?page=1&limit=10&payment_status=pending&search_text=15c03a6b' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1dWlkIjoiODc5ZTZkOTgtNGMyNy00Y2MzLTg4ZWItOTlhMGQ4YjhmZDE4IiwiZW1haWwiOiJhZG1pbkBnbWFpbC5jb20iLCJ2ZXJzaW9uIjowLCJpYXQiOjE3NzM0Mzk5MDAsImV4cCI6MTc3MzQ4MzEwMH0.hnQfSeA6DChL_hCM-XZmuwg4-3nt88spmHObA60xi8E'
+```
+
+
+## 📝 Admin Mark Payment As Refunded
+```bash
+curl --location --request POST 'http://localhost:3001/api/admin/refund/payment/15c03a6b-4468-447c-a2a8-14ed6500cf30' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1dWlkIjoiODc5ZTZkOTgtNGMyNy00Y2MzLTg4ZWItOTlhMGQ4YjhmZDE4IiwiZW1haWwiOiJhZG1pbkBnbWFpbC5jb20iLCJ2ZXJzaW9uIjowLCJpYXQiOjE3NzM0Mzk5MDAsImV4cCI6MTc3MzQ4MzEwMH0.hnQfSeA6DChL_hCM-XZmuwg4-3nt88spmHObA60xi8E'
+```
+
+
+## 📝 Admin Mark Payment As Disbursed
+``` bash
+curl --location --request POST 'http://localhost:3001/api/admin/disburse/payment/15c03a6b-4468-447c-a2a8-14ed6500cf30' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1dWlkIjoiODc5ZTZkOTgtNGMyNy00Y2MzLTg4ZWItOTlhMGQ4YjhmZDE4IiwiZW1haWwiOiJhZG1pbkBnbWFpbC5jb20iLCJ2ZXJzaW9uIjowLCJpYXQiOjE3NzM0Mzk5MDAsImV4cCI6MTc3MzQ4MzEwMH0.hnQfSeA6DChL_hCM-XZmuwg4-3nt88spmHObA60xi8E'
+```
+
+
 ## 📝 Admin Support List
 ```bash
 curl --location 'http://localhost:3001/api/admin/support?page=1&limit=10&ticket_status=pending&search_text=9aa21' \
@@ -590,3 +614,12 @@ curl --location --request PUT 'http://localhost:3001/api/admin/update/order' \
     "order_id": "25d6cfe5-b4e8-4c5a-8b3f-442980ff4764"
     "status": "completed"
 }'
+```
+
+
+## Update Shopper Profile Status
+```bash
+curl --location --request PUT 'http://localhost:3001/api/admin/approve/shopper/15c03a6b-4468-447c-a2a8-14ed6500cf30' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1dWlkIjoiODc5ZTZkOTgtNGMyNy00Y2MzLTg4ZWItOTlhMGQ4YjhmZDE4IiwiZW1haWwiOiJhZG1pbkBnbWFpbC5jb20iLCJ2ZXJzaW9uIjowLCJpYXQiOjE3NzM0Mzk5MDAsImV4cCI6MTc3MzQ4MzEwMH0.hnQfSeA6DChL_hCM-XZmuwg4-3nt88spmHObA60xi8E'
+```

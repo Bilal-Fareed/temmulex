@@ -70,6 +70,11 @@ const adminRefundOrDisbursePaymentSchema = vine.object({
     order_id: vine.string().uuid(),
 }); 
 
+const adminUpdateShopperStatusSchema = vine.object({
+    shopper_id: vine.string().uuid(),
+    status: vine.enum(['reject', 'approve'])
+}); 
+
 export {
     adminLoginSchema,
     adminBlockUserSchema,
@@ -82,6 +87,7 @@ export {
     adminGetUserDetailsSchema,
     adminGetOrderDetailsSchema,
     adminGetShopperDetailsSchema,
+    adminUpdateShopperStatusSchema,
     adminResolveSupportTicketSchema,
     adminRefundOrDisbursePaymentSchema,
 }

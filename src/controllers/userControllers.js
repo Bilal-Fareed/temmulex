@@ -211,7 +211,21 @@ const loginController = async (req, res) => {
 
         if (user_type === "freelancer") {
             const freelancerProfileDetails = await getFreelancerProfileDetailByUserUuid(user.uuid);
+
             if (!freelancerProfileDetails) return res.status(404).json({ success: false, message: 'Please create a shopper profile first to proceed further.' });
+            
+            if (freelancerProfileDetails.profileStatus != 'approved'){
+                const _errMessage = {
+                    "pending": "your account is under review at the moment",
+                    "rejected": "your account is rejected by admin"
+                }
+
+                return res.status(400).json({
+                    success: false,
+                    message: `Please contact support, ${_errMessage[freelancerProfileDetails.profileStatus]}`
+                });
+            }
+            
             user = {
                 ...user,
                 location: freelancerProfileDetails.location,
