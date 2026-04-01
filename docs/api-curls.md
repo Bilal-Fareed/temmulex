@@ -14,17 +14,22 @@ curl --location 'http://localhost:3001/v1/contact-us' \
 }'
 ```
 
-## Store Notification Token
+
+## 📝 get services
 ```bash
-curl --location --request POST 'http://localhost:3001/v1/users/notifications/register-device' \
---header 'x-device-id: test-device-id' \
---header 'x-user-agent: android' \
---header 'Content-Type: application/json' \
---header 'x-refresh-token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1dWlkIjoiMjg1YmIwZTAtYTNkOC00MDU5LTg4NTUtNDk3MTE4NTMyMTIxIiwidmVyc2lvbiI6MCwidG9rZW5JZCI6ImVlYjhmNmExLWEzZTAtNGRhZS05NjRkLWY2OTM2MjQwYzVmOSIsImlhdCI6MTc2ODMyNzI5MSwiZXhwIjoxNzY4OTMyMDkxfQ.grt-eqI0s9_JxOC5EDUVOD6-Qk2pGI6k_XPX9Jq07EI' \
---header 'authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1dWlkIjoiMjg1YmIwZTAtYTNkOC00MDU5LTg4NTUtNDk3MTE4NTMyMTIxIiwidmVyc2lvbiI6MCwidG9rZW5JZCI6ImVlYjhmNmExLWEzZTAtNGRhZS05NjRkLWY2OTM2MjQwYzVmOSIsImlhdCI6MTc2ODMyNzI5MSwiZXhwIjoxNzY4MzMwODkxfQ.YWUa9AKGLroqHf6_XP2FebkYHYtTtFFXyE9M2EWyEqE'
---data-raw '{
-    "token": "25dD6cfe&5b4V$e84cSA5a8b3fU4T_42980ff#4764$"
-}'
+curl --location 'http://localhost:3001/v1/services'
+```
+
+
+## 📝 get languages
+```bash
+curl --location 'http://localhost:3001/v1/languages'
+```
+
+
+## 📝 get questions
+```bash
+curl --location 'http://localhost:3001/v1/shopper-questions'
 ```
 
 
@@ -67,6 +72,7 @@ curl --location 'http://localhost:3001/v1/users/signup' \
 --form 'languages="[\"dcf45f83-291d-413f-938f-2ce3ede51ee3\"]"' \
 --form 'location="{\"lat\":0,\"lng\":0}"' \
 --form 'services="[{\"serviceId\":\"f740660d-a46c-472a-b934-6323ac0728f5\",\"fixedPriceCents\":100,\"currency\":\"USD\"}]"' \
+--form 'qna="[{\"questionId\":\"f740660d-a46c-472a-b934-6323ac0728f5\",\"answer\":\"random string for answer\"}]"' \
 --form 'cv=@"/C:/Users/pdfs/cv.pdf"' \
 --form 'dbs=@"/C:/Users/pdfs/dbs.pdf"'
 ```
@@ -94,6 +100,19 @@ curl --location 'http://localhost:3001/v1/users/verify-otp' \
     "email":"abc@gmail.com",
     "intent":"EMAIL_VERIFICATION",
     "otp": "0000"
+}'
+```
+
+## Store Notification Token
+```bash
+curl --location --request POST 'http://localhost:3001/v1/users/notifications/register-device' \
+--header 'x-device-id: test-device-id' \
+--header 'x-user-agent: android' \
+--header 'Content-Type: application/json' \
+--header 'x-refresh-token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1dWlkIjoiMjg1YmIwZTAtYTNkOC00MDU5LTg4NTUtNDk3MTE4NTMyMTIxIiwidmVyc2lvbiI6MCwidG9rZW5JZCI6ImVlYjhmNmExLWEzZTAtNGRhZS05NjRkLWY2OTM2MjQwYzVmOSIsImlhdCI6MTc2ODMyNzI5MSwiZXhwIjoxNzY4OTMyMDkxfQ.grt-eqI0s9_JxOC5EDUVOD6-Qk2pGI6k_XPX9Jq07EI' \
+--header 'authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1dWlkIjoiMjg1YmIwZTAtYTNkOC00MDU5LTg4NTUtNDk3MTE4NTMyMTIxIiwidmVyc2lvbiI6MCwidG9rZW5JZCI6ImVlYjhmNmExLWEzZTAtNGRhZS05NjRkLWY2OTM2MjQwYzVmOSIsImlhdCI6MTc2ODMyNzI5MSwiZXhwIjoxNzY4MzMwODkxfQ.YWUa9AKGLroqHf6_XP2FebkYHYtTtFFXyE9M2EWyEqE'
+--data-raw '{
+    "token": "25dD6cfe&5b4V$e84cSA5a8b3fU4T_42980ff#4764$"
 }'
 ```
 

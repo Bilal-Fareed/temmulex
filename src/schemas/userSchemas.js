@@ -32,11 +32,18 @@ const signupSchema = vine.object({
     dob: vine.date({ formats: ['DD/MM/YYYY', 'x'] }),
     phone: vine.string().minLength(2).maxLength(50),
     languages: vine.array(vine.string().uuid({ version: [4] })).optional().requiredWhen('user_type', '=', 'freelancer'),
-    location: vine.object({ lat: vine.number().min(-90).max(90), lng: vine.number().min(-180).max(180) }).optional().requiredWhen('user_type', '=', 'freelancer'),
+    location: vine.object({
+        lat: vine.number().min(-90).max(90),
+        lng: vine.number().min(-180).max(180)
+    }).optional().requiredWhen('user_type', '=', 'freelancer'),
     services: vine.array(vine.object({
         serviceId: vine.string().uuid({ version: [4] }),
         fixedPriceDollars: vine.number().optional().transform((value) => value ?? 0),
         currency: vine.string().minLength(3).maxLength(5).regex(/[A-Z]/, "Currency must contain capital alphabets").optional().transform((value) => value ?? 'GBP'),
+    })).optional().requiredWhen('user_type', '=', 'freelancer'),
+    qna: vine.array(vine.object({
+        questionId: vine.string().uuid({ version: [4] }),
+        answer: vine.string().minLength(2).maxLength(10000).optional().transform((value) => value ?? 'no answer received'),
     })).optional().requiredWhen('user_type', '=', 'freelancer'),
 });
 

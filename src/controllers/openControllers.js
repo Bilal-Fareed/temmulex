@@ -1,3 +1,4 @@
+import { getQuestions } from "../services/qnaService.js";
 import { getLanguages } from "../services/languageServices.js";
 import { getServices } from "../services/serviceServices.js";
 import { insertContactUsQueryServices } from "../services/contactUsService.js";
@@ -24,6 +25,17 @@ const getLanguagesController = async (req, res) => {
     }
 };
 
+const getQuestionsController = async (req, res) => {
+    try {
+        console.log("GET QUESTIONS OPEN CONTROLLER >  try block executed");
+        const questions = await getQuestions();
+        res.status(200).json({ success: true, message: "Questions Fetched Successfully", questions });
+    } catch (error) {
+        console.error("GET QUESTIONS OPEN CONTROLLER > ", error);
+        res.status(500).json({ success: false, message: "Internal Server Error" });
+    }
+};
+
 const insertQueryController = async (req, res) => {
     try {
         console.log("INSERT QUERY OPEN CONTROLLER >  try block executed");
@@ -42,6 +54,7 @@ const insertQueryController = async (req, res) => {
 
 export {
     getServicesController,
+    getQuestionsController,
     getLanguagesController,
     insertQueryController,
 }

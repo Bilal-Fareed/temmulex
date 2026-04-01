@@ -1,5 +1,6 @@
 import { uploadFile } from "../helpers/cloudinary.js";
 import { sendNotification } from "../helpers/firebase.js";
+import { insertAnswers } from "../services/qnaService.js";
 import { createStripeConnectAccount } from "../helpers/payment.js";
 import { hashPassword, verifyPassword, generateAccessToken, generateRefreshToken } from "../helpers/security.js";
 import { getUserByEmail, createUserService, getUserByUuid, updateUserByUuidService } from "../services/userService.js";
@@ -33,7 +34,7 @@ const userSignupController = async (req, res) => {
         let cvUrl = null;
         let dbsUrl = null;
 
-        const { email, password, title, first_name, last_name, country, dob, phone, user_type, services, languages, location } = req.body;
+        const { email, password, title, first_name, last_name, country, dob, phone, user_type, services, languages, location, qna } = req.body;
         const files = req.files ?? {};
 
         if (req.user?.email !== email) return res.status(403).json({ success: false, message: "Please use the same email for registration which was used for OTP verification." });
@@ -110,6 +111,17 @@ const userSignupController = async (req, res) => {
                         )
                     );
                 }
+
+                if (qna?.length) {
+                    insertingFreelancersDetails.push(
+                        qna.map((ans) => ({
+                            answer: ans.answer,
+                            questionId: ans.questionId,
+                            freelancerId: freelancer.uuid,
+                        })), { transaction: tx }
+                    )
+                }
+
                 await Promise.all(insertingFreelancersDetails);
             }
         });
