@@ -34,7 +34,6 @@ const freelancerProfiles = pgTable("freelancer_profiles", {
 });
 
 const freelancerProfilesRelations = relations(freelancerProfiles, ({ many, one }) => ({
-    orders: many(orders),
     reviews: many(reviews),
     languages: many(freelancerLanguages),
     services: many(freelancerServices),
