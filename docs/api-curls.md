@@ -291,21 +291,6 @@ curl --location 'http://localhost:3001/v1/users/my-orders?order_status=completed
 ```
 
 
-## 📝 Place Order
-```bash
-curl --location 'http://localhost:3001/v1/users/place-order' \
---header 'x-device-id: test-device-id' \
---header 'x-user-agent: android' \
---header 'x-refresh-token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1dWlkIjoiMjVkNmNmZTUtYjRlOC00YzVhLThiM2YtNDQyOTgwZmY0NzY0IiwidmVyc2lvbiI6MCwidG9rZW5JZCI6IjkyY2RhOWZmLTI4YzMtNDE3OS04YWYxLWU1MzBjZDE2Njg3NCIsImlhdCI6MTc3MjQwNDMyNCwiZXhwIjoxNzczMDA5MTI0fQ.ZBaW2-QS58whJCSRZhVt3GJ85dzjGt4oOxkt8W1Fxgg' \
---header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1dWlkIjoiMjVkNmNmZTUtYjRlOC00YzVhLThiM2YtNDQyOTgwZmY0NzY0IiwidmVyc2lvbiI6MCwidG9rZW5JZCI6IjkyY2RhOWZmLTI4YzMtNDE3OS04YWYxLWU1MzBjZDE2Njg3NCIsImlhdCI6MTc3MjQwNDMyNCwiZXhwIjoxNzcyNDA3OTI0fQ.N97QJryBcfXpqqFl_9ZfoFnQ4T4ym4ymBYPrd6X6nlg' \
---header 'Content-Type: application/json' \
---data '{
-    "freelancer_id":"15c2bb71-526e-4c0c-aa27-898c5b3fa764",
-    "service_id":"b5de0efc-057a-4968-89e8-5cdfcc47145e"
-}'
-```
-
-
 ## 📝 Give Rating for Order
 ```bash
 curl --location 'http://localhost:3001/v1/users/booking/feedback' \

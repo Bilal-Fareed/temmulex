@@ -25,13 +25,19 @@ const getUserSpecificConversationListService = async (filters = {}, projection =
 
     const offset = (page - 1) * limit;
 
+    let joinTableCondition;
     const conditions = [
         sql`${conversations.isDeleted} = false`,
     ];
 
-    if (filters?.clientId) conditions.push(eq(conversations.clientId, filters.clientId))
-    else if (filters?.freelancerId) conditions.push(eq(conversations.freelancerId, filters.freelancerId))
-
+    if (filters?.clientId) {
+        joinTableCondition = eq(conversations.freelancerId, users.uuid)
+        conditions.push(eq(conversations.clientId, filters.clientId))
+    } else if (filters?.freelancerId) {
+        joinTableCondition = eq(conversations.clientId, users.uuid)
+        conditions.push(eq(conversations.freelancerId, filters.freelancerId))
+    }
+    
     const result = await db
         .select({
             conversationUuid: conversations.uuid,
@@ -46,7 +52,7 @@ const getUserSpecificConversationListService = async (filters = {}, projection =
             messageCreatedAt: messages.createdAt
         })
         .from(conversations)
-        .leftJoin(users, eq(conversations.freelancerId, users.uuid))
+        .leftJoin(users, joinTableCondition)
         .leftJoin(messages, eq(messages.uuid, sql`(SELECT m.uuid FROM messages m WHERE m.conversation_uuid = ${conversations.uuid} ORDER BY created_at DESC LIMIT 1)`))
         .where(and(...conditions))
         .orderBy(desc(conversations.uuid))
