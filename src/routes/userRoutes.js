@@ -47,7 +47,7 @@ import {
 
 const router = Router();
 
-router.post('/signup', multerHandler, parseMultipartJSON(['languages', 'location', 'services']), authenticateTemporaryToken, validate({ body: signupSchema, headers: commonHeadersSchema }), userSignupController);
+router.post('/signup', multerHandler, parseMultipartJSON(['languages', 'location', 'services', 'qna']), authenticateTemporaryToken, validate({ body: signupSchema, headers: commonHeadersSchema }), userSignupController);
 
 router.post('/upload', multerHandler, authenticate, uploadFileController);
 
