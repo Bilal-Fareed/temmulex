@@ -1,6 +1,6 @@
 import express, { Router } from "express";
 import Stripe from "stripe";
-import { insertConversationServices } from "../services/logService.js";
+import { insertPaymentLogServices } from "../services/logService.js";
 import { updateOrderPaymentStatusService } from "../services/orderService.js";
 
 const router = Router();
@@ -22,7 +22,7 @@ router.post('/stripe', express.raw({ type: 'application/json' }), async (req, re
     const paymentIntent = event.data.object;
     const orderId = paymentIntent.metadata?.orderId;
 
-    await insertConversationServices([{
+    await insertPaymentLogServices([{
         eventId: paymentIntent?.id,
         eventType: event?.type ,
         payload: event
