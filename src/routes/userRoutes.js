@@ -7,6 +7,7 @@ import { sendMessageSchema } from '../schemas/openSchemas.js';
 import {
     signupSchema,
     signinSchema,
+    payNowSchema,
     verifyOtpSchema,
     forgotPasswordSchema,
     updatePasswordSchema,
@@ -24,6 +25,7 @@ import {
 import {
     userSignupController,
     loginController,
+    payNowController,
     logoutController,
     forgotPasswordController,
     updatePasswordController,
@@ -74,6 +76,8 @@ router.get('/top-rated/nearby', authenticate, validate({ query: nearbyTopRatedSh
 router.get('/my-orders', authenticate, validate({ query: getMyOrdersSchema }), getMyOrdersController);
 
 router.post('/place-order', authenticate, validate({ body: placeOrderSchema }), placeOrderController);
+
+router.post('/paynow', authenticate, validate({ body: payNowSchema }), payNowController);
 
 router.post('/booking/feedback', authenticate, validate({ body: orderFeedbackSchema }), orderFeedbackController);
 

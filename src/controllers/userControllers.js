@@ -1,11 +1,13 @@
 import { uploadFile } from "../helpers/cloudinary.js";
 import { sendNotification } from "../helpers/firebase.js";
+import { insertAnswers } from "../services/qnaService.js";
+import { createStripeConnectAccount } from "../helpers/payment.js";
 import { hashPassword, verifyPassword, generateAccessToken, generateRefreshToken } from "../helpers/security.js";
 import { getUserByEmail, createUserService, getUserByUuid, updateUserByUuidService } from "../services/userService.js";
 import { insertFreelancerDetailService, getFreelancerProfileDetailByUserUuid, getNearbyFreelancers } from "../services/freelancerProfileService.js";
 import { insertManyFreelancerLanguagesService } from "../services/freelancerLanguageService.js";
 import { insertManyFreelancerServices, getFreelancerServices } from "../services/freelancerServicesService.js";
-import { getOrderService, rateOrder } from "../services/orderService.js";
+import { getOrderService, rateOrder, getOrderByUuid, updateOrderByUuidService } from "../services/orderService.js";
 import { getNotificationTokenService, addNotificationTokenService } from "../services/notificationTokenService.js";
 import {
     addMessageServices,
@@ -23,9 +25,7 @@ import { PROFILE_UPDATE_OTP_MESSAGE_SUBCODE } from '../helpers/constants.js';
 import { db } from "../../infra/db.js";
 import { socketUsers, emitNewMessage } from "../../socketServer.js";
 import { dollarsToCents } from "../helpers/constants.js";
-import Stripe from "stripe";
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+import { createPaymentIntent, getPaymentIntentStatus, cancelOldPaymentIntent } from "../helpers/payment.js";
 
 const userSignupController = async (req, res) => {
     try {
@@ -34,7 +34,7 @@ const userSignupController = async (req, res) => {
         let cvUrl = null;
         let dbsUrl = null;
 
-        const { email, password, title, first_name, last_name, country, dob, phone, user_type, services, languages, location } = req.body;
+        const { email, password, title, first_name, last_name, country, dob, phone, user_type, services, languages, location, qna } = req.body;
         const files = req.files ?? {};
 
         if (req.user?.email !== email) return res.status(403).json({ success: false, message: "Please use the same email for registration which was used for OTP verification." });
@@ -84,7 +84,9 @@ const userSignupController = async (req, res) => {
                 const { lat = 0, lng = 0 } = location;
                 const insertingFreelancersDetails = [];
 
-                const freelancer = await insertFreelancerDetailService({ userId: user.uuid, lat, lng, cvUrl, dbsUrl }, { transaction: tx });
+                const account = await createStripeConnectAccount({ email });
+
+                const freelancer = await insertFreelancerDetailService({ userId: user.uuid, lat, lng, cvUrl, dbsUrl, stripeAccountId: account?.id }, { transaction: tx });
 
                 if (services?.length) {
                     insertingFreelancersDetails.push(
@@ -109,6 +111,17 @@ const userSignupController = async (req, res) => {
                         )
                     );
                 }
+
+                if (qna?.length) {
+                    insertingFreelancersDetails.push(
+                        qna.map((ans) => ({
+                            answer: ans.answer,
+                            questionId: ans.questionId,
+                            freelancerId: freelancer.uuid,
+                        })), { transaction: tx }
+                    )
+                }
+
                 await Promise.all(insertingFreelancersDetails);
             }
         });
@@ -210,7 +223,21 @@ const loginController = async (req, res) => {
 
         if (user_type === "freelancer") {
             const freelancerProfileDetails = await getFreelancerProfileDetailByUserUuid(user.uuid);
+
             if (!freelancerProfileDetails) return res.status(404).json({ success: false, message: 'Please create a shopper profile first to proceed further.' });
+            
+            if (freelancerProfileDetails.profileStatus != 'approved'){
+                const _errMessage = {
+                    "pending": "your account is under review at the moment",
+                    "rejected": "your account is rejected by admin"
+                }
+
+                return res.status(400).json({
+                    success: false,
+                    message: `Please contact support, ${_errMessage[freelancerProfileDetails.profileStatus]}`
+                });
+            }
+            
             user = {
                 ...user,
                 location: freelancerProfileDetails.location,
@@ -548,13 +575,8 @@ const placeOrderController = async (req, res) => {
         if (!freelancerService?.fixedPriceCents) return res.status(400).json({ success: false, message: "The Shopper has not finalized the pricing for this service yet." })
 
         // Create a PaymentIntent with the order amount and currency
-        const paymentIntent = await stripe.paymentIntents.create({
-            amount: freelancerService?.fixedPriceCents,
-            currency: "GBP",
-            // In the latest version of the API, specifying the `automatic_payment_methods` parameter is optional because Stripe enables its functionality by default.
-            automatic_payment_methods: {
-                enabled: true,
-            },
+        const paymentIntent = await createPaymentIntent({
+            amount: freelancerService?.fixedPriceCents
         });
 
         const order = await createOrderService({
@@ -562,6 +584,7 @@ const placeOrderController = async (req, res) => {
             freelancerId: freelancer_id, 
             serviceId: service_id, 
             price: freelancerService.fixedPriceCents,
+            commissionPercentage: process.env.COMMISSION_PERCENTAGE || 10,
             paymentReference: paymentIntent.id,
         })
 
@@ -576,6 +599,55 @@ const placeOrderController = async (req, res) => {
 
     } catch (error) {
         console.error("USER CONTROLLER > PLACE ORDER >", error);
+        res.status(500).json({ success: false, message: "Internal Server Error" });
+    }
+};
+
+const payNowController = async (req, res) => {
+    try {
+
+        console.log("USER CONTROLLER > PAY NOW > try block executed");
+
+        const { uuid } = req.user;
+        const { order_id } = req.body;
+
+        const orderDetails = await getOrderByUuid(order_id);
+
+        if (!orderDetails) return res.status(404).json({ success: false, message: "Order Not Found." });
+
+        if (orderDetails.clientId != uuid) return res.status(403).json({ success: false, message: "You are not allowed to pay for this order." })
+
+        if (orderDetails.paymentStatus != 'pending') return res.status(403).json({ success: false, message: `Order Payment Status [${orderDetails.paymentStatus}]. You are not allowed to make a payment for thos order on this state.` })
+        
+        const paymentIntent = await getPaymentIntentStatus(orderDetails.paymentReference)
+
+        if (["requires_payment_method", "requires_confirmation"].includes(paymentIntent.status))
+            return res.status(200).json({
+                success: true,
+                message: `Order Payment Intent Fetched Successfully.`,
+                data: {
+                    clientSecret: paymentIntent.client_secret,
+                },
+            });
+
+        // // Cancel Old Payment Intent
+        // await cancelOldPaymentIntent(orderDetails.paymentIntent)
+
+        // Create a PaymentIntent with the order amount and currency
+        const newPaymentIntent = await createPaymentIntent({ amount: orderDetails.price });
+
+        await updateOrderByUuidService(orderDetails.uuid, { paymentReference: newPaymentIntent.id });
+
+        res.status(200).json({
+            success: true,
+            message: "Order Payment Intent Fetched Successfully.",
+            data: {
+                clientSecret: newPaymentIntent.client_secret,
+            }
+        });
+
+    } catch (error) {
+        console.error("USER CONTROLLER > PAY NOW > ", error);
         res.status(500).json({ success: false, message: "Internal Server Error" });
     }
 };
@@ -783,6 +855,7 @@ export {
     userSignupController,
     loginController,
     logoutController,
+    payNowController,
     orderFeedbackController,
     verifyOtpController,
     sendMessagesController,

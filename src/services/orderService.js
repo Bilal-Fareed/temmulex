@@ -85,10 +85,14 @@ const getOrderService = async (filters = {}, projection = undefined, options = {
 
     const offset = (page - 1) * limit;
 
+    const commission = sql`(${orders.price} * ${orders.commissionPercentage} / 100.0)`;
+
     return await db
         .select({
             orderId: orders.uuid,
             price: sql`ROUND(${orders.price} / 100.0, 2)`,
+            commissionAmount: sql`ROUND(${commission} / 100.0, 2)`,
+            netShopperPayout: sql`ROUND((${orders.price} - ${commission}) / 100.0, 2)`,
             status: orders.status,
             createdAt: orders.createdAt,
             paymentStatus: orders.paymentStatus,
@@ -120,6 +124,52 @@ const getOrderService = async (filters = {}, projection = undefined, options = {
         .limit(limit);
 }
 
+const getOrderDetailsForAdminService = async (uuid) => {
+
+    const client = alias(users, "client");
+    const freelancer = alias(users, "freelancer");
+
+    const commission = sql`(${orders.price} * ${orders.commissionPercentage} / 100.0)`;
+
+    const [order] = await db
+        .select({
+            orderId: orders.uuid,
+            price: sql`ROUND(${orders.price} / 100.0, 2)`,
+            commissionAmount: sql`ROUND(${commission} / 100.0, 2)`,
+            netShopperPayout: sql`ROUND((${orders.price} - ${commission}) / 100.0, 2)`,
+            status: orders.status,
+            createdAt: orders.createdAt,
+            paymentStatus: orders.paymentStatus,
+            paymentReference: orders.paymentReference,
+            commissionPercentage: orders.commissionPercentage,
+
+            serviceId: services.uuid,
+            serviceName: services.name,
+            serviceType: services.service_type,
+
+            clientUuid: client.uuid,
+            clientName: sql`${client.firstName} || ' ' || ${client.lastName}`,
+            clientEmail: client.email,
+
+            freelancerUuid: freelancer.uuid,
+            freelancerName: sql`${freelancer.firstName} || ' ' || ${freelancer.lastName}`,
+            freelancerEmail: freelancer.email,
+
+            reviewId: reviews.uuid,
+            rating: reviews.rating,
+        })
+        .from(orders)
+
+        .leftJoin(client, eq(client.uuid, orders.clientId))
+        .leftJoin(services, eq(services.uuid, orders.serviceId))
+        .leftJoin(freelancer, eq(freelancer.uuid, orders.freelancerId))
+        .leftJoin(reviews, eq(reviews.orderId, orders.uuid))
+
+        .where(eq(orders.uuid, uuid))
+        .limit(1);
+
+        return order;
+}
 
 const rateOrder = async (data, options = {}) => {
 
@@ -242,6 +292,71 @@ const getAdminOrdersListService = async (filters = {}, options = {}) => {
         .limit(limit);
 }
 
+const getAdminOrdersListForPaymentService = async (filters = {}, options = {}) => {
+
+    const client = alias(users, "client");
+    const freelancer = alias(users, "freelancer");
+
+    const conditions = [];
+    const { search_text, payment_status } = filters;
+    const { page, limit } = options;
+    const offset = (page - 1) * limit;
+
+    if (search_text)
+        conditions.push(sql`(${orders.uuid})::text ILIKE ${'%' + search_text + '%'}`);
+
+    switch (payment_status) {
+        case 'pending':
+        case 'failed':
+        case 'received':
+        case 'refunded':
+        case 'disbursed':
+            conditions.push(eq(orders.paymentStatus, payment_status));
+            break;
+        case 'disputed':
+            conditions.push(and(eq(orders.status, 'completed'), eq(orders.paymentStatus, 'pending')));
+            break;
+    }
+
+    const commission = sql`(${orders.price} * ${orders.commissionPercentage} / 100.0)`;
+
+    return await db
+        .select({
+            orderId: orders.uuid,
+            price: sql`ROUND(${orders.price} / 100.0, 2)`,
+            commissionAmount: sql`ROUND(${commission} / 100.0, 2)`,
+            netShopperPayout: sql`ROUND((${orders.price} - ${commission}) / 100.0, 2)`,
+            status: orders.status,
+            createdAt: orders.createdAt,
+            paymentStatus: orders.paymentStatus,
+
+            serviceId: services.uuid,
+            serviceName: services.name,
+            serviceType: services.service_type,
+
+            clientUuid: client.uuid,
+            clientName: sql`${client.firstName} || ' ' || ${client.lastName}`,
+            clientEmail: client.email,
+
+            freelancerUuid: freelancer.uuid,
+            freelancerName: sql`${freelancer.firstName} || ' ' || ${freelancer.lastName}`,
+            freelancerEmail: freelancer.email,
+
+            reviewId: reviews.uuid,
+            rating: reviews.rating,
+        })
+        .from(orders)
+
+        .leftJoin(client, eq(client.uuid, orders.clientId))
+        .leftJoin(services, eq(services.uuid, orders.serviceId))
+        .leftJoin(freelancer, eq(freelancer.uuid, orders.freelancerId))
+        .leftJoin(reviews, eq(reviews.orderId, orders.uuid))
+
+        .where(...conditions)
+        .offset(offset)
+        .limit(limit);
+}
+
 export {
     rateOrder,
     getOrderByUuid,
@@ -252,6 +367,8 @@ export {
     updateOrderByUuidService,
     adminDashboardOrderStats,
     getAdminOrdersListService,
+    getOrderDetailsForAdminService,
     updateOrderPaymentStatusService,
     getFreelancerCompletedOrderStats,
+    getAdminOrdersListForPaymentService,
 }

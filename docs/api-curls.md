@@ -14,17 +14,22 @@ curl --location 'http://localhost:3001/v1/contact-us' \
 }'
 ```
 
-## Store Notification Token
+
+## 📝 get services
 ```bash
-curl --location --request POST 'http://localhost:3001/v1/users/notifications/register-device' \
---header 'x-device-id: test-device-id' \
---header 'x-user-agent: android' \
---header 'Content-Type: application/json' \
---header 'x-refresh-token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1dWlkIjoiMjg1YmIwZTAtYTNkOC00MDU5LTg4NTUtNDk3MTE4NTMyMTIxIiwidmVyc2lvbiI6MCwidG9rZW5JZCI6ImVlYjhmNmExLWEzZTAtNGRhZS05NjRkLWY2OTM2MjQwYzVmOSIsImlhdCI6MTc2ODMyNzI5MSwiZXhwIjoxNzY4OTMyMDkxfQ.grt-eqI0s9_JxOC5EDUVOD6-Qk2pGI6k_XPX9Jq07EI' \
---header 'authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1dWlkIjoiMjg1YmIwZTAtYTNkOC00MDU5LTg4NTUtNDk3MTE4NTMyMTIxIiwidmVyc2lvbiI6MCwidG9rZW5JZCI6ImVlYjhmNmExLWEzZTAtNGRhZS05NjRkLWY2OTM2MjQwYzVmOSIsImlhdCI6MTc2ODMyNzI5MSwiZXhwIjoxNzY4MzMwODkxfQ.YWUa9AKGLroqHf6_XP2FebkYHYtTtFFXyE9M2EWyEqE'
---data-raw '{
-    "token": "25dD6cfe&5b4V$e84cSA5a8b3fU4T_42980ff#4764$"
-}'
+curl --location 'http://localhost:3001/v1/services'
+```
+
+
+## 📝 get languages
+```bash
+curl --location 'http://localhost:3001/v1/languages'
+```
+
+
+## 📝 get questions
+```bash
+curl --location 'http://localhost:3001/v1/shopper-questions'
 ```
 
 
@@ -67,6 +72,7 @@ curl --location 'http://localhost:3001/v1/users/signup' \
 --form 'languages="[\"dcf45f83-291d-413f-938f-2ce3ede51ee3\"]"' \
 --form 'location="{\"lat\":0,\"lng\":0}"' \
 --form 'services="[{\"serviceId\":\"f740660d-a46c-472a-b934-6323ac0728f5\",\"fixedPriceCents\":100,\"currency\":\"USD\"}]"' \
+--form 'qna="[{\"questionId\":\"f740660d-a46c-472a-b934-6323ac0728f5\",\"answer\":\"random string for answer\"}]"' \
 --form 'cv=@"/C:/Users/pdfs/cv.pdf"' \
 --form 'dbs=@"/C:/Users/pdfs/dbs.pdf"'
 ```
@@ -94,6 +100,19 @@ curl --location 'http://localhost:3001/v1/users/verify-otp' \
     "email":"abc@gmail.com",
     "intent":"EMAIL_VERIFICATION",
     "otp": "0000"
+}'
+```
+
+## Store Notification Token
+```bash
+curl --location --request POST 'http://localhost:3001/v1/users/notifications/register-device' \
+--header 'x-device-id: test-device-id' \
+--header 'x-user-agent: android' \
+--header 'Content-Type: application/json' \
+--header 'x-refresh-token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1dWlkIjoiMjg1YmIwZTAtYTNkOC00MDU5LTg4NTUtNDk3MTE4NTMyMTIxIiwidmVyc2lvbiI6MCwidG9rZW5JZCI6ImVlYjhmNmExLWEzZTAtNGRhZS05NjRkLWY2OTM2MjQwYzVmOSIsImlhdCI6MTc2ODMyNzI5MSwiZXhwIjoxNzY4OTMyMDkxfQ.grt-eqI0s9_JxOC5EDUVOD6-Qk2pGI6k_XPX9Jq07EI' \
+--header 'authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1dWlkIjoiMjg1YmIwZTAtYTNkOC00MDU5LTg4NTUtNDk3MTE4NTMyMTIxIiwidmVyc2lvbiI6MCwidG9rZW5JZCI6ImVlYjhmNmExLWEzZTAtNGRhZS05NjRkLWY2OTM2MjQwYzVmOSIsImlhdCI6MTc2ODMyNzI5MSwiZXhwIjoxNzY4MzMwODkxfQ.YWUa9AKGLroqHf6_XP2FebkYHYtTtFFXyE9M2EWyEqE'
+--data-raw '{
+    "token": "25dD6cfe&5b4V$e84cSA5a8b3fU4T_42980ff#4764$"
 }'
 ```
 
@@ -243,6 +262,20 @@ curl --location 'http://localhost:3001/v1/users/place-order' \
 --data '{
     "freelancer_id": "de6fe813-c292-4da1-a817-eecb2cea9142",
     "service_id": "40130a06-2a6a-400f-95f3-0e9b53be0c7c"
+}'
+```
+
+
+## 📝 Pay Now Order
+```bash
+curl --location 'http://localhost:3001/v1/users/paynow' \
+--header 'x-device-id: test-device-id' \
+--header 'x-user-agent: android' \
+--header 'x-refresh-token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1dWlkIjoiMjg1YmIwZTAtYTNkOC00MDU5LTg4NTUtNDk3MTE4NTMyMTIxIiwidmVyc2lvbiI6MCwidG9rZW5JZCI6ImVlYjhmNmExLWEzZTAtNGRhZS05NjRkLWY2OTM2MjQwYzVmOSIsImlhdCI6MTc2ODMyNzI5MSwiZXhwIjoxNzY4OTMyMDkxfQ.grt-eqI0s9_JxOC5EDUVOD6-Qk2pGI6k_XPX9Jq07EI' \
+--header 'authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1dWlkIjoiMjg1YmIwZTAtYTNkOC00MDU5LTg4NTUtNDk3MTE4NTMyMTIxIiwidmVyc2lvbiI6MCwidG9rZW5JZCI6ImVlYjhmNmExLWEzZTAtNGRhZS05NjRkLWY2OTM2MjQwYzVmOSIsImlhdCI6MTc2ODMyNzI5MSwiZXhwIjoxNzY4MzMwODkxfQ.YWUa9AKGLroqHf6_XP2FebkYHYtTtFFXyE9M2EWyEqE' \
+--header 'Content-Type: application/json' \
+--data '{
+    "order_id": "40130a06-2a6a-4o0f-95g2-0b9b53be1c7c"
 }'
 ```
 
@@ -510,6 +543,30 @@ curl --location 'http://localhost:3001/api/admin/orders?page=1&limit=10&order_st
 ```
 
 
+## 📝 Admin Payment List
+```bash
+curl --location 'http://localhost:3001/api/admin/payments?page=1&limit=10&payment_status=pending&search_text=15c03a6b' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1dWlkIjoiODc5ZTZkOTgtNGMyNy00Y2MzLTg4ZWItOTlhMGQ4YjhmZDE4IiwiZW1haWwiOiJhZG1pbkBnbWFpbC5jb20iLCJ2ZXJzaW9uIjowLCJpYXQiOjE3NzM0Mzk5MDAsImV4cCI6MTc3MzQ4MzEwMH0.hnQfSeA6DChL_hCM-XZmuwg4-3nt88spmHObA60xi8E'
+```
+
+
+## 📝 Admin Mark Payment As Refunded
+```bash
+curl --location --request POST 'http://localhost:3001/api/admin/refund/payment/15c03a6b-4468-447c-a2a8-14ed6500cf30' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1dWlkIjoiODc5ZTZkOTgtNGMyNy00Y2MzLTg4ZWItOTlhMGQ4YjhmZDE4IiwiZW1haWwiOiJhZG1pbkBnbWFpbC5jb20iLCJ2ZXJzaW9uIjowLCJpYXQiOjE3NzM0Mzk5MDAsImV4cCI6MTc3MzQ4MzEwMH0.hnQfSeA6DChL_hCM-XZmuwg4-3nt88spmHObA60xi8E'
+```
+
+
+## 📝 Admin Mark Payment As Disbursed
+``` bash
+curl --location --request POST 'http://localhost:3001/api/admin/disburse/payment/15c03a6b-4468-447c-a2a8-14ed6500cf30' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1dWlkIjoiODc5ZTZkOTgtNGMyNy00Y2MzLTg4ZWItOTlhMGQ4YjhmZDE4IiwiZW1haWwiOiJhZG1pbkBnbWFpbC5jb20iLCJ2ZXJzaW9uIjowLCJpYXQiOjE3NzM0Mzk5MDAsImV4cCI6MTc3MzQ4MzEwMH0.hnQfSeA6DChL_hCM-XZmuwg4-3nt88spmHObA60xi8E'
+```
+
+
 ## 📝 Admin Support List
 ```bash
 curl --location 'http://localhost:3001/api/admin/support?page=1&limit=10&ticket_status=pending&search_text=9aa21' \
@@ -575,3 +632,12 @@ curl --location --request PUT 'http://localhost:3001/api/admin/update/order' \
     "order_id": "25d6cfe5-b4e8-4c5a-8b3f-442980ff4764"
     "status": "completed"
 }'
+```
+
+
+## Update Shopper Profile Status
+```bash
+curl --location --request PUT 'http://localhost:3001/api/admin/approve/shopper/15c03a6b-4468-447c-a2a8-14ed6500cf30' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1dWlkIjoiODc5ZTZkOTgtNGMyNy00Y2MzLTg4ZWItOTlhMGQ4YjhmZDE4IiwiZW1haWwiOiJhZG1pbkBnbWFpbC5jb20iLCJ2ZXJzaW9uIjowLCJpYXQiOjE3NzM0Mzk5MDAsImV4cCI6MTc3MzQ4MzEwMH0.hnQfSeA6DChL_hCM-XZmuwg4-3nt88spmHObA60xi8E'
+```

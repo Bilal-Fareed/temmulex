@@ -1,10 +1,10 @@
 import express, { Router } from "express";
-import Stripe from "stripe";
+import { stripe } from "../helpers/payment.js";
 import { insertPaymentLogServices } from "../services/logService.js";
 import { updateOrderPaymentStatusService } from "../services/orderService.js";
+import { updateFreelancerDetailDynamicallyService } from "../services/freelancerProfileService.js";
 
 const router = Router();
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 router.post('/stripe', express.raw({ type: 'application/json' }), async (req, res) => {
 
@@ -15,15 +15,14 @@ router.post('/stripe', express.raw({ type: 'application/json' }), async (req, re
     try {
         event = stripe.webhooks.constructEvent(req.body, signature, process.env.STRIPE_WEBHOOK_SECRET);
     } catch (error) {
-        console.error('⚠️ Webhook signature verification failed > ', error.message);
+        console.error('Webhook signature verification failed > ', error.message);
         return res.status(400).send(`Webhook Error > ${error.message}`);
     }
 
-    const paymentIntent = event.data.object;
-    const orderId = paymentIntent.metadata?.orderId;
+    const _event = event.data.object;
 
     await insertPaymentLogServices([{
-        eventId: paymentIntent?.id,
+        eventId: _event?.id,
         eventType: event?.type ,
         payload: event
     }])
@@ -32,16 +31,25 @@ router.post('/stripe', express.raw({ type: 'application/json' }), async (req, re
 
         case 'payment_intent.succeeded': {
             await updateOrderPaymentStatusService({
-                paymentStatus: 'confirmed',
+                paymentStatus: 'received',
                 status: 'ongoing',
-            }, { paymentReference: paymentIntent.id });
+            }, { paymentReference: _event.id });
             break;
         }
 
         case 'payment_intent.payment_failed': {
             await updateOrderPaymentStatusService({
                 paymentStatus: 'failed',
-            }, { paymentReference: paymentIntent.id, });
+            }, { paymentReference: _event.id, });
+            break;
+        }
+
+        case 'account.updated': {
+            await updateFreelancerDetailDynamicallyService({
+                onboardingComplete: true,
+                chargesEnabled: _event.charges_enabled,
+                payoutsEnabled: _event.payouts_enabled,
+            }, { stripeAccountId: _event.id });
             break;
         }
 

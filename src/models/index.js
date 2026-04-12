@@ -13,3 +13,5 @@ export * from "./contactUsModel.js";
 export * from "./paymentEventLogsModel.js";
 export * from "./adminModel.js";
 export * from "./notificationTokensModel.js";
+export * from "./freelancerQuestions.js";
+export * from "./freelancerAnswers.js";

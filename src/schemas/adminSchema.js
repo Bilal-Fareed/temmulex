@@ -21,7 +21,14 @@ const adminShopperListSchema = vine.object({
 }); 
 
 const adminOrderListSchema = vine.object({
-    order_status: vine.enum(['pending', 'ongoing', 'completed', 'disputed']).optional(),
+    order_status: vine.enum(['pending', 'ongoing', 'completed', 'cancelled', 'disputed']).optional(),
+    search_text: vine.string().minLength(0).maxLength(1000).optional(),
+    page: vine.number().min(1).max(1000).optional(),
+    limit: vine.number().min(1).max(100).optional(),
+}); 
+
+const adminPaymentListSchema = vine.object({
+    payment_status: vine.enum(['pending', 'received', 'refunded', 'disputed', 'disbursed', 'failed']).optional(),
     search_text: vine.string().minLength(0).maxLength(1000).optional(),
     page: vine.number().min(1).max(1000).optional(),
     limit: vine.number().min(1).max(100).optional(),
@@ -59,16 +66,28 @@ const adminGetOrderDetailsSchema = vine.object({
     order_id: vine.string().uuid(),
 }); 
 
+const adminRefundOrDisbursePaymentSchema = vine.object({
+    order_id: vine.string().uuid(),
+}); 
+
+const adminUpdateShopperStatusSchema = vine.object({
+    shopper_id: vine.string().uuid(),
+    status: vine.enum(['reject', 'approve'])
+}); 
+
 export {
     adminLoginSchema,
     adminBlockUserSchema,
     adminOrderListSchema,
     adminClientListSchema,
+    adminPaymentListSchema,
     adminUpdateOrderSchema,
     adminShopperListSchema,
     adminSupportListSchema,
     adminGetUserDetailsSchema,
     adminGetOrderDetailsSchema,
     adminGetShopperDetailsSchema,
+    adminUpdateShopperStatusSchema,
     adminResolveSupportTicketSchema,
+    adminRefundOrDisbursePaymentSchema,
 }
