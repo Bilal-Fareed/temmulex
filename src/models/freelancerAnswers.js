@@ -6,7 +6,7 @@ import {
     varchar,
 } from "drizzle-orm/pg-core";
 import { freelancerProfiles } from "./freelancerProfilesModel.js";
-import { freelancerQuestions } from "./freelancerQuestions";
+import { freelancerQuestions } from "./freelancerQuestions.js";
 
 const freelancerAnswers = pgTable("freelancer_answers", {
     id: serial("id").primaryKey(),
