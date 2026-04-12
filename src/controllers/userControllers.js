@@ -761,7 +761,7 @@ const storeFirebaseNotificationTokenController = async (req, res) => {
         const { token } = req.body;
         const deviceId = req.headers['x-device-id'], userAgent = req.headers['x-user-agent'] || 'android';
 
-        const [tokenExists] = await getNotificationTokenService({ deviceId, userId: uuid });
+        const [tokenExists] = await getNotificationTokenService({ token, userId: uuid });
 
         if (tokenExists) return res.status(200).json({ success: true, message: "Token already exists." });
 
