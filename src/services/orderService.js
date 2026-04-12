@@ -50,7 +50,8 @@ const getFreelancerCompletedOrderStats = async (freelancerUuid) => {
     const result = await db
         .select({
             totalOrders: count(),
-            totalEarnings: sum(orders.price),
+            // totalEarnings: sum(orders.price),
+            totalEarnings: sql`SUM(ROUND(${orders.price} / 100.0, 2))`,
         })
         .from(orders)
         .where(

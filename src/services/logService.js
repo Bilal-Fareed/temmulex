@@ -1,7 +1,7 @@
 import { db } from '../../infra/db.js';
 import { paymentEventLogs } from "../models/paymentEventLogsModel.js";
 
-const insertConversationServices = async (paymentLogs = [], options = {}) => {
+const insertPaymentLogServices = async (paymentLogs = [], options = {}) => {
 	const { transaction } = options;
 	const executor = transaction || db;
 
@@ -9,5 +9,5 @@ const insertConversationServices = async (paymentLogs = [], options = {}) => {
 };
 
 export {
-    insertConversationServices,
+    insertPaymentLogServices,
 }
