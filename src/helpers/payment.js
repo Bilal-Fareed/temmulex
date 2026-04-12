@@ -34,10 +34,32 @@ const disbursePayment = async (amount, currency, destinationAccount) => {
     return transfer;
 }
 
+const createPaymentIntent = async ({ amount }) => {
+    return await stripe.paymentIntents.create({
+        amount: amount,
+        currency: process.env.CURRENCY || "GBP",
+        // In the latest version of the API, specifying the `automatic_payment_methods` parameter is optional because Stripe enables its functionality by default.
+        automatic_payment_methods: {
+            enabled: true,
+        },
+    });
+}
+
+const getPaymentIntentStatus = async (paymentIntentId) => {
+    return await stripe.paymentIntents.retrieve(paymentIntentId);
+}
+
+const cancelOldPaymentIntent = async (oldPaymentIntentId) => {
+    await stripe.paymentIntents.cancel(oldPaymentIntentId);
+}
+
 export {
     stripe,
     refundPayment,
     disbursePayment,
+    createPaymentIntent,
+    cancelOldPaymentIntent,
+    getPaymentIntentStatus,
     createStripeConnectAccount,
     createStripeOnboardingLink,
 }

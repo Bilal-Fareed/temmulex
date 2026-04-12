@@ -43,7 +43,7 @@ const signupSchema = vine.object({
     })).optional().requiredWhen('user_type', '=', 'freelancer'),
     qna: vine.array(vine.object({
         questionId: vine.string().uuid({ version: [4] }),
-        answer: vine.string().minLength(2).maxLength(1000).optional().transform((value) => value ?? 'no answer received'),
+        answer: vine.string().minLength(2).maxLength(500).optional().transform((value) => value ?? 'no answer received'),
     })).optional().requiredWhen('user_type', '=', 'freelancer'),
 });
 
@@ -127,6 +127,11 @@ const placeOrderSchema = vine.object({
     service_id: vine.string().uuid({ version: [4] }),
 }); 
 
+// pay now schema
+const payNowSchema = vine.object({
+    order_id: vine.string().uuid({ version: [4] }),
+}); 
+
 // order feedback schema
 const orderFeedbackSchema = vine.object({
     booking_id: vine.string().uuid({ version: [4] }),
@@ -149,6 +154,7 @@ export {
     passwordSchema,
     signinSchema,
     signupSchema,
+    payNowSchema,
     verifyOtpSchema,
     sendOtpSchema,
     orderFeedbackSchema,

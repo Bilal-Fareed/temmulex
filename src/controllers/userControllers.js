@@ -7,7 +7,7 @@ import { getUserByEmail, createUserService, getUserByUuid, updateUserByUuidServi
 import { insertFreelancerDetailService, getFreelancerProfileDetailByUserUuid, getNearbyFreelancers } from "../services/freelancerProfileService.js";
 import { insertManyFreelancerLanguagesService } from "../services/freelancerLanguageService.js";
 import { insertManyFreelancerServices, getFreelancerServices } from "../services/freelancerServicesService.js";
-import { getOrderService, rateOrder } from "../services/orderService.js";
+import { getOrderService, rateOrder, getOrderByUuid, updateOrderByUuidService } from "../services/orderService.js";
 import { getNotificationTokenService, addNotificationTokenService } from "../services/notificationTokenService.js";
 import {
     addMessageServices,
@@ -25,7 +25,7 @@ import { PROFILE_UPDATE_OTP_MESSAGE_SUBCODE } from '../helpers/constants.js';
 import { db } from "../../infra/db.js";
 import { socketUsers, emitNewMessage } from "../../socketServer.js";
 import { dollarsToCents } from "../helpers/constants.js";
-import { stripe } from "../helpers/payment.js";
+import { createPaymentIntent, getPaymentIntentStatus, cancelOldPaymentIntent } from "../helpers/payment.js";
 
 const userSignupController = async (req, res) => {
     try {
@@ -575,13 +575,8 @@ const placeOrderController = async (req, res) => {
         if (!freelancerService?.fixedPriceCents) return res.status(400).json({ success: false, message: "The Shopper has not finalized the pricing for this service yet." })
 
         // Create a PaymentIntent with the order amount and currency
-        const paymentIntent = await stripe.paymentIntents.create({
-            amount: freelancerService?.fixedPriceCents,
-            currency: "GBP",
-            // In the latest version of the API, specifying the `automatic_payment_methods` parameter is optional because Stripe enables its functionality by default.
-            automatic_payment_methods: {
-                enabled: true,
-            },
+        const paymentIntent = await createPaymentIntent({
+            amount: freelancerService?.fixedPriceCents
         });
 
         const order = await createOrderService({
@@ -604,6 +599,55 @@ const placeOrderController = async (req, res) => {
 
     } catch (error) {
         console.error("USER CONTROLLER > PLACE ORDER >", error);
+        res.status(500).json({ success: false, message: "Internal Server Error" });
+    }
+};
+
+const payNowController = async (req, res) => {
+    try {
+
+        console.log("USER CONTROLLER > PAY NOW > try block executed");
+
+        const { uuid } = req.user;
+        const { order_id } = req.body;
+
+        const orderDetails = await getOrderByUuid(order_id);
+
+        if (!orderDetails) return res.status(404).json({ success: false, message: "Order Not Found." });
+
+        if (orderDetails.clientId != uuid) return res.status(403).json({ success: false, message: "You are not allowed to pay for this order." })
+
+        if (orderDetails.paymentStatus != 'pending') return res.status(403).json({ success: false, message: `Order Payment Status [${orderDetails.paymentStatus}]. You are not allowed to make a payment for thos order on this state.` })
+        
+        const paymentIntent = await getPaymentIntentStatus(orderDetails.paymentReference)
+
+        if (["requires_payment_method", "requires_confirmation"].includes(paymentIntent.status))
+            return res.status(200).json({
+                success: true,
+                message: `Order Payment Intent Fetched Successfully.`,
+                data: {
+                    clientSecret: paymentIntent.client_secret,
+                },
+            });
+
+        // // Cancel Old Payment Intent
+        // await cancelOldPaymentIntent(orderDetails.paymentIntent)
+
+        // Create a PaymentIntent with the order amount and currency
+        const newPaymentIntent = await createPaymentIntent({ amount: orderDetails.price });
+
+        await updateOrderByUuidService(orderDetails.uuid, { paymentReference: newPaymentIntent.id });
+
+        res.status(200).json({
+            success: true,
+            message: "Order Payment Intent Fetched Successfully.",
+            data: {
+                clientSecret: newPaymentIntent.client_secret,
+            }
+        });
+
+    } catch (error) {
+        console.error("USER CONTROLLER > PAY NOW > ", error);
         res.status(500).json({ success: false, message: "Internal Server Error" });
     }
 };
@@ -811,6 +855,7 @@ export {
     userSignupController,
     loginController,
     logoutController,
+    payNowController,
     orderFeedbackController,
     verifyOtpController,
     sendMessagesController,
