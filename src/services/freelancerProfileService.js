@@ -174,7 +174,7 @@ const getFreelancerDetails = async (uuid) => {
 			profileStatus: freelancerProfiles.profileStatus,
 			createdAt: freelancerProfiles.createdAt,
 			languages: sql`COALESCE(( SELECT json_agg(DISTINCT jsonb_build_object('name', l.name, 'uuid', l.uuid)) FROM freelancer_languages fl JOIN languages l ON l.uuid = fl.language_id WHERE fl.freelancer_id = ${freelancerProfiles.uuid} AND COALESCE(fl.is_deleted,false)=false ), '[]')`,
-			answers: sql`COALESCE(( SELECT json_agg(DISTINCT jsonb_build_object('question', fq.question, 'answer', fa.answer)) FROM freelancer_answers fa JOIN freelancer_questions fq ON fq.uuid = fa.question_id WHERE fa.freelancer_id = ${freelancerProfiles.uuid} AND COALESCE(fa.is_deleted,false)=false ), '[]')`,
+			answers: sql`COALESCE(( SELECT json_agg(DISTINCT jsonb_build_object('question', fq.question, 'answer', fa.answer)) FROM freelancer_answers fa JOIN freelancer_questions fq ON fq.uuid = fa.question_id WHERE fa.freelancer_id = ${freelancerProfiles.uuid}), '[]')`,
 			services: sql`COALESCE(( SELECT json_agg(DISTINCT jsonb_build_object('description', fs.description, 'title', fs.title, 'name', s.name, 'fixedPriceDollars', ROUND(fs.fixed_price_cents / 100.0, 2), 'currency', fs.currency, 'serviceType', s.service_type, 'uuid', s.uuid)) FROM freelancer_services fs JOIN services s ON s.uuid = fs.service_id WHERE fs.freelancer_id = ${freelancerProfiles.uuid} AND COALESCE(fs.is_deleted,false)=false ), '[]')`,
 		})
 		.from(users)
