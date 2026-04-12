@@ -34,7 +34,6 @@ const freelancerProfiles = pgTable("freelancer_profiles", {
 });
 
 const freelancerProfilesRelations = relations(freelancerProfiles, ({ many, one }) => ({
-    reviews: many(reviews),
     languages: many(freelancerLanguages),
     services: many(freelancerServices),
     users: one(users, { fields: [freelancerProfiles.userId], references: [users.uuid], onDelete: "cascade" }),
