@@ -59,22 +59,23 @@ curl --location 'http://localhost:3001/v1/users/signup' \
 curl --location 'http://localhost:3001/v1/users/signup' \
 --header 'x-device-id: test-device-id' \
 --header 'x-user-agent: android' \
---form 'profile_picture=@"/C:/Users/Pictures/profile_picture.png"' \
+--header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3Rpbmc5QGdtYWlsLmNvbSIsImludGVudCI6IkVNQUlMX1ZFUklGSUNBVElPTiIsImlhdCI6MTc3NjAyMDY3NiwiZXhwIjoxNzc2MDI0Mjc2fQ.H28zUJj8HVo2VlJsiQ5fVS5PgJF4V2s3b_GT1pfNtHY' \
+--form 'profile_picture=@"/C:/Users/DELL/Downloads/b16ffd120f5b763c28f892e946249097.jpg"' \
 --form 'user_type="freelancer"' \
---form 'email="freelancer@gmail.com"' \
---form 'password="Abc123!!"' \
+--form 'email="testing9@gmail.com"' \
+--form 'password="testing9@123"' \
 --form 'title="Mr"' \
---form 'first_name="First"' \
---form 'last_name="Demo"' \
---form 'country="USA"' \
---form 'dob="2026/12/01"' \
---form 'phone="123456789"' \
---form 'languages="[\"dcf45f83-291d-413f-938f-2ce3ede51ee3\"]"' \
---form 'location="{\"lat\":0,\"lng\":0}"' \
---form 'services="[{\"serviceId\":\"f740660d-a46c-472a-b934-6323ac0728f5\",\"fixedPriceCents\":100,\"currency\":\"USD\"}]"' \
---form 'qna="[{\"questionId\":\"f740660d-a46c-472a-b934-6323ac0728f5\",\"answer\":\"random string for answer\"}]"' \
---form 'cv=@"/C:/Users/pdfs/cv.pdf"' \
---form 'dbs=@"/C:/Users/pdfs/dbs.pdf"'
+--form 'first_name="Testing"' \
+--form 'last_name="Eight"' \
+--form 'country="PAK"' \
+--form 'dob="12/01/2026"' \
+--form 'phone="923123456789"' \
+--form 'languages="[\"0c9916f8-6568-4d4b-b2cf-306a8c7a7721\"]"' \
+--form 'location="{\"lat\":24.877668,\"lng\":67.020838} "' \
+--form 'services="[{\"serviceId\":\"05cdfa5c-0e90-4852-8fe7-fc3dd0409c34\",\"fixedPriceDollars\":100,\"currency\":\"GBP\"}]"' \
+--form 'qna="[{\"questionId\":\"4d8aa52f-1ebd-4706-a9d4-993a3f186c91\",\"answer\":\"random string for answer\"}]"' \
+--form 'cv=@"/C:/Users/DELL/Downloads/pdf-sample_0.pdf"' \
+--form 'dbs=@"/C:/Users/DELL/Downloads/pdf-sample_0.pdf"'
 ```
 
 

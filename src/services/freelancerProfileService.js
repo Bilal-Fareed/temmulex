@@ -16,13 +16,14 @@ const insertFreelancerDetailService = async (data, options = {}) => {
 	const { transaction } = options;
 	const executor = transaction || db;
 
-	const { userId, lat, lng, cvUrl, dbsUrl } = data
+	const { userId, lat, lng, cvUrl, dbsUrl, stripeAccountId } = data
 
 	const [freelancer] = await executor.insert(freelancerProfiles).values({
 		userId: userId,
 		location: sql`ST_SetSRID(ST_MakePoint(${lng}, ${lat}), 4326)`,
 		resumeLink: cvUrl,
 		certificateLink: dbsUrl,
+		stripeAccountId: stripeAccountId,
 	}).returning({
 		uuid: freelancerProfiles.uuid,
 		userId: freelancerProfiles.userId,
