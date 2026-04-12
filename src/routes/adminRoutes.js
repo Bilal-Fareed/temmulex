@@ -4,29 +4,36 @@ import { validate } from '../middlewares/validationMiddleware.js';
 import {
     adminLoginSchema,
     adminBlockUserSchema,
+    adminOrderListSchema,
+    adminClientListSchema,
     adminSupportListSchema,
     adminUpdateOrderSchema,
-    adminClientListSchema,
+    adminPaymentListSchema,
     adminShopperListSchema,
-    adminGetShopperDetailsSchema,
-    adminOrderListSchema,
     adminGetUserDetailsSchema,
     adminGetOrderDetailsSchema,
+    adminGetShopperDetailsSchema,
+    adminUpdateShopperStatusSchema,
     adminResolveSupportTicketSchema,
+    adminRefundOrDisbursePaymentSchema,
 } from '../schemas/adminSchema.js';
 import {
     adminLoginController,
     adminLogoutController,
+    refundPaymentController,
     adminBlockUserController,
     adminDashboardController,
+    disbursePaymentController,
     adminOrdersListController,
     adminClientListController,
+    adminPaymentListController,
     adminUpdateOrderController,
     adminSupportListController,
     adminShoppersListController,
     adminGetOrderDetailController,
     adminGetClientDetailController,
     adminGetShopperDetailController,
+    adminUpdateShopperDetailsController,
     adminResolveSupportTicketController,
 } from '../controllers/adminControllers.js';
 
@@ -52,7 +59,15 @@ router.get('/orders', authenticateAdminToken, validate({ query: adminOrderListSc
 
 router.get('/order/details/:order_id', authenticateAdminToken, validate({ params: adminGetOrderDetailsSchema }), adminGetOrderDetailController);
 
+router.get('/payments', authenticateAdminToken, validate({ query: adminPaymentListSchema }), adminPaymentListController);
+
+router.post('/refund/payment/:order_id', authenticateAdminToken, validate({ params: adminRefundOrDisbursePaymentSchema }), refundPaymentController);
+
+router.post('/disburse/payment/:order_id', authenticateAdminToken, validate({ params: adminRefundOrDisbursePaymentSchema }), disbursePaymentController);
+
 router.put('/update/order', authenticateAdminToken, validate({ body: adminUpdateOrderSchema }), adminUpdateOrderController);
+
+router.put('/:status/shopper/:shopper_id', authenticateAdminToken, validate({ params: adminUpdateShopperStatusSchema }), adminUpdateShopperDetailsController);
 
 router.get('/support', authenticateAdminToken, validate({ query: adminSupportListSchema }), adminSupportListController);
 

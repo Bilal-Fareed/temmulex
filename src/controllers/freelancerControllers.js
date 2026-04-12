@@ -12,6 +12,7 @@ import {
     insertManyFreelancerServices,
 } from "../services/freelancerServicesService.js";
 import { getNotificationTokenService } from "../services/notificationTokenService.js";
+import { createStripeOnboardingLink } from "../helpers/payment.js";
 import { getUserSpecificConversationListService, getConversationMessagesService, getConversationService, addMessageServices } from "../services/conversationService.js";
 import { getOrderService, getFreelancerCompletedOrderStats } from "../services/orderService.js";
 import { deleteFreelancersLanguage } from '../services/freelancerLanguageService.js';
@@ -22,6 +23,7 @@ import { getOrderByUuid, updateOrderByUuidService } from '../services/orderServi
 import { redisClient } from "../../infra/redis.js";
 import { sendOtpEmail } from "../helpers/mailer.js";
 import { dollarsToCents } from "../helpers/constants.js";
+import { STRIPE_PAYMENT_SUBCODE } from "../helpers/constants.js"
 import { socketUsers, emitNewMessage } from "../../socketServer.js";
 
 const getMyFreelancerProfileController = async (req, res) => {
@@ -250,6 +252,25 @@ const getDashboardDetailsController = async (req, res) => {
         console.log("FREELANCER CONTROLLER > GET DASHBOARD DETAILS > try block executed");
 
         const { uuid } = req.user;
+
+        const freelancerProfile = await getFreelancerProfileDetailByUserUuid(uuid)
+
+        if (
+            !freelancerProfile.payoutsEnabled ||
+            !freelancerProfile.chargesEnabled ||
+            !freelancerProfile.stripeAccountId ||
+            !freelancerProfile.onboardingComplete
+        ) {
+
+            const onboardingLink = await createStripeOnboardingLink(freelancerProfile.stripeAccountId);
+
+            return res.status(403).json({ 
+                success: false,
+                onboardingLink: onboardingLink,
+                subcode: STRIPE_PAYMENT_SUBCODE,
+                message: "To start receiving orders and access your dashboard, please complete your payment account setup.",
+            });
+        }
 
         const result = await getFreelancerCompletedOrderStats(uuid);
 
