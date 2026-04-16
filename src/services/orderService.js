@@ -124,7 +124,7 @@ const getOrderService = async (filters = {}, projection = undefined, options = {
         .limit(limit);
 }
 
-const getOrderDetailsForAdminService = async (uuid) => {
+const getOrderDetailsForAdminService = async ({ uuid }) => {
 
     const client = alias(users, "client");
     const freelancer = alias(users, "freelancer");
