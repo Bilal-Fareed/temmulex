@@ -7,7 +7,7 @@ import { dollarsToCents } from "../helpers/constants.js";
 const buildWhere = (filters) => {
 	return and(
 		...Object.entries(filters).map(([key, value]) =>
-			eq(users[key], value)
+			eq(freelancerProfiles[key], value)
 		)
 	);
 };
