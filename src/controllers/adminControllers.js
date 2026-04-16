@@ -1,6 +1,7 @@
 import { getAdminByEmail, getAdminByUuid, updateAdminByUuidService } from "../services/adminService.js";
 import { verifyPassword, generateAccessToken } from "../helpers/security.js";
 import { refundPayment, disbursePayment } from "../helpers/payment.js"; 
+import { dollarsToCents }from "../helpers/constants.js"
 import { adminDashboardUserStats, getUsersList, getUserByUuid, updateUserByUuidService } from "../services/userService.js";
 import {
     getShoppersList,
@@ -396,7 +397,7 @@ const disbursePaymentController = async (req, res) => {
             return res.status(400).json({ success: false, message: "Unable to payout shopper, incomplete connect account setup" });
 
         if (orderDetails.status === 'completed' && orderDetails.paymentStatus === 'received') {
-            const transfer = await disbursePayment(orderDetails.netShopperPayout, 'GBP', freelancerDetails.stripeAccountId);
+            const transfer = await disbursePayment(dollarsToCents(orderDetails.netShopperPayout), 'GBP', freelancerDetails.stripeAccountId);
             await updateOrderPaymentStatusService({ paymentStatus: 'disbursed', payoutTransferId: transfer.id }, { uuid: order_id });
             return res.status(200).json({ success: true, message: "Payment Disbursed Successfully" });
         } else {
