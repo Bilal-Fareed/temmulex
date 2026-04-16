@@ -190,7 +190,7 @@ const adminUpdateShopperDetailsController = async (req, res) => {
                 message: `Partner already ${shopper.profileStatus}, can not ${status} shopper!`
             });
 
-        await updateFreelancerDetailDynamicallyService(shopper_id, { profileStatus: status });
+        await updateFreelancerDetailDynamicallyService({ profileStatus: status }, { userId: shopper_id });
 
         res.status(200).json({
             success: true,
