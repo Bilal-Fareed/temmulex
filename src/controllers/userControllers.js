@@ -1,6 +1,6 @@
 import { uploadFile } from "../helpers/cloudinary.js";
 import { sendNotification } from "../helpers/firebase.js";
-import { insertAnswers } from "../services/qnaService.js";
+import { v4 as uuidv4 } from 'uuid';
 import { createStripeConnectAccount } from "../helpers/payment.js";
 import { hashPassword, verifyPassword, generateAccessToken, generateRefreshToken } from "../helpers/security.js";
 import { getUserByEmail, createUserService, getUserByUuid, updateUserByUuidService } from "../services/userService.js";
@@ -574,12 +574,16 @@ const placeOrderController = async (req, res) => {
 
         if (!freelancerService?.fixedPriceCents) return res.status(400).json({ success: false, message: "The Shopper has not finalized the pricing for this service yet." })
 
+        const orderUuid = uuidv4();
+
         // Create a PaymentIntent with the order amount and currency
         const paymentIntent = await createPaymentIntent({
-            amount: freelancerService?.fixedPriceCents
+            amount: freelancerService?.fixedPriceCents,
+            orderId: orderUuid,
         });
 
         const order = await createOrderService({
+            uuid: orderUuid,
             clientId: uuid, 
             freelancerId: freelancer_id, 
             serviceId: service_id, 
@@ -634,7 +638,10 @@ const payNowController = async (req, res) => {
         // await cancelOldPaymentIntent(orderDetails.paymentIntent)
 
         // Create a PaymentIntent with the order amount and currency
-        const newPaymentIntent = await createPaymentIntent({ amount: orderDetails.price });
+        const newPaymentIntent = await createPaymentIntent({ 
+            amount: orderDetails.price,
+            orderId: orderDetails.uuid, 
+        });
 
         await updateOrderByUuidService(orderDetails.uuid, { paymentReference: newPaymentIntent.id });
 

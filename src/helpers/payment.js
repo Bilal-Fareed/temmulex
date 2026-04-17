@@ -21,23 +21,36 @@ const createStripeOnboardingLink = async (accountId) => {
     return link.url;
 };
 
-const refundPayment = async (paymentIntent) => {
-    await stripe.refunds.create({ payment_intent: paymentIntent });
+const refundPayment = async ({ paymentIntent, orderId }) => {
+    await stripe.refunds.create({
+        payment_intent: paymentIntent,
+        metadata: {
+            orderId,
+        },
+    });
 }
 
-const disbursePayment = async (amount, currency, destinationAccount) => {
+const disbursePayment = async ({ amount, currency, destinationAccount, orderId }) => {
     const transfer = await stripe.transfers.create({
         amount: amount,
         currency: currency,
         destination: destinationAccount,
+        transfer_group: `order_${orderId}`,
+        metadata: {
+            orderId,
+        },
     });
     return transfer;
 }
 
-const createPaymentIntent = async ({ amount }) => {
+const createPaymentIntent = async ({ amount, orderId }) => {
     return await stripe.paymentIntents.create({
         amount: amount,
         currency: process.env.CURRENCY || "GBP",
+        transfer_group: `order_${orderId}`,
+        metadata: {
+            orderId,
+        },
         // In the latest version of the API, specifying the `automatic_payment_methods` parameter is optional because Stripe enables its functionality by default.
         automatic_payment_methods: {
             enabled: true,

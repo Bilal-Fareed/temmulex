@@ -370,8 +370,11 @@ const refundPaymentController = async (req, res) => {
         const orderDetails = await getOrderDetailsForAdminService({ uuid: order_id });
 
         if (['received'].includes(orderDetails.paymentStatus)){
-            await refundPayment(orderDetails.paymentReference);
-            await updateOrderPaymentStatusService({ paymentStatus: 'refunded' }, { uuid: order_id })
+            await refundPayment({ 
+                paymentIntent: orderDetails.paymentReference,
+                orderId: order_id, 
+            });
+            await updateOrderPaymentStatusService({ paymentStatus: 'refunded_pending' }, { uuid: order_id })
             return res.status(200).json({ success: true, message: "Payment Refunded Successfully" });
         } else {
             res.status(400).json({ success: false, message: `Unable to refund payment` });
@@ -397,8 +400,13 @@ const disbursePaymentController = async (req, res) => {
             return res.status(400).json({ success: false, message: "Unable to payout shopper, incomplete connect account setup" });
 
         if (orderDetails.status === 'completed' && orderDetails.paymentStatus === 'received') {
-            const transfer = await disbursePayment(dollarsToCents(orderDetails.netShopperPayout), 'GBP', freelancerDetails.stripeAccountId);
-            await updateOrderPaymentStatusService({ paymentStatus: 'disbursed', payoutTransferId: transfer.id }, { uuid: order_id });
+            const transfer = await disbursePayment({
+                amount: dollarsToCents(orderDetails.netShopperPayout),
+                currency: 'GBP',
+                orderId: order_id,
+                destinationAccount: freelancerDetails.stripeAccountId
+            });
+            await updateOrderPaymentStatusService({ paymentStatus: 'disbursed_pending', payoutTransferId: transfer.id }, { uuid: order_id });
             return res.status(200).json({ success: true, message: "Payment Disbursed Successfully" });
         } else {
             res.status(400).json({ success: false, message: `Unable to disburse payout` });
