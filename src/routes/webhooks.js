@@ -23,7 +23,7 @@ router.post('/stripe', express.raw({ type: 'application/json' }), async (req, re
 
     await insertPaymentLogServices([{
         eventId: _event?.id,
-        eventType: event?.type ,
+        eventType: event?.type,
         payload: event
     }])
 
@@ -40,16 +40,28 @@ router.post('/stripe', express.raw({ type: 'application/json' }), async (req, re
         case 'payment_intent.payment_failed': {
             await updateOrderPaymentStatusService({
                 paymentStatus: 'failed',
-            }, { paymentReference: _event.id, });
+            }, { paymentReference: _event.id });
             break;
         }
 
-        case 'account.updated': {
-            await updateFreelancerDetailDynamicallyService({
-                onboardingComplete: true,
-                chargesEnabled: _event.charges_enabled,
-                payoutsEnabled: _event.payouts_enabled,
-            }, { stripeAccountId: _event.id });
+        case 'refund.created':
+        case 'refund.updated': {
+            await updateOrderPaymentStatusService({
+                paymentStatus: 'refunded',
+            }, { paymentReference: _event.payment_intent });
+            break;
+        }
+
+        case 'transfer.created': {
+            const orderId = _event?.metadata?.orderId || _event?.transfer_group?.replace("order_", "");
+            if (orderId) {
+                await updateOrderPaymentStatusService({
+                    paymentStatus: 'disbursed',
+                    payoutTransferId: _event.id,
+                }, { uuid: orderId });
+            } else {
+                console.log(`Order mapping not found for transfer event id: ${_event.id}`);
+            }
             break;
         }
 

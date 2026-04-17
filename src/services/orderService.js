@@ -37,10 +37,10 @@ const createOrderService = async (data, options = {}) => {
 	const { transaction } = options;
 	const executor = transaction || db;
 
-    const { clientId, freelancerId, serviceId, price, paymentReference } = data
+    const { uuid, clientId, freelancerId, serviceId, price, paymentReference, commissionPercentage } = data
 
     const [order] = await executor.insert(orders)
-        .values({ clientId: clientId, freelancerId: freelancerId, serviceId: serviceId, price: price, paymentReference: paymentReference })
+        .values({ uuid: uuid, clientId: clientId, freelancerId: freelancerId, serviceId: serviceId, price: price, paymentReference: paymentReference, commissionPercentage: commissionPercentage })
 		.returning({ uuid: orders.uuid, clientId: orders.clientId, freelancerId: orders.freelancerId, serviceId: orders.serviceId, price: orders.price });
 
 	return order;
