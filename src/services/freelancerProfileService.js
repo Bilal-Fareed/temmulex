@@ -101,9 +101,9 @@ const getNearbyFreelancers = async (filters) => {
 		sql`${freelancerProfiles.isDeleted} = false`,
 		sql`${freelancerProfiles.isBlocked} = false`,
 		sql`${freelancerProfiles.profileStatus} = 'approved'`,
-		sql`${freelancerProfiles.onboardingComplete} = true`,
-		sql`${freelancerProfiles.chargesEnabled} = true`,
-		sql`${freelancerProfiles.payoutsEnabled} = true`,
+		// sql`${freelancerProfiles.onboardingComplete} = true`,
+		// sql`${freelancerProfiles.chargesEnabled} = true`,
+		// sql`${freelancerProfiles.payoutsEnabled} = true`,
 		sql`ST_DistanceSphere(${freelancerProfiles.location}, ${sql.raw(point)}) <= ${radius}`,
 	];
 
