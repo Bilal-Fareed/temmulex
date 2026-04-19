@@ -1,4 +1,10 @@
 import http from "http";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 import "dotenv/config";
 import cors from "cors";
 import express from "express";
@@ -30,6 +36,11 @@ server.use(cors({
 }));
 
 const port = process.env.PORT || 3001;
+
+server.use(express.static(path.join(__dirname, "public")));
+
+import staticRoutes from "./src/routes/staticRoutes.js";
+server.use("/static", staticRoutes);
 
 import openRoutes from "./src/routes/openRoutes.js";
 server.use("/v1", openRoutes);

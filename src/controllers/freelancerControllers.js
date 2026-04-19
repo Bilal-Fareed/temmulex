@@ -1,3 +1,4 @@
+import path from "path";
 import { uploadFile } from "../helpers/cloudinary.js";
 import { sendNotification } from "../helpers/firebase.js";
 import {
@@ -234,6 +235,10 @@ const getMyOrdersController = async (req, res) => {
         const { uuid } = req.user;
         const { page = 1, limit = 10, order_status } = req.query;
 
+        const freelancerDetails = await getFreelancerProfileDetailByUserUuid(uuid);
+        if (!freelancerDetails?.onboardingComplete)
+            return res.status(200).json({ success: true, message: "Orders fetched successfully", data: [] });    
+
         const data = await getOrderService({
             status: order_status,
             freelancerId: uuid,
@@ -256,19 +261,20 @@ const getDashboardDetailsController = async (req, res) => {
         const freelancerProfile = await getFreelancerProfileDetailByUserUuid(uuid)
 
         if (
-            !freelancerProfile.payoutsEnabled ||
-            !freelancerProfile.chargesEnabled ||
             !freelancerProfile.stripeAccountId ||
             !freelancerProfile.onboardingComplete
         ) {
 
-            const onboardingLink = await createStripeOnboardingLink(freelancerProfile.stripeAccountId);
+            const onboardingLink = await createStripeOnboardingLink({
+                accountId: freelancerProfile.stripeAccountId,
+                shopperId: freelancerProfile.userId,
+            });
 
-            return res.status(403).json({ 
+            return res.status(403).json({
                 success: false,
                 onboardingLink: onboardingLink,
                 subcode: STRIPE_PAYMENT_SUBCODE,
-                message: "To start receiving orders and access your dashboard, please complete your payment account setup.",
+                message: "To start receiving orders and access your dashboard, please complete your stripe account setup.",
             });
         }
 

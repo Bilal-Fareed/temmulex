@@ -120,6 +120,13 @@
       "when": 1776013745405,
       "tag": "0016_tense_sasquatch",
       "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "7",
+      "when": 1776626410147,
+      "tag": "0017_abnormal_tarantula",
+      "breakpoints": true
     }
   ]
 }
