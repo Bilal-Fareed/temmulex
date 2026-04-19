@@ -3,7 +3,7 @@ import { fileURLToPath } from "url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-import { updateFreelancerDetailDynamicallyService } from "../services/freelancerProfileService";
+import { updateFreelancerDetailDynamicallyService } from "../services/freelancerProfileService.js";
 
 const stripeOnboardingReturnController = async (req, res) => {
     const { shopper_id } = req.params;
