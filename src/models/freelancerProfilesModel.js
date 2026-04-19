@@ -27,8 +27,6 @@ const freelancerProfiles = pgTable("freelancer_profiles", {
     isDeleted: boolean("is_deleted").default(false),
     stripeAccountId: varchar("stripe_account_id", { length: 100 }).default(null),
     onboardingComplete: boolean("onboarding_complete").default(false),
-    chargesEnabled: boolean("charges_enabled").default(false),
-    payoutsEnabled: boolean("payouts_enabled").default(false),
     createdAt: timestamp("created_at").defaultNow(),
     updatedAt: timestamp("updated_at").defaultNow(),
 });

@@ -394,9 +394,12 @@ const disbursePaymentController = async (req, res) => {
 
         const orderDetails = await getOrderDetailsForAdminService({ uuid: order_id });
 
+        if (orderDetails.status != "completed")
+            return res.status(400).json({ success: false, message: "Unable to payout, order status is not completed yet" });
+
         const freelancerDetails = await getFreelancerProfileDetailByUserUuid(orderDetails.freelancerUuid);
 
-        if (!freelancerDetails.payoutsEnabled || !freelancerDetails.onboardingComplete || !freelancerDetails.chargesEnabled)
+        if (!freelancerDetails.onboardingComplete)
             return res.status(400).json({ success: false, message: "Unable to payout shopper, incomplete connect account setup" });
 
         if (orderDetails.status === 'completed' && orderDetails.paymentStatus === 'received') {

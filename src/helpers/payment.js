@@ -10,10 +10,10 @@ const createStripeConnectAccount = async ({ email }) => {
     return account;
 }
 
-const createStripeOnboardingLink = async (accountId) => {
+const createStripeOnboardingLink = async ({ accountId, shopperId }) => {
     const link = await stripe.accountLinks.create({
         account: accountId,
-        refresh_url: process.env.STRIPE_ONBOARDING_REFRESH_LINK,
+        refresh_url: `${process.env.STRIPE_ONBOARDING_REFRESH_LINK}/${shopperId ? shopperId : ''}`,
         return_url: process.env.STRIPE_ONBOARDING_RETURN_LINK,
         type: "account_onboarding",
     });
