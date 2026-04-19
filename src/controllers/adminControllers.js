@@ -112,8 +112,8 @@ const adminClientListController = async (req, res) => {
         const { page, limit, search_text, profile_status } = req.query;
 
         const clientList = await getUsersList({
-            page,
-            limit,
+            page: Number(page) || 1,
+            limit: Number(limit) || 10,
             search_text,
             profile_status
         });
@@ -238,8 +238,8 @@ const adminShoppersListController = async (req, res) => {
         const { page, limit, search_text, profile_status } = req.query;
 
         const shoppersList = await getShoppersList({
-            page,
-            limit,
+            page: Number(page) || 1,
+            limit: Number(limit) || 10,
             search_text,
             profile_status
         });
@@ -258,7 +258,7 @@ const adminOrdersListController = async (req, res) => {
 
         const { page, limit, search_text, order_status } = req.query;
 
-        const ordersList = await getAdminOrdersListService({ search_text, order_status }, { page, limit });
+        const ordersList = await getAdminOrdersListService({ search_text, order_status }, { page: Number(page) || 1, limit: Number(limit) || 10 });
 
         res.status(200).json({ success: true, message: "Orders List Fetched Successfully", data: ordersList });
 
@@ -274,7 +274,7 @@ const adminPaymentListController = async (req, res) => {
 
         const { page, limit, search_text, payment_status } = req.query;
 
-        const paymentsList = await getAdminOrdersListForPaymentService({ search_text, payment_status }, { page, limit });
+        const paymentsList = await getAdminOrdersListForPaymentService({ search_text, payment_status }, { page: Number(page) || 1, limit: Number(limit) || 10 });
 
         res.status(200).json({ success: true, message: "Payment List Fetched Successfully", data: paymentsList });
 
@@ -331,7 +331,7 @@ const adminSupportListController = async (req, res) => {
 
         const { page, limit, search_text, ticket_status } = req.query;
 
-        const supportList = await getSupportListService({ search_text, ticket_status, page, limit });
+        const supportList = await getSupportListService({ search_text, ticket_status, page: Number(page) || 1, limit: Number(limit) || 10 });
 
         res.status(200).json({ success: true, message: "Tickets List Fetched Successfully", data: supportList });
 
