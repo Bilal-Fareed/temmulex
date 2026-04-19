@@ -521,8 +521,8 @@ const getNearbyTopRatedShoppersController = async (req, res) => {
             radius,
             languageIds: languages,
             serviceIds: services,
-            page,
-            limit,
+            page: Number(page) || 1,
+            limit: Number(limit) || 10,
             search_text,
             ...(price_range && { price_range })
         });
@@ -545,7 +545,7 @@ const getMyOrdersController = async (req, res) => {
         const data = await getOrderService({
             status: order_status,
             clientId: uuid,
-        }, {}, { page, limit });
+        }, {}, { page: Number(page) || 1, limit: Number(limit) || 10 });
 
         res.status(200).json({ success: true, message: "Orders fetched successfully", data: data || [] });
     } catch (error) {
@@ -694,8 +694,8 @@ const getUserChatsController = async (req, res) => {
 
         const conversationList = await getUserSpecificConversationListService({
             clientId: uuid,
-            page,
-            limit
+            page: Number(page) || 1,
+            limit: Number(limit) || 10
         })
 
         res.status(200).json({ success: true, message: "Conversation List Fetched Successfully", data: conversationList });
@@ -735,7 +735,7 @@ const getConversationMessagesController = async (req, res) => {
 
         const messages = await getConversationMessagesService({
             conversationId: conversation_id
-        }, {}, { page, limit });
+        }, {}, { page: Number(page) || 1, limit: Number(limit) || 10 });
 
         res.status(200).json({ success: true, message: "Messages fetched Successfully", data: messages });
     } catch (error) {

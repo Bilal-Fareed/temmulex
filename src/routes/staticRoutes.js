@@ -7,6 +7,9 @@ import {
 const router = Router();
 
 router.get("/return/:shopper_id", stripeOnboardingReturnController);
+
+router.get("/return", stripeOnboardingReturnController);
+
 router.get("/refresh", stripeOnboardingRefreshController);
 
 export default router;
