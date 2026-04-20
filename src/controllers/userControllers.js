@@ -3,7 +3,7 @@ import { sendNotification } from "../helpers/firebase.js";
 import { v4 as uuidv4 } from 'uuid';
 import { createStripeConnectAccount } from "../helpers/payment.js";
 import { hashPassword, verifyPassword, generateAccessToken, generateRefreshToken } from "../helpers/security.js";
-import { getUserByEmail, createUserService, getUserByUuid, updateUserByUuidService } from "../services/userService.js";
+import { getUserByEmail, createUserService, getUserByUuid, updateUserByUuidService, updateUserService } from "../services/userService.js";
 import { insertFreelancerDetailService, getFreelancerProfileDetailByUserUuid, getNearbyFreelancers } from "../services/freelancerProfileService.js";
 import { insertManyFreelancerLanguagesService } from "../services/freelancerLanguageService.js";
 import { insertManyFreelancerServices, getFreelancerServices } from "../services/freelancerServicesService.js";
@@ -386,10 +386,10 @@ const forgotPasswordController = async (req, res) => {
 
         const hashedPassword = await hashPassword(password);
 
-        await updateUserByUuidService(uuid, {
+        await updateUserService({
             password: hashedPassword,
             refreshTokenVersion: user.refreshTokenVersion + 1
-        });
+        }, { email: email });
 
         res.status(200).json({ success: true, message: "Password updated" });
     } catch (error) {
