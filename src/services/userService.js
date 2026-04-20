@@ -32,6 +32,16 @@ const getUserByUuid = async (uuid, projection = undefined, options = {}) => {
 	});
 }
 
+const updateUserService = async (updatedObject, filters = {}, options = {}) => {
+	const { transaction } = options;
+	const executor = transaction || db;
+
+	await executor
+		.update(users)
+		.set(updatedObject)
+		.where(buildWhere(filters));
+};
+
 const createUserService = async (data, options = {}) => {
 
 	const { transaction } = options;
@@ -129,6 +139,7 @@ const getUsersList = async (filters) => {
 
 export {
 	getUsersList,
+	updateUserService,
 	getUserService,
 	createUserService,
 	getUserByEmail,
