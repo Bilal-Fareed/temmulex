@@ -8,6 +8,7 @@ const getServices = async (options = {}) => {
             uuid: services.uuid,
             name: services.name,
             slug: services.slug,
+            iconEmoji: services.iconEmoji,
             service_type: services.service_type,
         })
         .from(services)

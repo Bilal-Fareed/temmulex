@@ -8,6 +8,7 @@ const services = pgTable("services", {
 	name: varchar("name", { length: 150 }).notNull().unique(),
 	slug: varchar("slug", { length: 150 }).notNull().unique(),
 	service_type: varchar("service_type", { length: 255 }).notNull(),
+	iconEmoji: varchar("icon_emoji", { length: 255 }),
 	createdAt: timestamp("created_at").defaultNow(),
 	updatedAt: timestamp("updated_at"),
 	isDeleted: boolean("is_deleted").default(false),

@@ -1,0 +1,1 @@
+ALTER TABLE "services" ADD COLUMN "icon_emoji" varchar(255);
