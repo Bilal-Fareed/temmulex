@@ -127,6 +127,13 @@
       "when": 1776626410147,
       "tag": "0017_abnormal_tarantula",
       "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1778095594115,
+      "tag": "0018_overrated_molten_man",
+      "breakpoints": true
     }
   ]
 }
