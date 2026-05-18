@@ -182,6 +182,18 @@ const adminUpdateShopperDetailsController = async (req, res) => {
         console.log("ADMIN CONTROLLER > ADMIN UPDATE SHOPPER STATUS > try block executed");
 
         const { shopper_id, status } = req.params;
+        let profileStatus; 
+
+        switch (status) {
+            case "reject":
+                profileStatus = "rejected"
+                break;
+            case "approve":
+                profileStatus = "approved"
+                break;
+            default:
+                return res.status(400).json({success: false,message: `Bad Data Invalid Status Provided.`});
+        }
 
         const shopper = await getFreelancerProfileDetailByUserUuid(shopper_id)
 
@@ -191,7 +203,7 @@ const adminUpdateShopperDetailsController = async (req, res) => {
                 message: `Partner already ${shopper.profileStatus}, can not ${status} shopper!`
             });
 
-        await updateFreelancerDetailDynamicallyService({ profileStatus: status }, { userId: shopper_id });
+        await updateFreelancerDetailDynamicallyService({ profileStatus: profileStatus }, { userId: shopper_id });
 
         res.status(200).json({
             success: true,
