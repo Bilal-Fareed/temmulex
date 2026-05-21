@@ -24,6 +24,7 @@ const insertFreelancerDetailService = async (data, options = {}) => {
 		resumeLink: cvUrl,
 		certificateLink: dbsUrl,
 		stripeAccountId: stripeAccountId,
+		...(process.env.ENVIRONMENT?.toLowerCase() !== 'production' && { profileStatus: 'approved' })
 	}).returning({
 		uuid: freelancerProfiles.uuid,
 		userId: freelancerProfiles.userId,
