@@ -35,7 +35,7 @@ const adminPaymentListSchema = vine.object({
 }); 
 
 const adminSupportListSchema = vine.object({
-    ticket_status: vine.enum(['pending', 'ongoing', 'completed', 'disputed']).optional(),
+    ticket_status: vine.enum(['pending', 'resolved']).optional(),
     search_text: vine.string().minLength(0).maxLength(1000).optional(),
     page: vine.number().min(1).max(1000).optional(),
     limit: vine.number().min(1).max(100).optional(),
