@@ -94,14 +94,14 @@ const getNearbyFreelancers = async (filters) => {
 
 	const offset = (page - 1) * limit;
 
-	const point = `ST_SetSRID(ST_MakePoint(${lng}, ${lat}), 4326)`;
+	// const point = `ST_SetSRID(ST_MakePoint(${lng}, ${lat}), 4326)`;
 
 	const conditions = [
 		sql`${freelancerProfiles.isDeleted} = false`,
 		sql`${freelancerProfiles.isBlocked} = false`,
 		sql`${freelancerProfiles.profileStatus} = 'approved'`,
 		sql`${freelancerProfiles.onboardingComplete} = true`,
-		sql`ST_DistanceSphere(${freelancerProfiles.location}, ${sql.raw(point)}) <= ${radius}`,
+		// sql`ST_DistanceSphere(${freelancerProfiles.location}, ${sql.raw(point)}) <= ${radius}`,
 	];
 
 	// Optional language filter
@@ -140,7 +140,7 @@ const getNearbyFreelancers = async (filters) => {
 			profilePicture: users.profilePicture,
 			profileStatus: freelancerProfiles.profileStatus,
 			createdAt: freelancerProfiles.createdAt,
-			distance: sql`ST_DistanceSphere(${freelancerProfiles.location}, ${sql.raw(point)})`,
+			// distance: sql`ST_DistanceSphere(${freelancerProfiles.location}, ${sql.raw(point)})`,
 			languages: sql`COALESCE(( SELECT json_agg(DISTINCT l.name) FROM freelancer_languages fl JOIN languages l ON l.uuid = fl.language_id WHERE fl.freelancer_id = ${freelancerProfiles.uuid} AND COALESCE(fl.is_deleted,false)=false ), '[]')`,
 			services: sql`COALESCE(( SELECT json_agg(DISTINCT jsonb_build_object('description', fs.description, 'title', fs.title, 'name', s.name, 'fixedPriceDollars', ROUND(fs.fixed_price_cents / 100.0, 2), 'currency', fs.currency, 'serviceType', s.service_type, 'uuid', s.uuid)) FROM freelancer_services fs JOIN services s ON s.uuid = fs.service_id WHERE fs.freelancer_id = ${freelancerProfiles.uuid} AND COALESCE(fs.is_deleted,false)=false ), '[]')`,
 		})
