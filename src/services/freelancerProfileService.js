@@ -24,7 +24,6 @@ const insertFreelancerDetailService = async (data, options = {}) => {
 		resumeLink: cvUrl,
 		certificateLink: dbsUrl,
 		stripeAccountId: stripeAccountId,
-		...(process.env.ENVIRONMENT?.toLowerCase() !== 'production' && { profileStatus: 'approved' })
 	}).returning({
 		uuid: freelancerProfiles.uuid,
 		userId: freelancerProfiles.userId,
@@ -84,7 +83,7 @@ const getNearbyFreelancers = async (filters) => {
 	const {
 		lat = 0.0,
 		lng = 0.0,
-		radius = 1000,
+		radius = 1000000,
 		languageIds = [],
 		serviceIds = [],
 		price_range,

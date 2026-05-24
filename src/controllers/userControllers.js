@@ -502,7 +502,7 @@ const getNearbyTopRatedShoppersController = async (req, res) => {
         let {
             lat = 0.0,
             lng = 0.0,
-            radius = 1000,
+            radius = 1000000,
             languages = [],
             services = [],
             search_text,
