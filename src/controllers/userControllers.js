@@ -161,10 +161,10 @@ const updateUserProfileController = async (req, res) => {
         if (user?.isDeleted || user?.isBlocked) return res.status(400).json({ success: false, message: "Please contact support, your account has been deleted or blocked." });
 
         if (otp) {
-            const storedOtp = await redisClient.get(`otp:${email}`);
+            const storedOtp = await redisClient.instance.get(`otp:${email}`);
 
             if (storedOtp && storedOtp === otp) {
-                await redisClient.del(`otp:${email}`);
+                await redisClient.instance.del(`otp:${email}`);
                 await updateUserByUuidService(uuid, {
                     email,
                     title,
@@ -181,7 +181,7 @@ const updateUserProfileController = async (req, res) => {
         } else if (user && user.email !== email) {
             const otp = Math.floor(1000 + Math.random() * 9000).toString();
 
-            await redisClient.set(`otp:${email}`, otp, 'EX', 60);
+            await redisClient.instance.set(`otp:${email}`, otp, 'EX', 60);
 
             await sendOtpEmail(email, otp);
 
@@ -356,10 +356,10 @@ const verifyOtpController = async (req, res) => {
             return res.status(200).json({ success: true, token: accessToken, message: 'OTP Verified Successfully!' });
         }
 
-        const storedOtp = await redisClient.get(`otp:${email}`);
+        const storedOtp = await redisClient.instance.get(`otp:${email}`);
 
         if (storedOtp && storedOtp === otp) {
-            await redisClient.del(`otp:${email}`);
+            await redisClient.instance.del(`otp:${email}`);
             const accessToken = generateAccessToken({ email, intent }, { expiryTime: '5m' });
             return res.status(200).json({ success: true, token: accessToken, message: 'OTP Verified Successfully!' });
         } else {
@@ -436,7 +436,7 @@ const sendOtpController = async (req, res) => {
 
         const otp = Math.floor(1000 + Math.random() * 9000).toString();
 
-        await redisClient.set(`otp:${email}`, otp, 'EX', 60);
+        await redisClient.instance.set(`otp:${email}`, otp, 'EX', 60);
 
         await sendOtpEmail(email, otp);
 
