@@ -36,7 +36,7 @@ async function sendOtpEmail(to, otp) {
     const transporter = mailer();
 
     await transporter.sendMail({
-        from: `"TEMMULEX" <${process.env.SMTP_USER}>`,
+        from: `"TEMMLUXE" <${process.env.SMTP_USER}>`,
         to,
         subject: 'Your OTP Code',
         text: `Your OTP is: ${otp}`,
