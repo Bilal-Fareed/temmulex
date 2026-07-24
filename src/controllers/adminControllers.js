@@ -177,6 +177,25 @@ const adminBlockUserController = async (req, res) => {
     }
 };
 
+const adminUnblockUserController = async (req, res) => {
+    try {
+        console.log("ADMIN CONTROLLER > ADMIN UNBLOCK USER > try block executed");
+
+        const { user_id } = req.params;
+
+        await updateUserByUuidService(user_id, { isBlocked: false });
+
+        res.status(200).json({
+            success: true,
+            message: "User Unblocked Successfully",
+        });
+
+    } catch (error) {
+        console.error("ADMIN CONTROLLER > ADMIN UNBLOCK USER >", error);
+        res.status(500).json({ success: false, message: "Internal Server Error" });
+    }
+};
+
 const adminUpdateShopperDetailsController = async (req, res) => {
     try {
         console.log("ADMIN CONTROLLER > ADMIN UPDATE SHOPPER STATUS > try block executed");
@@ -437,6 +456,7 @@ export {
     adminLoginController,
     refundPaymentController,
     adminBlockUserController,
+    adminUnblockUserController,
     adminLogoutController,
     adminDashboardController,
     disbursePaymentController,

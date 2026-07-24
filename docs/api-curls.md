@@ -624,6 +624,14 @@ curl --location --request PUT 'http://localhost:3001/api/admin/block-user/25d6cf
 ```
 
 
+## Unblock USer
+```bash
+curl --location --request PUT 'http://localhost:3001/api/admin/unblock-user/25d6cfe5-b4e8-4c5a-8b3f-442980ff4764' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1dWlkIjoiODc5ZTZkOTgtNGMyNy00Y2MzLTg4ZWItOTlhMGQ4YjhmZDE4IiwiZW1haWwiOiJhZG1pbkBnbWFpbC5jb20iLCJ2ZXJzaW9uIjowLCJpYXQiOjE3NzM0Mzk5MDAsImV4cCI6MTc3MzQ4MzEwMH0.hnQfSeA6DChL_hCM-XZmuwg4-3nt88spmHObA60xi8E'
+```
+
+
 ## Update Order Status
 ```bash
 curl --location --request PUT 'http://localhost:3001/api/admin/update/order' \
