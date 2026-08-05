@@ -18,6 +18,7 @@ import {
 } from "../services/conversationService.js";
 import { redisClient } from "../../infra/redis.js";
 import { sendOtpEmail } from "../helpers/mailer.js";
+import { insertAnswers } from "../services/qnaService.js"
 import { createOrderService } from "../services/orderService.js"
 import { deleteUserSessionByUserId, insertUserSession } from "../services/sessionsService.js";
 import { randomUUID } from 'crypto';
@@ -114,12 +115,14 @@ const userSignupController = async (req, res) => {
 
                 if (qna?.length) {
                     insertingFreelancersDetails.push(
-                        qna.map((ans) => ({
-                            answer: ans.answer,
-                            questionId: ans.questionId,
-                            freelancerId: freelancer.uuid,
-                        })), { transaction: tx }
-                    )
+                        insertAnswers(
+                            qna.map((ans) => ({
+                                answer: ans.answer,
+                                questionId: ans.questionId,
+                                freelancerId: freelancer.uuid,
+                            })), { transaction: tx }
+                        )
+                    );
                 }
 
                 await Promise.all(insertingFreelancersDetails);
