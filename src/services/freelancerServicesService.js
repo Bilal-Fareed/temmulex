@@ -28,7 +28,7 @@ const deleteFreelancerServices = async (filter = {}, options = {}) => {
 			eq(freelancerServices.freelancerId, freelancer_id),
 			eq(freelancerServices.serviceId, service_id)
 		)
-	).returning();;
+	).returning();
 };
 
 const updateFreelancerService = async (filters = {}, updatedObject = {}, options = {}) => {
