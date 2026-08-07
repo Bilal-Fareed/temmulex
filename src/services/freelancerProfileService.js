@@ -101,7 +101,7 @@ const getNearbyFreelancers = async (filters) => {
 		sql`${freelancerProfiles.isBlocked} = false`,
 		sql`${freelancerProfiles.profileStatus} = 'approved'`,
 		sql`${freelancerProfiles.onboardingComplete} = true`,
-		sql`ST_DistanceSphere(${freelancerProfiles.location}, ${sql.raw(point)}) <= ${radius}`,
+		// sql`ST_DistanceSphere(${freelancerProfiles.location}, ${sql.raw(point)}) <= ${radius}`,
 	];
 
 	// Optional language filter

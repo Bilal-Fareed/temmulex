@@ -1,4 +1,5 @@
 import path from "path";
+import { db } from "../../infra/db.js";
 import { uploadFile } from "../helpers/cloudinary.js";
 import { sendNotification } from "../helpers/firebase.js";
 import {
