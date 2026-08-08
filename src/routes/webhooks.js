@@ -8,6 +8,7 @@ const router = Router();
 
 router.post('/stripe', express.raw({ type: 'application/json' }), async (req, res) => {
 
+    console.log('Stripe Webhook Request Start');
     let event = req.body;
 
     const signature = req.headers['stripe-signature'];
@@ -19,6 +20,7 @@ router.post('/stripe', express.raw({ type: 'application/json' }), async (req, re
         return res.status(400).send(`Webhook Error > ${error.message}`);
     }
 
+    console.log('Stripe Webhook Request Event > ', event);
     const _event = event.data.object;
 
     await insertPaymentLogServices([{
