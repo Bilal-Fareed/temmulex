@@ -11,6 +11,7 @@ import {
     adminUpdateOrderSchema,
     adminPaymentListSchema,
     adminShopperListSchema,
+    adminRestoreAccountSchema,
     adminGetUserDetailsSchema,
     adminGetOrderDetailsSchema,
     adminGetShopperDetailsSchema,
@@ -32,6 +33,7 @@ import {
     adminUpdateOrderController,
     adminSupportListController,
     adminShoppersListController,
+    adminRestoreAccountController,
     adminGetOrderDetailController,
     adminGetClientDetailController,
     adminGetShopperDetailController,
@@ -50,6 +52,8 @@ router.get('/dashboard', authenticateAdminToken, adminDashboardController);
 router.get('/clients', authenticateAdminToken, validate({ query: adminClientListSchema }), adminClientListController);
 
 router.get('/client/details/:user_id', authenticateAdminToken, validate({ params: adminGetUserDetailsSchema }), adminGetClientDetailController);
+
+router.put('/restore-account/:user_id', authenticateAdminToken, validate({ params: adminRestoreAccountSchema }), adminRestoreAccountController);
 
 router.put('/block-user/:user_id', authenticateAdminToken, validate({ params: adminBlockUserSchema }), adminBlockUserController);
 

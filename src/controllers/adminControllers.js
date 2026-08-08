@@ -158,6 +158,25 @@ const adminGetClientDetailController = async (req, res) => {
     }
 };
 
+const adminRestoreAccountController = async (req, res) => {
+    try {
+        console.log("ADMIN CONTROLLER > ADMIN RESTORE ACCOUNT > try block executed");
+
+        const { user_id } = req.params;
+
+        await updateUserByUuidService(user_id, { isDeleted: false });
+
+        res.status(200).json({
+            success: true,
+            message: "User Account Restored Successfully",
+        });
+
+    } catch (error) {
+        console.error("ADMIN CONTROLLER > ADMIN RESTORE ACCOUNT >", error);
+        res.status(500).json({ success: false, message: "Internal Server Error" });
+    }
+};
+
 const adminBlockUserController = async (req, res) => {
     try {
         console.log("ADMIN CONTROLLER > ADMIN BLOCK USER > try block executed");
@@ -465,6 +484,7 @@ export {
     adminUpdateOrderController,
     adminClientListController,
     adminShoppersListController,
+    adminRestoreAccountController,
     adminGetClientDetailController,
     adminGetShopperDetailController,
     adminOrdersListController,
