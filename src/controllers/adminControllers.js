@@ -1,5 +1,6 @@
 import { getAdminByEmail, getAdminByUuid, updateAdminByUuidService } from "../services/adminService.js";
 import { verifyPassword, generateAccessToken } from "../helpers/security.js";
+import { sendShopperProfileStatusEmail } from "../helpers/mailer.js";
 import { refundPayment, disbursePayment } from "../helpers/payment.js"; 
 import { dollarsToCents }from "../helpers/constants.js"
 import { adminDashboardUserStats, getUsersList, getUserByUuid, updateUserByUuidService } from "../services/userService.js";
@@ -242,6 +243,9 @@ const adminUpdateShopperDetailsController = async (req, res) => {
             });
 
         await updateFreelancerDetailDynamicallyService({ profileStatus: profileStatus }, { userId: shopper_id });
+
+        const userDetails = await getUserByUuid(shopper.userId)
+        sendShopperProfileStatusEmail({ toEmail: userDetails.email, toName: userDetails.firstName, status: profileStatus });
 
         res.status(200).json({
             success: true,

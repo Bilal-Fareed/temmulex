@@ -44,7 +44,55 @@ async function sendOtpEmail(to, otp) {
     });
 }
 
+async function sendShopperAccountStatusChangeEmail(to) {
+    const transporter = mailer();
+
+    await transporter.sendMail({
+        from: `"TEMMLUXE" <${process.env.SMTP_USER}>`,
+        to,
+        subject: 'Your OTP Code',
+        text: `Your OTP is: ${otp}`,
+        html: `<p>Your OTP is: <strong>${otp}</strong></p>`,
+    });
+}
+
+const sendShopperProfileStatusEmail = async ({ toEmail, toName, status, reason = null }) => {
+    const transporter = mailer();
+
+    const isApproved = status === 'approved';
+
+    const title = isApproved
+        ? 'Shopper Profile Request Approved'
+        : 'Shopper Profile Request Rejected';
+
+    const message = isApproved
+        ? 'Your shopper profile request has been reviewed and approved. You can now use your shopper profile.'
+        : 'Your shopper profile request has been reviewed and unfortunately could not be approved at this time.';
+
+    await transporter.sendMail({
+        from: `"TEMMLUXE" <${process.env.SMTP_USER}>`,
+        toEmail,
+        subject: title,
+        text: `${title}\n\n${message}`,
+        html: `
+            <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+                <h2>${title}</h2>
+                <p>Hello, ${toEmail}</p>
+                <p>${message}</p>
+                <p>
+                    If you have any questions, please contact our support team.
+                </p>
+                <p>
+                    Regards,<br>
+                    <strong>TEMMLUXE Team</strong>
+                </p>
+            </div>
+        `,
+    });
+};
+
 export {
     sendOtpEmail,
-    initializeMailer
+    initializeMailer,
+    sendShopperProfileStatusEmail,
 }
