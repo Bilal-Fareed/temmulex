@@ -69,7 +69,7 @@ const authenticate = async (req, res, next) => {
 			const newTokenId = uuidv4();
 			await insertUserSession({
 				tokenId: newTokenId,
-				userId: user.uuid,
+				userUuid: user.uuid,
 				deviceId: deviceId,
 				userAgent: userAgent,
 				userType: decodedRefreshToken.userType,
