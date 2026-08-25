@@ -254,8 +254,8 @@ const loginController = async (req, res) => {
         }
 
         const tokenId = randomUUID();
-        const accessToken = generateAccessToken({ uuid: user.uuid, version: user.refreshTokenVersion, tokenId });
-        const refreshToken = generateRefreshToken({ uuid: user.uuid, version: user.refreshTokenVersion, tokenId });
+        const accessToken = generateAccessToken({ uuid: user.uuid, version: user.refreshTokenVersion, tokenId, userType: user_type });
+        const refreshToken = generateRefreshToken({ uuid: user.uuid, version: user.refreshTokenVersion, tokenId, userType: user_type });
 
         await insertUserSession({
             tokenId,
