@@ -58,7 +58,7 @@ const authenticate = async (req, res, next) => {
 			}
 
 			// Validate user
-			const [user] = await getUserByUuid(decodedRefreshToken.uuid);
+			const user = await getUserByUuid(decodedRefreshToken.uuid);
 			if (!user || user.refreshTokenVersion !== decodedRefreshToken.version) {
 				return res.status(401).json({ message: 'Session version mismatch' });
 			}
