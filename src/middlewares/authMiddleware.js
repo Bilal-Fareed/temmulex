@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import { getUserByUuid } from '../services/userService.js';
 import { getAdminByUuid } from '../services/adminService.js';
-import { getUserSessionForAuth, insertUserSession } from '../services/sessionsService.js';
+import { getUserSessionForAuth, insertUserSession, deleteUserSessionByUserId } from '../services/sessionsService.js';
 import { generateAccessToken, generateRefreshToken, verifyAccessToken, verifyRefreshToken } from '../helpers/security.js';
 
 /**
@@ -64,7 +64,7 @@ const authenticate = async (req, res, next) => {
 			}
 
 			// Rotate session
-			await deleteSessionById();
+			await deleteUserSessionByUserId(user.uuid);
 
 			const newTokenId = uuidv4();
 			await insertUserSession({
