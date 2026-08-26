@@ -1,4 +1,4 @@
-import { v4 as uuidv4 } from 'uuid';
+import { randomUUID } from 'crypto';
 import { getUserByUuid } from '../services/userService.js';
 import { getAdminByUuid } from '../services/adminService.js';
 import { getUserSessionForAuth, insertUserSession, deleteUserSessionByUserId } from '../services/sessionsService.js';
@@ -66,14 +66,7 @@ const authenticate = async (req, res, next) => {
 			// Rotate session
 			await deleteUserSessionByUserId(user.uuid);
 
-			const newTokenId = uuidv4();
-			await insertUserSession({
-				tokenId: newTokenId,
-				userUuid: user.uuid,
-				deviceId: deviceId,
-				userAgent: userAgent,
-				userType: decodedRefreshToken.userType,
-			});
+			const newTokenId = randomUUID();
 
 			// Generate new tokens
 			const newAccessToken = generateAccessToken({
@@ -87,6 +80,14 @@ const authenticate = async (req, res, next) => {
 				uuid: user.uuid,
 				version: user.refreshTokenVersion,
 				tokenId: newTokenId,
+				userType: decodedRefreshToken.userType,
+			});
+
+			await insertUserSession({
+				tokenId: newTokenId,
+				userUuid: user.uuid,
+				deviceId: deviceId,
+				userAgent: userAgent,
 				userType: decodedRefreshToken.userType,
 			});
 
