@@ -11,13 +11,16 @@ import {
     adminUpdateOrderSchema,
     adminPaymentListSchema,
     adminShopperListSchema,
+    adminGetOrderItemsSchema,
     adminRestoreAccountSchema,
     adminGetUserDetailsSchema,
+    adminOrderItemsListSchema,
     adminGetOrderDetailsSchema,
     adminGetShopperDetailsSchema,
     adminUpdateShopperStatusSchema,
     adminResolveSupportTicketSchema,
     adminRefundOrDisbursePaymentSchema,
+    adminRefundOrDisburseItemPaymentSchema,
 } from '../schemas/adminSchema.js';
 import {
     adminLoginController,
@@ -33,6 +36,9 @@ import {
     adminUpdateOrderController,
     adminSupportListController,
     adminShoppersListController,
+    refundItemPaymentController,
+    adminOrderItemsListController,
+    disburseItemPaymentController,
     adminRestoreAccountController,
     adminGetOrderDetailController,
     adminGetClientDetailController,
@@ -80,5 +86,11 @@ router.put('/:status/shopper/:shopper_id', authenticateAdminToken, validate({ pa
 router.get('/support', authenticateAdminToken, validate({ query: adminSupportListSchema }), adminSupportListController);
 
 router.put('/resolve/ticket/:ticket_no', authenticateAdminToken, validate({ params: adminResolveSupportTicketSchema }), adminResolveSupportTicketController);
+
+router.get('/orderItems/:order_id', authenticateAdminToken, validate({ params: adminGetOrderItemsSchema, query: adminOrderItemsListSchema }), adminOrderItemsListController)
+
+router.post('/refund/item/payment/:item_id', authenticateAdminToken, validate({ params: adminRefundOrDisburseItemPaymentSchema }), refundItemPaymentController);
+
+router.post('/disburse/item/payment/:item_id', authenticateAdminToken, validate({ params: adminRefundOrDisburseItemPaymentSchema }), disburseItemPaymentController);
 
 export default router;

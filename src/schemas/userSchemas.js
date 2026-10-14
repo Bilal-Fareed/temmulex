@@ -150,6 +150,14 @@ const getConversationMessagesSchema = vine.object({
     limit: vine.number().min(1).max(100).optional(),
 })
 
+// Signup schema
+const addOrderItemSchema = vine.object({
+    order_id: vine.string().uuid({ version: [4] }),
+    item_name: vine.string().minLength(2).maxLength(20),
+    description: vine.string().minLength(2).maxLength(100),
+    price: vine.number().transform((value) => value ?? 0),
+})
+
 export {
     passwordSchema,
     signinSchema,
@@ -157,6 +165,7 @@ export {
     payNowSchema,
     verifyOtpSchema,
     sendOtpSchema,
+    addOrderItemSchema,
     orderFeedbackSchema,
     forgotPasswordSchema,
     nearbyTopRatedShopperSchema,

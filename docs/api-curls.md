@@ -146,6 +146,23 @@ curl --location 'http://localhost:3001/v1/users/login' \
 ```
 
 
+## 📝 Add Items in Ongoing Order
+```bash
+curl --location 'http://localhost:3001/v1/users/add-item' \
+--header 'x-device-id: test-device-id' \
+--header 'x-user-agent: android' \
+--header 'x-refresh-token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1dWlkIjoiMjVkNmNmZTUtYjRlOC00YzVhLThiM2YtNDQyOTgwZmY0NzY0IiwidmVyc2lvbiI6MCwidG9rZW5JZCI6IjkyY2RhOWZmLTI4YzMtNDE3OS04YWYxLWU1MzBjZDE2Njg3NCIsImlhdCI6MTc3MjQwNDMyNCwiZXhwIjoxNzczMDA5MTI0fQ.ZBaW2-QS58whJCSRZhVt3GJ85dzjGt4oOxkt8W1Fxgg' \
+--header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1dWlkIjoiMjVkNmNmZTUtYjRlOC00YzVhLThiM2YtNDQyOTgwZmY0NzY0IiwidmVyc2lvbiI6MCwidG9rZW5JZCI6IjkyY2RhOWZmLTI4YzMtNDE3OS04YWYxLWU1MzBjZDE2Njg3NCIsImlhdCI6MTc3MjQwNDMyNCwiZXhwIjoxNzcyNDA3OTI0fQ.N97QJryBcfXpqqFl_9ZfoFnQ4T4ym4ymBYPrd6X6nlg' \
+--header 'Content-Type: application/json' \
+--data '{
+    "order_id":"15c2bb71-526e-4c0c-aa27-898c5b3fa764",
+    "item_name":"testing item",
+    "description": "random text for testing purpose",
+    "price" : 2.0
+}'
+```
+
+
 ## 📝 Logout
 ```bash
 curl --location --request POST 'http://localhost:3001/v1/users/logout' \
@@ -552,9 +569,25 @@ curl --location 'http://localhost:3001/api/admin/payments?page=1&limit=10&paymen
 ```
 
 
+## 📝 Admin Mark Item Payment As Refunded
+```bash
+curl --location --request POST 'http://localhost:3001/api/admin/refund/item/payment/15c03a6b-4468-447c-a2a8-14ed6500cf30' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1dWlkIjoiODc5ZTZkOTgtNGMyNy00Y2MzLTg4ZWItOTlhMGQ4YjhmZDE4IiwiZW1haWwiOiJhZG1pbkBnbWFpbC5jb20iLCJ2ZXJzaW9uIjowLCJpYXQiOjE3NzM0Mzk5MDAsImV4cCI6MTc3MzQ4MzEwMH0.hnQfSeA6DChL_hCM-XZmuwg4-3nt88spmHObA60xi8E'
+```
+
+
 ## 📝 Admin Mark Payment As Refunded
 ```bash
 curl --location --request POST 'http://localhost:3001/api/admin/refund/payment/15c03a6b-4468-447c-a2a8-14ed6500cf30' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1dWlkIjoiODc5ZTZkOTgtNGMyNy00Y2MzLTg4ZWItOTlhMGQ4YjhmZDE4IiwiZW1haWwiOiJhZG1pbkBnbWFpbC5jb20iLCJ2ZXJzaW9uIjowLCJpYXQiOjE3NzM0Mzk5MDAsImV4cCI6MTc3MzQ4MzEwMH0.hnQfSeA6DChL_hCM-XZmuwg4-3nt88spmHObA60xi8E'
+```
+
+
+## 📝 Admin Mark Item Payment As Disbursed
+``` bash
+curl --location --request POST 'http://localhost:3001/api/admin/disburse/item/payment/15c03a6b-4468-447c-a2a8-14ed6500cf30' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1dWlkIjoiODc5ZTZkOTgtNGMyNy00Y2MzLTg4ZWItOTlhMGQ4YjhmZDE4IiwiZW1haWwiOiJhZG1pbkBnbWFpbC5jb20iLCJ2ZXJzaW9uIjowLCJpYXQiOjE3NzM0Mzk5MDAsImV4cCI6MTc3MzQ4MzEwMH0.hnQfSeA6DChL_hCM-XZmuwg4-3nt88spmHObA60xi8E'
 ```
