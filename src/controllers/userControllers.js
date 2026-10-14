@@ -583,7 +583,8 @@ const placeOrderController = async (req, res) => {
         // Create a PaymentIntent with the order amount and currency
         const paymentIntent = await createPaymentIntent({
             amount: freelancerService?.fixedPriceCents,
-            orderId: orderUuid,
+            metadata: { orderId: orderUuid },
+            transferGroup: `order_${orderUuid}`,
         });
 
         const order = await createOrderService({
@@ -644,7 +645,8 @@ const payNowController = async (req, res) => {
         // Create a PaymentIntent with the order amount and currency
         const newPaymentIntent = await createPaymentIntent({ 
             amount: orderDetails.price,
-            orderId: orderDetails.uuid, 
+            metadata: { orderId: orderDetails.uuid },
+            transferGroup: `order_${orderDetails.uuid}`,
         });
 
         await updateOrderByUuidService(orderDetails.uuid, { paymentReference: newPaymentIntent.id });
@@ -886,7 +888,8 @@ const addOrderItemController = async (req, res) => {
         // Create a PaymentIntent with the order amount and currency
         const paymentIntent = await createPaymentIntent({
             amount: price,
-            itemId: itemUuid,
+            metadata: { itemId: itemUuid },
+            transferGroup: `item_${itemUuid}`,
         });
 
         const itemDetails = await insertOrderItemService({
