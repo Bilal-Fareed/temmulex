@@ -19,6 +19,7 @@ import {
     nearbyTopRatedShopperSchema,
     getConversationSchema,
     sendOtpSchema,
+    addOrderItemSchema,
     getConversationMessagesSchema,
     registerNotificationTokenSchema,
 } from '../schemas/userSchemas.js';
@@ -42,6 +43,7 @@ import {
     getConversationMessagesController,
     getMyProfileController,
     placeOrderController,
+    addOrderItemController,
     storeFirebaseNotificationTokenController,
 } from '../controllers/userControllers.js';
 
@@ -86,5 +88,7 @@ router.get('/my-chats', authenticate, validate({ query: getConversationSchema })
 router.get('/messages', authenticate, validate({ query: getConversationMessagesSchema }), getConversationMessagesController);
 
 router.post('/send-message', multerHandler, authenticate, validate({ body: sendMessageSchema }), sendMessagesController);
+
+router.post('/add-item', authenticate, validate({ body: addOrderItemSchema }), addOrderItemController);
 
 export default router;

@@ -15,3 +15,4 @@ export * from "./adminModel.js";
 export * from "./notificationTokensModel.js";
 export * from "./freelancerQuestions.js";
 export * from "./freelancerAnswers.js";
+export * from "./orderItemsModel.js";
