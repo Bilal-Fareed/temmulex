@@ -1,4 +1,5 @@
 import path from "path";
+import { db } from "../../infra/db.js";
 import { uploadFile } from "../helpers/cloudinary.js";
 import { sendNotification } from "../helpers/firebase.js";
 import {
@@ -171,17 +172,17 @@ const updateFreelancerProfileController = async (req, res) => {
         const freelancer = await getFreelancerProfileDetailByUserUuid(user.uuid);
 
         if (otp) {
-            const storedOtp = await redisClient.get(`otp:${email}`);
+            const storedOtp = await redisClient.instance.get(`otp:${email}`);
 
             if (storedOtp && storedOtp === otp) {
-                await redisClient.del(`otp:${email}`);
+                await redisClient.instance.del(`otp:${email}`);
             } else {
                 return res.status(403).json({ success: false, message: "Invalid OTP, please verify OTP to update your email." });
             }
         } else if (user && user.email !== email) {
             const otp = Math.floor(1000 + Math.random() * 9000).toString();
 
-            await redisClient.set(`otp:${email}`, otp, 'EX', 60);
+            await redisClient.instance.set(`otp:${email}`, otp, 'EX', 60);
 
             await sendOtpEmail(email, otp);
 

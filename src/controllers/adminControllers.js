@@ -1,5 +1,6 @@
 import { getAdminByEmail, getAdminByUuid, updateAdminByUuidService } from "../services/adminService.js";
 import { verifyPassword, generateAccessToken } from "../helpers/security.js";
+import { sendShopperProfileStatusEmail } from "../helpers/mailer.js";
 import { refundPayment, disbursePayment } from "../helpers/payment.js"; 
 import { dollarsToCents }from "../helpers/constants.js"
 import { adminDashboardUserStats, getUsersList, getUserByUuid, updateUserByUuidService } from "../services/userService.js";
@@ -158,6 +159,25 @@ const adminGetClientDetailController = async (req, res) => {
     }
 };
 
+const adminRestoreAccountController = async (req, res) => {
+    try {
+        console.log("ADMIN CONTROLLER > ADMIN RESTORE ACCOUNT > try block executed");
+
+        const { user_id } = req.params;
+
+        await updateUserByUuidService(user_id, { isDeleted: false });
+
+        res.status(200).json({
+            success: true,
+            message: "User Account Restored Successfully",
+        });
+
+    } catch (error) {
+        console.error("ADMIN CONTROLLER > ADMIN RESTORE ACCOUNT >", error);
+        res.status(500).json({ success: false, message: "Internal Server Error" });
+    }
+};
+
 const adminBlockUserController = async (req, res) => {
     try {
         console.log("ADMIN CONTROLLER > ADMIN BLOCK USER > try block executed");
@@ -173,6 +193,25 @@ const adminBlockUserController = async (req, res) => {
 
     } catch (error) {
         console.error("ADMIN CONTROLLER > ADMIN BLOCK USER >", error);
+        res.status(500).json({ success: false, message: "Internal Server Error" });
+    }
+};
+
+const adminUnblockUserController = async (req, res) => {
+    try {
+        console.log("ADMIN CONTROLLER > ADMIN UNBLOCK USER > try block executed");
+
+        const { user_id } = req.params;
+
+        await updateUserByUuidService(user_id, { isBlocked: false });
+
+        res.status(200).json({
+            success: true,
+            message: "User Unblocked Successfully",
+        });
+
+    } catch (error) {
+        console.error("ADMIN CONTROLLER > ADMIN UNBLOCK USER >", error);
         res.status(500).json({ success: false, message: "Internal Server Error" });
     }
 };
@@ -204,6 +243,9 @@ const adminUpdateShopperDetailsController = async (req, res) => {
             });
 
         await updateFreelancerDetailDynamicallyService({ profileStatus: profileStatus }, { userId: shopper_id });
+
+        const userDetails = await getUserByUuid(shopper.userId)
+        sendShopperProfileStatusEmail({ toEmail: userDetails.email, toName: userDetails.firstName, status: profileStatus });
 
         res.status(200).json({
             success: true,
@@ -437,6 +479,7 @@ export {
     adminLoginController,
     refundPaymentController,
     adminBlockUserController,
+    adminUnblockUserController,
     adminLogoutController,
     adminDashboardController,
     disbursePaymentController,
@@ -445,6 +488,7 @@ export {
     adminUpdateOrderController,
     adminClientListController,
     adminShoppersListController,
+    adminRestoreAccountController,
     adminGetClientDetailController,
     adminGetShopperDetailController,
     adminOrdersListController,

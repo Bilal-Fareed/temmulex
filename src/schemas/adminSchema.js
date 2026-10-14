@@ -58,6 +58,14 @@ const adminBlockUserSchema = vine.object({
     user_id: vine.string().uuid(),
 }); 
 
+const adminRestoreAccountSchema = vine.object({
+    user_id: vine.string().uuid(),
+}); 
+
+const adminUnblockUserSchema = vine.object({
+    user_id: vine.string().uuid(),
+}); 
+
 const adminGetShopperDetailsSchema = vine.object({
     shopper_id: vine.string().uuid(),
 }); 
@@ -80,10 +88,12 @@ export {
     adminBlockUserSchema,
     adminOrderListSchema,
     adminClientListSchema,
+    adminUnblockUserSchema,
     adminPaymentListSchema,
     adminUpdateOrderSchema,
     adminShopperListSchema,
     adminSupportListSchema,
+    adminRestoreAccountSchema,
     adminGetUserDetailsSchema,
     adminGetOrderDetailsSchema,
     adminGetShopperDetailsSchema,

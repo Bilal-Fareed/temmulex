@@ -22,12 +22,12 @@ function verifyPasswordSync(password, hash) {
 }
 
 function generateAccessToken(payload, options = {}) {
-    const { expiryTime = '1h' } = options;
+    const { expiryTime = '1m' } = options;
     return jwt.sign(payload, ACCESS_SECRET, { expiresIn: expiryTime });
 };
 
 function generateRefreshToken(payload, options = {}) {
-    const { expiryTime = '7d' } = options;
+    const { expiryTime = '5m' } = options;
     return jwt.sign(payload, REFRESH_SECRET, { expiresIn: expiryTime });
 };
 
