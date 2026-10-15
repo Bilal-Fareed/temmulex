@@ -27,6 +27,12 @@ const adminOrderListSchema = vine.object({
     limit: vine.number().min(1).max(100).optional(),
 }); 
 
+const adminOrderItemsListSchema = vine.object({
+    search_text: vine.string().minLength(0).maxLength(1000).optional(),
+    page: vine.number().min(1).max(1000).optional(),
+    limit: vine.number().min(1).max(100).optional(),
+}); 
+
 const adminPaymentListSchema = vine.object({
     payment_status: vine.enum(['pending', 'received', 'refunded', 'disputed', 'disbursed', 'failed']).optional(),
     search_text: vine.string().minLength(0).maxLength(1000).optional(),
@@ -78,6 +84,14 @@ const adminRefundOrDisbursePaymentSchema = vine.object({
     order_id: vine.string().uuid(),
 }); 
 
+const adminRefundOrDisburseItemPaymentSchema = vine.object({
+    item_id: vine.string().uuid(),
+}); 
+
+const adminGetOrderItemsSchema = vine.object({
+    item_id: vine.string().uuid(),
+}); 
+
 const adminUpdateShopperStatusSchema = vine.object({
     shopper_id: vine.string().uuid(),
     status: vine.enum(['reject', 'approve'])
@@ -93,6 +107,8 @@ export {
     adminUpdateOrderSchema,
     adminShopperListSchema,
     adminSupportListSchema,
+    adminGetOrderItemsSchema,
+    adminOrderItemsListSchema,
     adminRestoreAccountSchema,
     adminGetUserDetailsSchema,
     adminGetOrderDetailsSchema,
@@ -100,4 +116,5 @@ export {
     adminUpdateShopperStatusSchema,
     adminResolveSupportTicketSchema,
     adminRefundOrDisbursePaymentSchema,
+    adminRefundOrDisburseItemPaymentSchema,
 }

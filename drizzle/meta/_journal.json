@@ -134,6 +134,13 @@
       "when": 1778095594115,
       "tag": "0018_overrated_molten_man",
       "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1791980565048,
+      "tag": "0019_shiny_phalanx",
+      "breakpoints": true
     }
   ]
 }

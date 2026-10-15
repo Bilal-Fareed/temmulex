@@ -12,7 +12,7 @@ import { relations } from "drizzle-orm";
 import { users } from "./usersModel.js";
 import { reviews } from "./reviewsModel.js";
 import { services } from "./servicesModel.js";
-import { conversations } from "./conversationsModel.js";
+import { orderItems } from "./orderItemsModel.js";
 
 const orders = pgTable("orders", {
     id: serial("id").primaryKey(),
@@ -36,6 +36,7 @@ const orderRelations = relations(orders, ({ one }) => ({
     freelancer: one(users, { fields: [orders.freelancerId], references: [users.uuid] }),
     service: one(services, { fields: [orders.serviceId], references: [services.uuid] }),
     reviews: one(reviews),
+    orderItems: one(orderItems)
 }));
 
 export {

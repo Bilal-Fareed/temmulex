@@ -9,6 +9,7 @@ import { insertManyFreelancerLanguagesService } from "../services/freelancerLang
 import { insertManyFreelancerServices, getFreelancerServices } from "../services/freelancerServicesService.js";
 import { getOrderService, rateOrder, getOrderByUuid, updateOrderByUuidService } from "../services/orderService.js";
 import { getNotificationTokenService, addNotificationTokenService } from "../services/notificationTokenService.js";
+import { insertOrderItemService } from "../services/orderItemService.js";
 import {
     addMessageServices,
     getConversationService,
@@ -582,7 +583,8 @@ const placeOrderController = async (req, res) => {
         // Create a PaymentIntent with the order amount and currency
         const paymentIntent = await createPaymentIntent({
             amount: freelancerService?.fixedPriceCents,
-            orderId: orderUuid,
+            metadata: { orderId: orderUuid },
+            transferGroup: `order_${orderUuid}`,
         });
 
         const order = await createOrderService({
@@ -643,7 +645,8 @@ const payNowController = async (req, res) => {
         // Create a PaymentIntent with the order amount and currency
         const newPaymentIntent = await createPaymentIntent({ 
             amount: orderDetails.price,
-            orderId: orderDetails.uuid, 
+            metadata: { orderId: orderDetails.uuid },
+            transferGroup: `order_${orderDetails.uuid}`,
         });
 
         await updateOrderByUuidService(orderDetails.uuid, { paymentReference: newPaymentIntent.id });
@@ -861,6 +864,57 @@ const storeFirebaseNotificationTokenController = async (req, res) => {
     }
 };
 
+const addOrderItemController = async (req, res) => {
+    try {
+
+        console.log("USER CONTROLLER > ADD ORDER ITEM > try block executed");
+
+        const { uuid } = req.user;
+        const { order_id, price, item_name, description } = req.body;
+
+        const orderDetails = await getOrderByUuid(order_id);
+        
+        if (!orderDetails)
+            return res.status(404).json({ success: false, message: "Order details not found." })
+
+        if (orderDetails.status != 'ongoing')
+            return res.status(400).json({
+                success: false,
+                message: `Order status is ${orderDetails.status}, you can not add items in current status.`
+            })
+
+        const itemUuid = uuidv4();
+
+        // Create a PaymentIntent with the order amount and currency
+        const paymentIntent = await createPaymentIntent({
+            amount: price,
+            metadata: { itemId: itemUuid },
+            transferGroup: `item_${itemUuid}`,
+        });
+
+        const itemDetails = await insertOrderItemService({
+            uuid: itemUuid,
+            price: price,
+            description: description,
+            itemName: item_name,
+            paymentReference: paymentIntent.id,
+        })
+
+        res.status(200).json({
+            success: true,
+            message: "Item Added Successfully",
+            data: {
+                ...itemDetails,
+                clientSecret: paymentIntent.client_secret,
+            }
+        });
+
+    } catch (error) {
+        console.error("USER CONTROLLER > ADD ORDER ITEM >", error);
+        res.status(500).json({ success: false, message: "Internal Server Error" });
+    }
+};
+
 export {
     userSignupController,
     loginController,
@@ -872,6 +926,7 @@ export {
     forgotPasswordController,
     updatePasswordController,
     sendOtpController,
+    addOrderItemController,
     getUserDetailsController,
     deleteAccountController,
     getMyProfileController,

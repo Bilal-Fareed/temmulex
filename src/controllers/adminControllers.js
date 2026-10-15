@@ -2,8 +2,9 @@ import { getAdminByEmail, getAdminByUuid, updateAdminByUuidService } from "../se
 import { verifyPassword, generateAccessToken } from "../helpers/security.js";
 import { sendShopperProfileStatusEmail } from "../helpers/mailer.js";
 import { refundPayment, disbursePayment } from "../helpers/payment.js"; 
-import { dollarsToCents }from "../helpers/constants.js"
+import { dollarsToCents } from "../helpers/constants.js"
 import { adminDashboardUserStats, getUsersList, getUserByUuid, updateUserByUuidService } from "../services/userService.js";
+import { getAdminOrderItemsListService, getOrderItemDetailsForAdminService, updateItemPaymentStatusService } from "../services/orderItemService.js";
 import {
     getShoppersList,
     getFreelancerDetails,
@@ -322,6 +323,23 @@ const adminOrdersListController = async (req, res) => {
     }
 };
 
+const adminOrderItemsListController = async (req, res) => {
+    try {
+        console.log("ADMIN CONTROLLER > ADMIN ORDER ITEMS LIST > try block executed");
+
+        const { page, limit, search_text } = req.query;
+        const { order_id } = req.params;
+
+        const orderItemsList = await getAdminOrderItemsListService({ search_text, order_id }, { page: Number(page) || 1, limit: Number(limit) || 10 });
+
+        res.status(200).json({ success: true, message: "Order Items List Fetched Successfully", data: orderItemsList });
+
+    } catch (error) {
+        console.error("ADMIN CONTROLLER > ADMIN ORDER ITEMS LIST >", error);
+        res.status(500).json({ success: false, message: "Internal Server Error" });
+    }
+};
+
 const adminPaymentListController = async (req, res) => {
     try {
         console.log("ADMIN CONTROLLER > ADMIN ORDERS LIST > try block executed");
@@ -426,7 +444,7 @@ const refundPaymentController = async (req, res) => {
         if (['received'].includes(orderDetails.paymentStatus)){
             await refundPayment({ 
                 paymentIntent: orderDetails.paymentReference,
-                orderId: order_id, 
+                metadata: { orderId: order_id }, 
             });
             await updateOrderPaymentStatusService({ paymentStatus: 'refunded_pending' }, { uuid: order_id })
             return res.status(200).json({ success: true, message: "Payment Refunded Successfully" });
@@ -436,6 +454,66 @@ const refundPaymentController = async (req, res) => {
 
     } catch (error) {
         console.error("ADMIN CONTROLLER > ADMIN REFUND PAYMENT > ", error);
+        res.status(500).json({ success: false, message: "Internal Server Error" });
+    }
+};
+
+const refundItemPaymentController = async (req, res) => {
+    try {
+        console.log("ADMIN CONTROLLER > ADMIN REFUND ITEM PAYMENT > try block executed");
+
+        const { item_id } = req.params;
+
+        const orderItemDetails = await getOrderItemDetailsForAdminService({ uuid: item_id });
+
+        if (['received'].includes(orderItemDetails.paymentStatus)){
+            await refundPayment({ 
+                paymentIntent: orderItemDetails.paymentReference,
+                metadata: { itemId: item_id }, 
+            });
+            await updateItemPaymentStatusService({ paymentStatus: 'refunded_pending' }, { uuid: item_id })
+            return res.status(200).json({ success: true, message: "Payment Refunded Successfully" });
+        } else {
+            res.status(400).json({ success: false, message: `Unable to refund payment` });
+        }
+
+    } catch (error) {
+        console.error("ADMIN CONTROLLER > ADMIN REFUND ITEM PAYMENT > ", error);
+        res.status(500).json({ success: false, message: "Internal Server Error" });
+    }
+};
+
+const disburseItemPaymentController = async (req, res) => {
+    try {
+        console.log("ADMIN CONTROLLER > ADMIN DISPURSE ITEM PAYMENT > try block executed");
+
+        const { item_id } = req.params;
+
+        const orderItemDetails = await getOrderItemDetailsForAdminService({ uuid: item_id });
+
+        const orderDetails = await getOrderDetailsForAdminService({ uuid: orderItemDetails.orderId });
+
+        const freelancerDetails = await getFreelancerProfileDetailByUserUuid(orderDetails.freelancerUuid);
+
+        if (!freelancerDetails.onboardingComplete)
+            return res.status(400).json({ success: false, message: "Unable to payout shopper, incomplete connect account setup" });
+
+        if (orderItemDetails.paymentStatus === 'received') {
+            const transfer = await disbursePayment({
+                amount: dollarsToCents(orderDetails.netShopperPayout),
+                currency: 'GBP',
+                metadata: { itemId: item_id },
+                transferGroup: `item_${item_id}`,
+                destinationAccount: freelancerDetails.stripeAccountId
+            });
+            await updateItemPaymentStatusService({ paymentStatus: 'disbursed_pending', payoutTransferId: transfer.id }, { uuid: item_id });
+            return res.status(200).json({ success: true, message: "Payment Disbursed Successfully" });
+        } else {
+            res.status(400).json({ success: false, message: `Unable to disburse payment` });
+        }
+
+    } catch (error) {
+        console.error("ADMIN CONTROLLER > ADMIN DISPURSE ITEM PAYMENT > ", error);
         res.status(500).json({ success: false, message: "Internal Server Error" });
     }
 };
@@ -460,7 +538,8 @@ const disbursePaymentController = async (req, res) => {
             const transfer = await disbursePayment({
                 amount: dollarsToCents(orderDetails.netShopperPayout),
                 currency: 'GBP',
-                orderId: order_id,
+                metadata: { orderId: order_id },
+                transferGroup: `order_${order_id}`,
                 destinationAccount: freelancerDetails.stripeAccountId
             });
             await updateOrderPaymentStatusService({ paymentStatus: 'disbursed_pending', payoutTransferId: transfer.id }, { uuid: order_id });
@@ -485,6 +564,7 @@ export {
     disbursePaymentController,
     adminSupportListController,
     adminPaymentListController,
+    adminOrderItemsListController,
     adminUpdateOrderController,
     adminClientListController,
     adminShoppersListController,
@@ -493,6 +573,8 @@ export {
     adminGetShopperDetailController,
     adminOrdersListController,
     adminGetOrderDetailController,
+    refundItemPaymentController,
+    disburseItemPaymentController,
     adminResolveSupportTicketController,
     adminUpdateShopperDetailsController,
 }
