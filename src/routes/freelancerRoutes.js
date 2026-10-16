@@ -8,6 +8,7 @@ import {
     completeOrderSchema,
     updateServiceSchema,
     getMyOrdersSchema,
+    getItemsListSchema,
     deleteServiceSchema,
     getConversationSchema,
     getConversationMessagesSchema,
@@ -21,6 +22,7 @@ import {
     sendMessagesController,
     completeOrderController,
     addServiceController,
+    getOrderItemsListController,
     getFreelancerChatsController,
     getDashboardDetailsController,
     updateFreelancerProfileController,
@@ -53,5 +55,7 @@ router.get('/my-chats', authenticate, validate({ query: getConversationSchema })
 router.get('/messages', authenticate, validate({ query: getConversationMessagesSchema }), getConversationMessagesController);
 
 router.post('/send-message', multerHandler, authenticate, validate({ body: sendMessageSchema }), sendMessagesController);
+
+router.get('/items-list', authenticate, validate({ query: getItemsListSchema }), getOrderItemsListController);
 
 export default router;

@@ -158,6 +158,13 @@ const addOrderItemSchema = vine.object({
     price: vine.number().transform((value) => value ?? 0),
 })
 
+// get items list schema
+const getItemsListSchema = vine.object({
+    order_id: vine.string().uuid({ version: [4] }),
+    page: vine.number().min(1).max(1000).optional(),
+    limit: vine.number().min(1).max(100).optional(),
+}); 
+
 export {
     passwordSchema,
     signinSchema,
@@ -168,6 +175,7 @@ export {
     addOrderItemSchema,
     orderFeedbackSchema,
     forgotPasswordSchema,
+    getItemsListSchema,
     nearbyTopRatedShopperSchema,
     updatePasswordSchema,
     commonHeadersSchema,

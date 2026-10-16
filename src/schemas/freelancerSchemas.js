@@ -58,9 +58,17 @@ const getConversationMessagesSchema = vine.object({
     limit: vine.number().min(1).max(100).optional(),
 })
 
+// get items list schema
+const getItemsListSchema = vine.object({
+    order_id: vine.string().uuid({ version: [4] }),
+    page: vine.number().min(1).max(1000).optional(),
+    limit: vine.number().min(1).max(100).optional(),
+}); 
+
 export {
     addServiceSchema,
     getMyOrdersSchema,
+    getItemsListSchema,
     completeOrderSchema,
     updateServiceSchema,
     deleteServiceSchema,
