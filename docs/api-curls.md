@@ -372,7 +372,7 @@ curl --location 'http://localhost:3001/v1/users/send-message' \
 ```
 
 
-## 📝 Get Chat List for Users
+## 📝 Get Items List for Users
 ```bash
 curl --location 'http://localhost:3001/v1/users/items-list?order_id=de6fe813-c292-4da1-a817-eecb2cea9142&page=1&limit=10' \
 --header 'x-device-id: test-device-id' \
@@ -522,7 +522,7 @@ curl --location 'http://localhost:3001/v1/freelancers/send-message' \
 ```
 
 
-## 📝 Get Chat List for Users
+## 📝 Get Items List for Users
 ```bash
 curl --location 'http://localhost:3001/v1/freelancers/items-list?order_id=de6fe813-c292-4da1-a817-eecb2cea9142&page=1&limit=10' \
 --header 'x-device-id: test-device-id' \
@@ -619,6 +619,14 @@ curl --location --request POST 'http://localhost:3001/api/admin/disburse/item/pa
 ## 📝 Admin Mark Payment As Disbursed
 ``` bash
 curl --location --request POST 'http://localhost:3001/api/admin/disburse/payment/15c03a6b-4468-447c-a2a8-14ed6500cf30' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1dWlkIjoiODc5ZTZkOTgtNGMyNy00Y2MzLTg4ZWItOTlhMGQ4YjhmZDE4IiwiZW1haWwiOiJhZG1pbkBnbWFpbC5jb20iLCJ2ZXJzaW9uIjowLCJpYXQiOjE3NzM0Mzk5MDAsImV4cCI6MTc3MzQ4MzEwMH0.hnQfSeA6DChL_hCM-XZmuwg4-3nt88spmHObA60xi8E'
+```
+
+
+## 📝 Admin Get Order Items List
+``` bash
+curl --location --request POST 'http://localhost:3001/api/admin/orderItems/15c03a6b-4468-447c-a2a8-14ed6500cf30' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1dWlkIjoiODc5ZTZkOTgtNGMyNy00Y2MzLTg4ZWItOTlhMGQ4YjhmZDE4IiwiZW1haWwiOiJhZG1pbkBnbWFpbC5jb20iLCJ2ZXJzaW9uIjowLCJpYXQiOjE3NzM0Mzk5MDAsImV4cCI6MTc3MzQ4MzEwMH0.hnQfSeA6DChL_hCM-XZmuwg4-3nt88spmHObA60xi8E'
 ```
