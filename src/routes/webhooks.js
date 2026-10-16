@@ -89,7 +89,8 @@ router.post('/stripe', express.raw({ type: 'application/json' }), async (req, re
             }
 
             case 'transfer.created': {
-                const { orderId, itemId } = _event?.metadata ?? {}; 
+                const orderId = _event?.metadata?.orderId || _event?.transfer_group?.replace("order_", "");
+                const itemId = _event?.metadata?.itemId || _event?.transfer_group?.replace("item_", "");
 
                 if (orderId) {
                     await updateOrderPaymentStatusService({
