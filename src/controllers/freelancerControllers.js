@@ -16,12 +16,12 @@ import {
 import { getNotificationTokenService } from "../services/notificationTokenService.js";
 import { createStripeOnboardingLink } from "../helpers/payment.js";
 import { getUserSpecificConversationListService, getConversationMessagesService, getConversationService, addMessageServices } from "../services/conversationService.js";
-import { getOrderService, getFreelancerCompletedOrderStats } from "../services/orderService.js";
+import { getOrderService, getFreelancerCompletedOrderStats, getOrderByUuid, updateOrderByUuidService } from "../services/orderService.js";
 import { deleteFreelancersLanguage } from '../services/freelancerLanguageService.js';
 import { insertManyFreelancerLanguagesService } from '../services/freelancerLanguageService.js';
 import { updateUserByUuidService, getUserByUuid } from '../services/userService.js';
 import { PROFILE_UPDATE_OTP_MESSAGE_SUBCODE } from '../helpers/constants.js';
-import { getOrderByUuid, updateOrderByUuidService } from '../services/orderService.js';
+import { getOrderItemsService } from '../services/orderItemService.js';
 import { redisClient } from "../../infra/redis.js";
 import { sendOtpEmail } from "../helpers/mailer.js";
 import { dollarsToCents } from "../helpers/constants.js";
@@ -252,6 +252,26 @@ const getMyOrdersController = async (req, res) => {
     }
 };
 
+
+const getOrderItemsListController = async (req, res) => {
+    try {
+
+        console.log("USER CONTROLLER > GET ORDER ITEM LIST > try block executed");
+
+        const { uuid } = req.user;
+        const { page = 1, limit = 10, order_id } = req.query;
+
+        const data = await getOrderItemsService({
+            orderId: order_id,
+        }, {}, { page: Number(page) || 1, limit: Number(limit) || 10 });
+
+        res.status(200).json({ success: true, message: "Order Items fetched successfully", data: data || [] });
+    } catch (error) {
+        console.error("USER CONTROLLER > GET ORDER ITEM LIST >", error);
+        res.status(500).json({ success: false, message: "Internal Server Error" });
+    }
+};
+
 const getDashboardDetailsController = async (req, res) => {
     try {
 
@@ -462,6 +482,7 @@ export {
     updateServiceController,
     completeOrderController,
     sendMessagesController,
+    getOrderItemsListController,
     getFreelancerChatsController,
     getDashboardDetailsController,
     updateFreelancerProfileController,

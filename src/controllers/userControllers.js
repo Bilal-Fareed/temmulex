@@ -9,7 +9,7 @@ import { insertManyFreelancerLanguagesService } from "../services/freelancerLang
 import { insertManyFreelancerServices, getFreelancerServices } from "../services/freelancerServicesService.js";
 import { getOrderService, rateOrder, getOrderByUuid, updateOrderByUuidService } from "../services/orderService.js";
 import { getNotificationTokenService, addNotificationTokenService } from "../services/notificationTokenService.js";
-import { insertOrderItemService } from "../services/orderItemService.js";
+import { insertOrderItemService, getOrderItemsService } from "../services/orderItemService.js";
 import {
     addMessageServices,
     getConversationService,
@@ -558,6 +558,25 @@ const getMyOrdersController = async (req, res) => {
     }
 };
 
+const getOrderItemsListController = async (req, res) => {
+    try {
+
+        console.log("USER CONTROLLER > GET ORDER ITEM LIST > try block executed");
+
+        const { uuid } = req.user;
+        const { page = 1, limit = 10, order_id } = req.query;
+
+        const data = await getOrderItemsService({
+            orderId: order_id,
+        }, {}, { page: Number(page) || 1, limit: Number(limit) || 10 });
+
+        res.status(200).json({ success: true, message: "Order Items fetched successfully", data: data || [] });
+    } catch (error) {
+        console.error("USER CONTROLLER > GET ORDER ITEM LIST >", error);
+        res.status(500).json({ success: false, message: "Internal Server Error" });
+    }
+};
+
 const placeOrderController = async (req, res) => {
     try {
 
@@ -928,6 +947,7 @@ export {
     sendOtpController,
     addOrderItemController,
     getUserDetailsController,
+    getOrderItemsListController,
     deleteAccountController,
     getMyProfileController,
     placeOrderController,

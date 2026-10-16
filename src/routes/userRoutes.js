@@ -14,6 +14,7 @@ import {
     commonHeadersSchema,
     getMyOrdersSchema,
     placeOrderSchema,
+    getItemsListSchema,
     updateUserProfileSchema,
     orderFeedbackSchema,
     nearbyTopRatedShopperSchema,
@@ -43,6 +44,7 @@ import {
     getConversationMessagesController,
     getMyProfileController,
     placeOrderController,
+    getOrderItemsListController,
     addOrderItemController,
     storeFirebaseNotificationTokenController,
 } from '../controllers/userControllers.js';
@@ -90,5 +92,7 @@ router.get('/messages', authenticate, validate({ query: getConversationMessagesS
 router.post('/send-message', multerHandler, authenticate, validate({ body: sendMessageSchema }), sendMessagesController);
 
 router.post('/add-item', authenticate, validate({ body: addOrderItemSchema }), addOrderItemController);
+
+router.get('/items-list', authenticate, validate({ query: getItemsListSchema }), getOrderItemsListController);
 
 export default router;

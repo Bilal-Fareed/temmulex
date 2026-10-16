@@ -79,7 +79,39 @@ const getOrderItemDetailsForAdminService = async ({ uuid }) => {
         return orderItem;
 }
 
+const getOrderItemsService = async (filters = {}, projection = undefined, options = {}) => {
+
+    let whereClause = buildWhere(filters);
+
+    const { page, limit } = options;
+
+    const offset = (page - 1) * limit;
+
+    return await db
+        .select({
+            uuid: orderItems.uuid,
+            orderId: orderItems.orderId,
+            itemName: orderItems.itemName,
+            description: orderItems.description,
+            price: sql`ROUND(${orderItems.price} / 100.0, 2)`,
+            paymentStatus: orderItems.paymentStatus,
+        })
+        .from(orderItems)
+        .where(whereClause)
+        .offset(offset)
+        .limit(limit);
+}
+
+const getOrderItemByUuid = async (uuid, projection = undefined, options = {}) => {
+    return await db.query.orderItems.findFirst({
+        where: eq(orderItems.uuid, uuid),
+        ...(projection && Object.keys(projection).length > 0 && { columns: projection }),
+    });
+}
+
 export {
+    getOrderItemByUuid,
+    getOrderItemsService,
 	insertOrderItemService,
     getAdminOrderItemsListService,
     updateItemPaymentStatusService,
